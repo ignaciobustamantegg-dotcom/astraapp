@@ -78,37 +78,37 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen min-h-[100dvh] bg-background relative overflow-hidden">
       {/* Ambient glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[600px] h-[250px] md:h-[400px] rounded-full bg-primary/5 blur-[80px] md:blur-[120px] pointer-events-none" />
 
       {/* Header */}
-      <nav className="bg-background/60 backdrop-blur-xl border-b border-border/50 px-6 h-16 flex items-center justify-between relative z-10">
+      <nav className="bg-background/60 backdrop-blur-xl border-b border-border/50 px-4 md:px-6 h-14 md:h-16 flex items-center justify-between relative z-10 safe-top">
         <div className="flex items-center gap-2">
           <Moon className="w-5 h-5 text-primary" />
           <span className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
             Astra
           </span>
         </div>
-        <button onClick={handleSignOut} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={handleSignOut} className="text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
           Sign Out
         </button>
       </nav>
 
-      <main className="max-w-2xl mx-auto px-6 py-10 relative z-10">
+      <main className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-10 relative z-10 pb-16">
         {/* Welcome & Progress */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-10"
+          className="mb-6 md:mb-10"
         >
           <p className="text-sm text-muted-foreground mb-1">Welcome, {displayName}</p>
-          <h1 className="text-2xl md:text-3xl font-medium text-foreground mb-6">
+          <h1 className="text-xl md:text-3xl font-medium text-foreground mb-4 md:mb-6">
             Your Emotional Audit
           </h1>
 
-          <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
+          <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4 md:p-6">
             <div className="flex items-baseline justify-between mb-3">
               <span className="text-sm font-medium text-foreground">
                 Day {currentDay} of 7
@@ -133,7 +133,7 @@ const Dashboard = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 * i }}
-                className={`bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6 transition-all ${
+                className={`bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4 md:p-6 transition-all ${
                   isLocked ? "opacity-40" : "hover:border-primary/30 hover:shadow-[0_0_30px_rgba(217,170,60,0.05)]"
                 }`}
               >
@@ -161,7 +161,7 @@ const Dashboard = () => {
                         </Badge>
                       )}
                     </div>
-                    <h3 className="text-base md:text-lg font-medium text-foreground leading-snug">
+                    <h3 className="text-sm md:text-lg font-medium text-foreground leading-snug">
                       {item.title}
                     </h3>
                     <p className="text-sm text-muted-foreground mt-1 font-light">
