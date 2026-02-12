@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Lock } from "lucide-react";
+import { Lock, Moon, Sparkles, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const AUDIT_DAYS = [
@@ -36,7 +36,6 @@ const Dashboard = () => {
         return;
       }
 
-      // Fetch profile & progress
       const [profileRes, progressRes] = await Promise.all([
         supabase.from("profiles").select("display_name").eq("user_id", session.user.id).maybeSingle(),
         supabase.from("audit_progress").select("*").eq("user_id", session.user.id).maybeSingle(),
@@ -73,24 +72,30 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-foreground border-t-transparent rounded-full animate-spin" />
+        <Moon className="w-8 h-8 text-primary animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-secondary/30">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+
       {/* Header */}
-      <nav className="bg-background border-b border-border px-6 h-16 flex items-center justify-between">
-        <span className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
-          Astra
-        </span>
+      <nav className="bg-background/60 backdrop-blur-xl border-b border-border/50 px-6 h-16 flex items-center justify-between relative z-10">
+        <div className="flex items-center gap-2">
+          <Moon className="w-5 h-5 text-primary" />
+          <span className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
+            Astra
+          </span>
+        </div>
         <button onClick={handleSignOut} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
           Sign Out
         </button>
       </nav>
 
-      <main className="max-w-2xl mx-auto px-6 py-10">
+      <main className="max-w-2xl mx-auto px-6 py-10 relative z-10">
         {/* Welcome & Progress */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -103,16 +108,16 @@ const Dashboard = () => {
             Your Emotional Audit
           </h1>
 
-          <div className="bg-background rounded-xl border border-border p-6">
+          <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6">
             <div className="flex items-baseline justify-between mb-3">
               <span className="text-sm font-medium text-foreground">
                 Day {currentDay} of 7
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-primary font-medium">
                 {progressPercent}% Complete
               </span>
             </div>
-            <Progress value={progressPercent} className="h-1.5 bg-border" />
+            <Progress value={progressPercent} className="h-1.5 bg-secondary" />
           </div>
         </motion.div>
 
@@ -128,28 +133,30 @@ const Dashboard = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 * i }}
-                className={`bg-background rounded-xl border border-border p-6 transition-all ${
-                  isLocked ? "opacity-50" : "hover:shadow-sm"
+                className={`bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-6 transition-all ${
+                  isLocked ? "opacity-40" : "hover:border-primary/30 hover:shadow-[0_0_30px_rgba(217,170,60,0.05)]"
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="text-xs font-medium tracking-[0.1em] uppercase text-accent">
+                      <span className="text-xs font-medium tracking-[0.1em] uppercase text-primary">
                         Day {item.day}
                       </span>
                       {status === "completed" && (
-                        <Badge variant="secondary" className="text-[10px] font-medium tracking-wide">
+                        <Badge className="text-[10px] font-medium tracking-wide bg-primary/15 text-primary border-0 gap-1">
+                          <CheckCircle2 className="w-3 h-3" />
                           Completed
                         </Badge>
                       )}
                       {status === "unlocked" && (
-                        <Badge className="text-[10px] font-medium tracking-wide bg-foreground text-background">
+                        <Badge className="text-[10px] font-medium tracking-wide bg-primary text-background border-0 gap-1">
+                          <Sparkles className="w-3 h-3" />
                           Unlocked
                         </Badge>
                       )}
                       {status === "reserved" && (
-                        <Badge variant="outline" className="text-[10px] font-medium tracking-wide text-muted-foreground">
+                        <Badge variant="outline" className="text-[10px] font-medium tracking-wide text-muted-foreground border-border/50">
                           Reserved
                         </Badge>
                       )}
@@ -164,9 +171,9 @@ const Dashboard = () => {
 
                   <div className="flex-shrink-0 pt-1">
                     {isLocked ? (
-                      <Lock className="w-4 h-4 text-muted-foreground/50" />
+                      <Lock className="w-4 h-4 text-muted-foreground/40" />
                     ) : status === "unlocked" ? (
-                      <Button size="sm" className="h-9 rounded-full px-5 text-xs font-medium tracking-wide">
+                      <Button size="sm" className="h-9 rounded-full px-5 text-xs font-semibold tracking-wide bg-primary text-background hover:bg-primary/90">
                         Begin
                       </Button>
                     ) : null}

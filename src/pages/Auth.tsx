@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { Moon } from "lucide-react";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -55,14 +56,20 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <nav className="px-6 h-16 flex items-center">
-        <Link to="/" className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
-          Astra
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Ambient glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+
+      <nav className="px-6 h-16 flex items-center relative z-10">
+        <Link to="/" className="flex items-center gap-2">
+          <Moon className="w-5 h-5 text-primary" />
+          <span className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
+            Astra
+          </span>
         </Link>
       </nav>
 
-      <div className="flex-1 flex items-center justify-center px-6 pb-20">
+      <div className="flex-1 flex items-center justify-center px-6 pb-20 relative z-10">
         <motion.div
           className="w-full max-w-sm"
           initial={{ opacity: 0, y: 16 }}
@@ -70,7 +77,7 @@ const Auth = () => {
           transition={{ duration: 0.5 }}
         >
           <div className="text-center mb-10">
-            <div className="w-8 h-[1px] bg-accent mx-auto mb-6" />
+            <Moon className="w-8 h-8 text-primary mx-auto mb-4" />
             <h1 className="text-3xl font-medium text-foreground mb-2">
               {isSignUp ? "Create Your Account" : "Welcome Back"}
             </h1>
@@ -92,7 +99,7 @@ const Auth = () => {
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Your name"
-                  className="h-12 bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-accent"
+                  className="h-12 bg-card border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground"
                 />
               </div>
             )}
@@ -107,7 +114,7 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="h-12 bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-accent"
+                className="h-12 bg-card border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground"
               />
             </div>
             <div className="space-y-2">
@@ -122,14 +129,14 @@ const Auth = () => {
                 placeholder="••••••••"
                 required
                 minLength={6}
-                className="h-12 bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-accent"
+                className="h-12 bg-card border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-full text-sm font-medium tracking-wide"
+              className="w-full h-12 rounded-full text-sm font-semibold tracking-wide bg-foreground text-background hover:bg-foreground/90"
             >
               {loading
                 ? "Please wait..."
@@ -143,7 +150,7 @@ const Auth = () => {
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-foreground font-medium hover:underline underline-offset-4"
+              className="text-primary font-medium hover:underline underline-offset-4"
             >
               {isSignUp ? "Sign In" : "Sign Up"}
             </button>
