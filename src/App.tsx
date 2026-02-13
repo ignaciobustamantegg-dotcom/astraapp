@@ -15,6 +15,7 @@ import Profile from "./pages/Profile";
 import JourneyMap from "./components/JourneyMap";
 import DayExperience from "./pages/DayExperience";
 import DayExperience2 from "./pages/DayExperience2";
+import DayExperience3 from "./pages/DayExperience3";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/journey" element={<JourneyMap />} />
               <Route path="/journey/day/1" element={<DayExperience />} />
               <Route path="/journey/day/2" element={<DayExperience2 />} />
+              <Route path="/journey/day/3" element={<DayExperience3 />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Navigate to="/journey" replace />} />
             </Route>
