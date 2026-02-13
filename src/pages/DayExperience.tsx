@@ -150,8 +150,6 @@ const DayExperience = () => {
 
   const screen = SCREENS[currentScreen];
 
-  const dmSerif = "'DM Serif Display', 'Playfair Display', serif";
-
   if (showCompletion) {
     return (
       <motion.div
@@ -190,8 +188,8 @@ const DayExperience = () => {
           </div>
 
           <h2
-            className="text-xl font-medium text-foreground mb-2"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-xl text-foreground mb-2"
+            style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: 1.1 }}
           >
             Día 1 completado
           </h2>
@@ -263,8 +261,8 @@ const DayExperience = () => {
               Día 1
             </p>
             <p
-              className="text-sm font-medium text-foreground"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              className="text-sm text-foreground"
+              style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: 1.1 }}
             >
               Identificación de la Inercia
             </p>
@@ -281,10 +279,10 @@ const DayExperience = () => {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentScreen}
-            initial={{ opacity: 0, y: 14 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="flex flex-col"
           >
             {screen.type === "text" && (() => {
@@ -308,17 +306,19 @@ const DayExperience = () => {
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.12 + i * 0.07, duration: 0.4, ease: "easeOut" }}
-                      className="rounded-2xl px-6 py-5 my-4"
+                      className="rounded-2xl px-6 py-5 my-5"
                       style={{
-                        background: "hsla(260, 30%, 14%, 0.7)",
-                        borderLeft: "2px solid hsla(270, 60%, 60%, 0.2)",
+                        background: "hsla(260, 28%, 15%, 0.6)",
+                        borderLeft: "3px solid hsl(270, 70%, 70%)",
+                        boxShadow: "inset 3px 0 12px hsla(270, 70%, 70%, 0.08)",
                       }}
                     >
                       {highlightBuffer.map((hl, j) =>
                         hl.text ? (
                           <p
                             key={j}
-                            className="text-[17px] leading-[1.9] text-foreground/85"
+                            className="text-[17px] leading-[1.7] text-foreground/85 italic"
+                            style={{ fontWeight: 300 }}
                           >
                             {hl.text}
                           </p>
@@ -350,16 +350,16 @@ const DayExperience = () => {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease: "easeOut" }}
-                    className={`leading-[2] ${
+                    className={`${
                       isLead
-                        ? "text-[20px] font-medium text-foreground mb-2"
+                        ? "text-[19px] text-foreground mb-3 leading-[1.6]"
                         : isClose
-                          ? "text-[20px] font-medium text-foreground mt-5"
-                          : "text-[17px] text-foreground/75"
+                          ? "text-[19px] text-foreground mt-7 leading-[1.6]"
+                          : "text-[17px] text-foreground/70 leading-[1.7]"
                     }`}
                     style={{
-                      fontFamily: isLead || isClose ? dmSerif : undefined,
-                      letterSpacing: isLead || isClose ? "0.01em" : undefined,
+                      fontWeight: isLead ? 300 : isClose ? 500 : 300,
+                      letterSpacing: isLead || isClose ? "-0.01em" : undefined,
                     }}
                   >
                     {line.text}
@@ -392,8 +392,8 @@ const DayExperience = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.22, duration: 0.4 }}
-                  className="text-[18px] leading-[1.85] font-medium text-foreground"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  className="text-[18px] leading-[1.7] text-foreground"
+                  style={{ fontWeight: 300, letterSpacing: "-0.01em" }}
                 >
                   {screen.prompt}
                 </motion.p>
@@ -425,7 +425,12 @@ const DayExperience = () => {
       </div>
 
       {/* Bottom button */}
-      <div className="px-8 pb-7 pt-6 relative z-10">
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
+        className="px-8 pb-7 pt-6 relative z-10"
+      >
         <button
           onClick={handleContinue}
           className="w-full h-[52px] rounded-xl text-[15px] font-medium press-scale transition-all duration-300"
@@ -438,7 +443,7 @@ const DayExperience = () => {
         >
           {screen.button}
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 };
