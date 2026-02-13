@@ -55,9 +55,7 @@ const Plans = () => {
         >
           <X className="w-5 h-5" />
         </button>
-        <button className="text-sm text-muted-foreground min-h-[44px] flex items-center px-3">
-          Restaurar
-        </button>
+        <div className="min-h-[44px] min-w-[44px]" />
       </div>
 
       {/* Content */}
