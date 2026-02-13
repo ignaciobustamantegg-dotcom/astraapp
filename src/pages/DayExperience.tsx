@@ -221,9 +221,9 @@ const DayExperience = () => {
             onClick={() => navigate("/journey")}
             className="w-full max-w-[280px] h-[52px] rounded-xl text-sm font-bold press-scale transition-all duration-300 text-primary-foreground"
             style={{
-              background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
-              boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
-              border: "1px solid hsla(270, 60%, 75%, 0.2)",
+              background: "linear-gradient(135deg, hsl(270, 55%, 58%), hsl(270, 55%, 63%), hsl(275, 50%, 68%))",
+              boxShadow: "0 0 20px hsla(270, 55%, 63%, 0.22), 0 4px 12px hsla(270, 55%, 63%, 0.12)",
+              border: "1px solid hsla(270, 55%, 68%, 0.18)",
             }}
           >
             Volver al mapa
@@ -450,9 +450,9 @@ const DayExperience = () => {
           onClick={handleContinue}
           className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
           style={{
-            background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
-            boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
-            border: "1px solid hsla(270, 60%, 75%, 0.2)",
+            background: "linear-gradient(135deg, hsl(270, 55%, 58%), hsl(270, 55%, 63%), hsl(275, 50%, 68%))",
+            boxShadow: "0 0 20px hsla(270, 55%, 63%, 0.22), 0 4px 12px hsla(270, 55%, 63%, 0.12)",
+            border: "1px solid hsla(270, 55%, 68%, 0.18)",
           }}
         >
           {screen.button}
