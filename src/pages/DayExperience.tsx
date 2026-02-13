@@ -87,7 +87,7 @@ const SCREENS: Screen[] = [
   {
     type: "text",
     lines: [
-      { text: "Reconocer es el primer movimiento consciente.", style: "serif-close" },
+      { text: "Reconocer es el primer movimiento consciente.", style: "serif-lead" },
     ],
     button: "Completar Día 1",
   },
