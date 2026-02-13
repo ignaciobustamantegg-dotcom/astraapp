@@ -12,8 +12,8 @@ const BottomNavigation = () => {
 
   return (
     <nav
-      className="sticky bottom-0 z-50 border-t border-border/30 safe-bottom-fixed"
-      style={{ background: "hsla(260, 40%, 6%, 0.85)", backdropFilter: "blur(20px)" }}
+      className="shrink-0 z-50 border-t border-border/30 safe-bottom-fixed"
+      style={{ background: "hsl(260, 40%, 6%)" }}
     >
       <div className="flex items-center justify-around h-14">
         {tabs.map(({ to, label, icon: Icon }) => {

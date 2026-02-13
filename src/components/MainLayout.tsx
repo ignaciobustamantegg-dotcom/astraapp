@@ -5,7 +5,7 @@ import BottomNavigation from "@/components/BottomNavigation";
 const MainLayout = () => {
   return (
     <div
-      className="min-h-[100dvh] relative overflow-hidden flex flex-col"
+      className="h-[100dvh] relative overflow-hidden flex flex-col"
       style={{
         background: `linear-gradient(180deg, 
           hsl(260, 40%, 6%) 0%, 
