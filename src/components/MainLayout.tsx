@@ -38,7 +38,7 @@ const MainLayout = () => {
         </div>
       </nav>
 
-      <main className="flex-1 relative z-10 no-scrollbar overflow-y-auto pb-14 bg-[hsl(255_30%_5%)]">
+      <main className="flex-1 relative z-10 no-scrollbar overflow-y-auto pb-14">
         <Outlet />
       </main>
 
