@@ -2,8 +2,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import { Home, Map, User } from "lucide-react";
 
 const tabs = [
-  { to: "/home", label: "Inicio", icon: Home },
-  { to: "/journey", label: "Viaje", icon: Map },
+  { to: "/home", label: "Início", icon: Home },
+  { to: "/journey", label: "Jornada", icon: Map },
   { to: "/profile", label: "Perfil", icon: User },
 ];
 

@@ -22,14 +22,14 @@ const Home = () => {
       </div>
 
       <h1 className="text-2xl font-medium text-foreground text-center mb-3">
-        Tu resultado
+        Seu resultado
       </h1>
 
       <p className="text-sm text-muted-foreground text-center leading-relaxed max-w-[320px] mb-8">
-        Tienes un perfil de alta sensibilidad emocional con tendencia a la sobreexigencia.
-        Tu patrón dominante es la evitación del conflicto interno, lo que genera ciclos de
-        agotamiento y desconexión. La auditoría de 7 días te ayudará a identificar y
-        transformar estos patrones.
+        Você tem um perfil de alta sensibilidade emocional com tendência à autoexigência.
+        Seu padrão dominante é a evitação do conflito interno, o que gera ciclos de
+        esgotamento e desconexão. A auditoria de 7 dias vai te ajudar a identificar e
+        transformar esses padrões.
       </p>
 
       <button
@@ -40,7 +40,7 @@ const Home = () => {
           boxShadow: "0 4px 20px hsla(270, 80%, 55%, 0.3)",
         }}
       >
-        Continuar mi viaje
+        Continuar minha jornada
         <ArrowRight className="w-4 h-4" />
       </button>
     </motion.div>

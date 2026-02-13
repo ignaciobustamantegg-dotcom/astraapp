@@ -33,12 +33,12 @@ const SignUp = () => {
       if (error) throw error;
 
       toast({
-        title: "Revisa tu correo",
-        description: "Te hemos enviado un enlace de verificación para completar tu registro.",
+        title: "Verifique seu e-mail",
+        description: "Enviamos um link de verificação para completar seu cadastro.",
       });
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Erro",
         description: error.message,
         variant: "destructive",
       });
@@ -67,31 +67,31 @@ const SignUp = () => {
         transition={{ duration: 0.4 }}
       >
         <h1 className="text-[1.75rem] font-semibold text-foreground mb-8">
-          Crear cuenta
+          Criar conta
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-foreground">
-              Nombre de usuario
+              Nome de usuário
             </Label>
             <Input
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Tu nombre"
+              placeholder="Seu nome"
               className="h-12 bg-transparent border-border/60 rounded-xl text-base text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-foreground">
-              Correo electrónico
+              E-mail
             </Label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Escribe tu correo electrónico"
+              placeholder="Digite seu e-mail"
               required
               className="h-12 bg-transparent border-border/60 rounded-xl text-base text-foreground placeholder:text-muted-foreground"
             />
@@ -99,14 +99,14 @@ const SignUp = () => {
 
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-foreground">
-              Contraseña
+              Senha
             </Label>
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Escribe la contraseña"
+                placeholder="Digite sua senha"
                 required
                 minLength={6}
                 className="h-12 bg-transparent border-border/60 rounded-xl text-base text-foreground placeholder:text-muted-foreground pr-12"
@@ -122,9 +122,9 @@ const SignUp = () => {
           </div>
 
           <p className="text-xs text-muted-foreground text-center leading-relaxed">
-            Al crear una cuenta, aceptas las{" "}
-            <span className="text-primary font-semibold">Condiciones de uso</span> y la{" "}
-            <span className="text-primary font-semibold">Política de confidencialidad</span>.
+            Ao criar uma conta, você aceita os{" "}
+            <span className="text-primary font-semibold">Termos de uso</span> e a{" "}
+            <span className="text-primary font-semibold">Política de privacidade</span>.
           </p>
 
           <Button
@@ -132,7 +132,7 @@ const SignUp = () => {
             disabled={loading}
             className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide bg-muted text-muted-foreground hover:bg-muted/80 press-scale"
           >
-            {loading ? "Cargando..." : "Crear cuenta"}
+            {loading ? "Carregando..." : "Criar conta"}
           </Button>
         </form>
       </motion.div>
@@ -140,12 +140,12 @@ const SignUp = () => {
       {/* Bottom link */}
       <div className="text-center pb-8 px-6 safe-bottom">
         <p className="text-sm text-muted-foreground">
-          ¿Ya tienes una cuenta?{" "}
+          Já tem uma conta?{" "}
           <button
             onClick={() => navigate("/login")}
             className="text-primary font-semibold"
           >
-            Iniciar sesión
+            Entrar
           </button>
         </p>
       </div>
