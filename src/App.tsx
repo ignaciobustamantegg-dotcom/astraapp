@@ -39,10 +39,17 @@ const App = () => (
             >
               <Route path="/home" element={<Home />} />
               <Route path="/journey" element={<JourneyMap />} />
-              <Route path="/journey/day/1" element={<DayExperience />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Navigate to="/journey" replace />} />
             </Route>
+            <Route
+              path="/journey/day/1"
+              element={
+                <ProtectedRoute>
+                  <DayExperience />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
