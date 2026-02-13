@@ -1,24 +1,23 @@
 
 
-## Fix: Purple progress line not passing through all completed day nodes
+## Problem
 
-### Problem
-The current approach uses `pathLength={6}` to normalize the entire bezier path into 6 equal abstract segments, then uses `strokeDasharray` to show `currentDay - 1` segments. However, the bezier curves between nodes have **different actual lengths** because nodes zigzag at different horizontal positions. A curve from x=15 to x=59 is much longer than one from x=37 to x=15. So equal abstract segments don't map to equal visual segments — the line falls short of or overshoots the actual node positions.
+There's too much space between the purple "Continuar" button and the bottom navigation bar. This happens because of stacked spacing:
 
-### Solution
-Instead of one path with dasharray tricks, build **separate sub-paths** for each completed segment (day 1 to day 2, day 2 to day 3, etc.) and render only the completed ones as solid purple lines. This guarantees each segment exactly connects two consecutive nodes.
+1. `MainLayout`'s `<main>` has `pb-14` (56px) bottom padding
+2. The button container has `pt-4` (16px) top padding and `pb-2` (8px) bottom padding
 
-### Technical Details
+These combine to push the button far from the navigation bar.
 
-**File: `src/components/JourneyMap.tsx`**
+## Solution
 
-1. Add a helper function `generateSegmentPath(from, to)` that creates the bezier curve string between two consecutive points (using the same control point math already in `generatePath`).
+Two changes needed:
 
-2. Replace the single progress `<path>` element with a loop that renders one `<path>` per completed segment:
-   - For each `i` from `0` to `currentDay - 2`, render a path from `points[i]` to `points[i+1]` using the same cubic bezier formula.
-   - Each segment path uses the purple stroke styling (`hsl(270, 60%, 65%)`, strokeWidth 2.5, opacity 0.6).
-   - No `pathLength` or `strokeDasharray` needed — each segment is fully drawn.
+### 1. Remove bottom padding from MainLayout's main element (line 40)
+- Change `pb-14` to `pb-0` on the `<main>` tag, since the Day Experience pages manage their own bottom spacing with the fixed button
 
-3. Remove the `pathLength` and `strokeDasharray` attributes from the progress path since they are no longer needed.
+### 2. Reduce button container padding in both Day files
+- In `src/pages/DayExperience.tsx` (line 432): change `px-8 pb-2 pt-4` to `px-8 pb-1 pt-2`
+- In `src/pages/DayExperience2.tsx` (same line): apply the identical change
 
-This approach is simpler, reliable regardless of curve lengths, and visually identical to the intended design.
+This positions the button snugly above the bottom navigation bar, matching the reference screenshot.
