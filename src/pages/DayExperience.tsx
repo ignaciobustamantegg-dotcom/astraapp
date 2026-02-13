@@ -235,7 +235,7 @@ const DayExperience = () => {
 
   return (
     <div
-      className="h-full w-full flex flex-col relative"
+      className="flex flex-col min-h-[calc(100dvh-6.5rem)] relative"
       style={{
         background: `linear-gradient(180deg,
           hsl(265, 40%, 14%) 0%,
@@ -259,8 +259,8 @@ const DayExperience = () => {
         }}
       />
 
-      {/* Header - fixed top */}
-      <div className="shrink-0 px-5 pt-3 pb-2 relative z-10">
+      {/* Header */}
+      <div className="px-5 pt-3 pb-2 relative z-10">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={() => {
@@ -289,9 +289,8 @@ const DayExperience = () => {
         <Progress value={progress} className="h-1 bg-secondary" />
       </div>
 
-      {/* Content - scrollable */}
-      <div className="flex-1 overflow-y-auto no-scrollbar relative z-10">
-        <div className="px-8 pt-6">
+      {/* Content */}
+      <div className="flex-1 flex flex-col justify-center px-8 pt-6 relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentScreen}
@@ -302,6 +301,7 @@ const DayExperience = () => {
             className="flex flex-col"
           >
             {screen.type === "text" && (() => {
+              // Group lines into segments, collecting highlight blocks
               const rendered: React.ReactNode[] = [];
               let highlightBuffer: ScreenLine[] = [];
               let inHighlight = false;
@@ -314,6 +314,7 @@ const DayExperience = () => {
                 }
                 if (line.style === "highlight-end") {
                   if (line.text) highlightBuffer.push(line);
+                  // Render highlight block
                   rendered.push(
                     <motion.div
                       key={`hl-${i}`}
@@ -349,6 +350,7 @@ const DayExperience = () => {
                   return;
                 }
 
+                // Normal lines
                 if (line.style === "spacer") {
                   rendered.push(<div key={i} className="h-6" />);
                   return;
@@ -435,32 +437,27 @@ const DayExperience = () => {
             )}
           </motion.div>
         </AnimatePresence>
-        </div>
+      </div>
 
-        {/* Bottom button - sticky */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
-          className="shrink-0 sticky bottom-0 px-6 pb-6 pt-4 z-30"
+      {/* Bottom button */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
+        className="px-8 pb-7 pt-6 relative z-10"
+      >
+        <button
+          onClick={handleContinue}
+          className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
           style={{
-            background: "linear-gradient(0deg, hsla(255,30%,5%,0.95) 0%, hsla(255,30%,5%,0.6) 55%, transparent 100%)",
-            backdropFilter: "blur(10px)",
+            background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
+            boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
+            border: "1px solid hsla(270, 60%, 75%, 0.2)",
           }}
         >
-          <button
-            onClick={handleContinue}
-            className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
-            style={{
-              background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
-              boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
-              border: "1px solid hsla(270, 60%, 75%, 0.2)",
-            }}
-          >
-            {screen.button}
-          </button>
-        </motion.div>
-      </div>
+          {screen.button}
+        </button>
+      </motion.div>
     </div>
   );
 };
