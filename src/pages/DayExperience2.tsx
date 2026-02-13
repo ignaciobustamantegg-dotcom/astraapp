@@ -293,7 +293,8 @@ const DayExperience2 = () => {
       </div>
 
       {/* Content - scrollable */}
-      <div className="flex-1 overflow-y-auto no-scrollbar px-8 pt-6 pb-40 relative z-10">
+      <div className="flex-1 overflow-y-auto no-scrollbar relative z-10">
+        <div className="px-8 pt-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentScreen}
@@ -437,31 +438,32 @@ const DayExperience2 = () => {
             )}
           </motion.div>
         </AnimatePresence>
-      </div>
+        </div>
 
-      {/* Bottom button - fixed */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
-        className="fixed left-0 right-0 bottom-14 px-8 pb-6 pt-4 z-30"
-        style={{
-          background: "linear-gradient(0deg, hsla(255,30%,5%,0.95) 0%, hsla(255,30%,5%,0.6) 55%, transparent 100%)",
-          backdropFilter: "blur(10px)",
-        }}
-      >
-        <button
-          onClick={handleContinue}
-          className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
+        {/* Bottom button - sticky */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
+          className="shrink-0 sticky bottom-0 px-6 pb-6 pt-4 z-30"
           style={{
-            background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
-            boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
-            border: "1px solid hsla(270, 60%, 75%, 0.2)",
+            background: "linear-gradient(0deg, hsla(255,30%,5%,0.95) 0%, hsla(255,30%,5%,0.6) 55%, transparent 100%)",
+            backdropFilter: "blur(10px)",
           }}
         >
-          {screen.button}
-        </button>
-      </motion.div>
+          <button
+            onClick={handleContinue}
+            className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
+            style={{
+              background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
+              boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
+              border: "1px solid hsla(270, 60%, 75%, 0.2)",
+            }}
+          >
+            {screen.button}
+          </button>
+        </motion.div>
+      </div>
     </div>
   );
 };
