@@ -1,8 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Moon, Lock, CheckCircle2, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
+import { Lock, CheckCircle2, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import JourneyMapSkeleton from "./JourneyMapSkeleton";
 
 const AUDIT_DAYS = [
   { day: 1, title: "Identificación de la Inercia", icon: Compass },
@@ -23,27 +25,30 @@ type AuditProgress = {
 
 const JourneyMap = () => {
   const { user } = useAuth();
-  const [progress, setProgress] = useState<AuditProgress | null>(null);
-  const [displayName, setDisplayName] = useState("");
-  const [loading, setLoading] = useState(true);
   const pathRef = useRef<SVGSVGElement>(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      if (!user) return;
+  const { data: profileData } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("display_name").eq("user_id", user!.id).maybeSingle();
+      return data;
+    },
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      const [profileRes, progressRes] = await Promise.all([
-        supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle(),
-        supabase.from("audit_progress").select("*").eq("user_id", user.id).maybeSingle(),
-      ]);
+  const { data: progressData, isLoading } = useQuery({
+    queryKey: ["audit_progress", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("audit_progress").select("*").eq("user_id", user!.id).maybeSingle();
+      return data as AuditProgress | null;
+    },
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
-      setDisplayName(profileRes.data?.display_name || user.email?.split("@")[0] || "");
-      setProgress(progressRes.data as AuditProgress | null);
-      setLoading(false);
-    };
-
-    loadData();
-  }, [user]);
+  const displayName = profileData?.display_name || user?.email?.split("@")[0] || "";
+  const progress = progressData ?? null;
 
   const currentDay = progress?.current_day || 1;
 
@@ -73,12 +78,8 @@ const JourneyMap = () => {
 
   const { d: pathD, points, totalHeight } = generatePath();
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        <Moon className="w-8 h-8 text-primary animate-pulse" />
-      </div>
-    );
+  if (isLoading) {
+    return <JourneyMapSkeleton />;
   }
 
   return (
