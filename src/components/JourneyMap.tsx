@@ -95,7 +95,7 @@ const JourneyMap = () => {
       >
         <p className="text-xs text-muted-foreground mb-1">Bienvenido, {displayName}</p>
         <h1 className="text-xl font-medium text-foreground">
-          Tu Ritual de Claridad Relacional
+          Tu mapa de 7 días
         </h1>
       </motion.div>
 
