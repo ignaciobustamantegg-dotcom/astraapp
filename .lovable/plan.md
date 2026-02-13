@@ -1,24 +1,26 @@
 
 
-## Problema
+## Problem
 
-Actualmente, toda la pantalla del Día 1 y Día 2 se puede hacer scroll porque el contenedor principal en `MainLayout` permite scroll libre (`overflow-y-auto`). Esto causa que el header (con la barra de progreso), el botón inferior y el fondo se muevan juntos, dejando ver un espacio de color diferente debajo.
+The DayExperience pages (Day 1 and Day 2) define their own purple gradient background, but they sit inside the `MainLayout` which has a different gradient ending in a warm brownish tone (`hsl(30, 20%, 15%)`). When you scroll past the bottom button, the MainLayout background becomes visible, creating an unwanted color strip below the purple content.
 
-## Solución
+## Root Cause
 
-Cambiar la estructura para que:
-- El **header** (flecha, título, barra de progreso) quede **fijo arriba**
-- El **botón** quede **fijo abajo**
-- Solo el **área de texto** en el medio haga scroll cuando el contenido no quepa en pantalla
+- `MainLayout` gradient ends at `hsl(30, 20%, 15%)` (warm/brown)
+- `DayExperience` uses `min-h-[calc(100dvh-6.5rem)]` -- this sizes to the viewport but doesn't extend to fill all scrollable space
+- The `main` element in MainLayout scrolls, and below the DayExperience content the layout's own background shows through
 
-## Cambios técnicos
+## Solution
 
-### 1. `src/pages/DayExperience.tsx` y `src/pages/DayExperience2.tsx`
+Change the `min-h` on the main container div in both `DayExperience.tsx` and `DayExperience2.tsx` to use `min-h-full` (or a large enough value) so the background always covers the full scrollable area. Alternatively, a simpler and more robust fix is to remove `min-h-[calc(100dvh-6.5rem)]` and replace it with `min-h-full` while also ensuring the background color extends by adding a matching background to the bottom padding area.
 
-- Cambiar el contenedor principal de `min-h-full` a `h-full` con `overflow-hidden` para que ocupe exactamente el espacio disponible sin crecer más
-- Mantener el header y el botón como secciones fijas (sin scroll)
-- Agregar `overflow-y-auto` y la clase `no-scrollbar` solo al área de contenido central (el `div` con `flex-1`) para que únicamente esa zona haga scroll cuando el texto lo necesite
-- Cambiar `justify-center` por `justify-start` en el área de contenido para que el texto fluya desde arriba cuando hay scroll
+### Changes
 
-Esto aplica el mismo cambio en ambos archivos (Día 1 y Día 2) para mantener consistencia.
+**1. `src/pages/DayExperience.tsx`**
+- Change the outer container from `min-h-[calc(100dvh-6.5rem)]` to `min-h-full` so it fills the entire scrollable `main` area, not just the viewport minus header
+
+**2. `src/pages/DayExperience2.tsx`**
+- Apply the same fix: change `min-h-[calc(100dvh-6.5rem)]` to `min-h-full`
+
+This ensures the purple gradient background covers the entire scrollable content area with no gap at the bottom.
 
