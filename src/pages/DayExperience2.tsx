@@ -239,16 +239,8 @@ const DayExperience2 = () => {
   }
 
   return (
-    <div
-      className="flex flex-col min-h-[calc(100dvh-6.5rem)] relative"
-      style={{
-        background: `linear-gradient(180deg,
-          hsl(265, 40%, 14%) 0%,
-          hsl(260, 38%, 10%) 35%,
-          hsl(258, 35%, 8%) 65%,
-          hsl(255, 30%, 5%) 100%)`,
-      }}
-    >
+    <div className="flex flex-col h-full relative">
+      {/* Ambient glows */}
       <div
         className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[360px] h-[400px] pointer-events-none"
         style={{
@@ -262,8 +254,8 @@ const DayExperience2 = () => {
         }}
       />
 
-      {/* Header */}
-      <div className="px-5 pt-3 pb-2 relative z-10">
+      {/* Fixed Header */}
+      <div className="px-5 pt-3 pb-2 relative z-10 shrink-0">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={() => {
@@ -292,172 +284,175 @@ const DayExperience2 = () => {
         <Progress value={progress} className="h-1 bg-secondary" />
       </div>
 
-      {/* Content */}
-      <div className="flex-1 flex flex-col justify-center px-8 pt-6 relative z-10">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentScreen}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="flex flex-col"
-          >
-            {screen.type === "text" && (() => {
-              const rendered: React.ReactNode[] = [];
-              let highlightBuffer: ScreenLine[] = [];
-              let inHighlight = false;
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto no-scrollbar relative z-10">
+        <div className="flex flex-col justify-center px-8 pt-6 pb-4 min-h-full">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentScreen}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="flex flex-col"
+            >
+              {screen.type === "text" && (() => {
+                const rendered: React.ReactNode[] = [];
+                let highlightBuffer: ScreenLine[] = [];
+                let inHighlight = false;
 
-              screen.lines.forEach((line, i) => {
-                if (line.style === "highlight-start") {
-                  inHighlight = true;
-                  highlightBuffer.push(line);
-                  return;
-                }
-                if (line.style === "highlight-end") {
-                  if (line.text) highlightBuffer.push(line);
+                screen.lines.forEach((line, i) => {
+                  if (line.style === "highlight-start") {
+                    inHighlight = true;
+                    highlightBuffer.push(line);
+                    return;
+                  }
+                  if (line.style === "highlight-end") {
+                    if (line.text) highlightBuffer.push(line);
+                    rendered.push(
+                      <motion.div
+                        key={`hl-${i}`}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.12 + i * 0.07, duration: 0.4, ease: "easeOut" }}
+                        className="rounded-2xl px-6 py-5 my-5"
+                        style={{
+                          background: "hsla(260, 28%, 15%, 0.6)",
+                          borderLeft: "3px solid hsl(270, 70%, 70%)",
+                          boxShadow: "inset 3px 0 12px hsla(270, 70%, 70%, 0.08)",
+                        }}
+                      >
+                        {highlightBuffer.map((hl, j) =>
+                          hl.text ? (
+                            <p
+                              key={j}
+                              className="text-[16px] leading-[1.7] text-foreground/85 italic"
+                              style={{ fontWeight: 300 }}
+                            >
+                              {hl.text}
+                            </p>
+                          ) : null
+                        )}
+                      </motion.div>
+                    );
+                    highlightBuffer = [];
+                    inHighlight = false;
+                    return;
+                  }
+                  if (inHighlight) {
+                    highlightBuffer.push(line);
+                    return;
+                  }
+
+                  if (line.style === "spacer") {
+                    rendered.push(<div key={i} className="h-6" />);
+                    return;
+                  }
+
+                  const isLead = line.style === "serif-lead";
+                  const isClose = line.style === "serif-close";
+
                   rendered.push(
-                    <motion.div
-                      key={`hl-${i}`}
+                    <motion.p
+                      key={i}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.12 + i * 0.07, duration: 0.4, ease: "easeOut" }}
-                      className="rounded-2xl px-6 py-5 my-5"
+                      transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease: "easeOut" }}
+                      className={`${
+                        isLead
+                          ? "text-[20px] text-foreground mb-3 leading-[1.7] font-bold"
+                          : isClose
+                            ? "text-[16px] text-foreground mt-7 leading-[1.7]"
+                            : "text-[16px] text-foreground/70 leading-[1.7]"
+                      }`}
                       style={{
-                        background: "hsla(260, 28%, 15%, 0.6)",
-                        borderLeft: "3px solid hsl(270, 70%, 70%)",
-                        boxShadow: "inset 3px 0 12px hsla(270, 70%, 70%, 0.08)",
+                        fontWeight: isLead ? 700 : isClose ? 500 : 300,
+                        letterSpacing: isLead ? "-0.01em" : undefined,
                       }}
                     >
-                      {highlightBuffer.map((hl, j) =>
-                        hl.text ? (
-                          <p
-                            key={j}
-                            className="text-[16px] leading-[1.7] text-foreground/85 italic"
-                            style={{ fontWeight: 300 }}
-                          >
-                            {hl.text}
-                          </p>
-                        ) : null
-                      )}
-                    </motion.div>
+                      {line.text}
+                    </motion.p>
                   );
-                  highlightBuffer = [];
-                  inHighlight = false;
-                  return;
-                }
-                if (inHighlight) {
-                  highlightBuffer.push(line);
-                  return;
-                }
+                });
 
-                if (line.style === "spacer") {
-                  rendered.push(<div key={i} className="h-6" />);
-                  return;
-                }
+                return <div className="flex flex-col">{rendered}</div>;
+              })()}
 
-                const isLead = line.style === "serif-lead";
-                const isClose = line.style === "serif-close";
-
-                rendered.push(
+              {screen.type === "journal" && (
+                <div className="space-y-5">
                   <motion.p
-                    key={i}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease: "easeOut" }}
-                    className={`${
-                      isLead
-                        ? "text-[20px] text-foreground mb-3 leading-[1.7] font-bold"
-                        : isClose
-                          ? "text-[16px] text-foreground mt-7 leading-[1.7]"
-                          : "text-[16px] text-foreground/70 leading-[1.7]"
-                    }`}
-                    style={{
-                      fontWeight: isLead ? 700 : isClose ? 500 : 300,
-                      letterSpacing: isLead ? "-0.01em" : undefined,
-                    }}
+                    transition={{ delay: 0.08, duration: 0.4 }}
+                    className="text-[10px] font-medium tracking-[0.15em] uppercase text-primary/70"
                   >
-                    {line.text}
+                    {screen.title}
                   </motion.p>
-                );
-              });
-
-              return <div className="flex flex-col">{rendered}</div>;
-            })()}
-
-            {screen.type === "journal" && (
-              <div className="space-y-5">
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.08, duration: 0.4 }}
-                  className="text-[10px] font-medium tracking-[0.15em] uppercase text-primary/70"
-                >
-                  {screen.title}
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15, duration: 0.4 }}
-                  className="text-[17px] leading-[1.85] text-foreground/80"
-                >
-                  Escribe libremente:
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.22, duration: 0.4 }}
-                  className="text-[18px] leading-[1.7] text-foreground"
-                  style={{ fontWeight: 300, letterSpacing: "-0.01em" }}
-                >
-                  {screen.prompt}
-                </motion.p>
-                <motion.p
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.29, duration: 0.4 }}
-                  className="text-[14px] text-muted-foreground"
-                >
-                  {screen.hint}
-                </motion.p>
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.36, duration: 0.4 }}
-                >
-                  <textarea
-                    value={journalText}
-                    onChange={(e) => setJournalText(e.target.value)}
-                    placeholder="Escribe aquí..."
-                    className="w-full min-h-[160px] rounded-xl p-4 text-[16px] leading-[1.8] text-foreground bg-secondary/40 border border-border/20 placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary/20 resize-none transition-all duration-300"
-                    style={{ fontSize: "16px" }}
-                  />
-                </motion.div>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15, duration: 0.4 }}
+                    className="text-[17px] leading-[1.85] text-foreground/80"
+                  >
+                    Escribe libremente:
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.22, duration: 0.4 }}
+                    className="text-[18px] leading-[1.7] text-foreground"
+                    style={{ fontWeight: 300, letterSpacing: "-0.01em" }}
+                  >
+                    {screen.prompt}
+                  </motion.p>
+                  <motion.p
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.29, duration: 0.4 }}
+                    className="text-[14px] text-muted-foreground"
+                  >
+                    {screen.hint}
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.36, duration: 0.4 }}
+                  >
+                    <textarea
+                      value={journalText}
+                      onChange={(e) => setJournalText(e.target.value)}
+                      placeholder="Escribe aquí..."
+                      className="w-full min-h-[160px] rounded-xl p-4 text-[16px] leading-[1.8] text-foreground bg-secondary/40 border border-border/20 placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary/20 resize-none transition-all duration-300"
+                      style={{ fontSize: "16px" }}
+                    />
+                  </motion.div>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
 
-      {/* Bottom button */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
-        className="px-8 pb-7 pt-6 relative z-10"
-      >
-        <button
-          onClick={handleContinue}
-          className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
-          style={{
-            background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
-            boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
-            border: "1px solid hsla(270, 60%, 75%, 0.2)",
-          }}
+      {/* Fixed Bottom button */}
+      <div className="px-8 pb-7 pt-4 relative z-10 shrink-0">
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
         >
-          {screen.button}
-        </button>
-      </motion.div>
+          <button
+            onClick={handleContinue}
+            className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
+            style={{
+              background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
+              boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
+              border: "1px solid hsla(270, 60%, 75%, 0.2)",
+            }}
+          >
+            {screen.button}
+          </button>
+        </motion.div>
+      </div>
     </div>
   );
 };
