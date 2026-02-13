@@ -110,14 +110,6 @@ const JourneyMap = () => {
           preserveAspectRatio="xMidYMid meet"
           fill="none"
         >
-          <path
-            d={pathD}
-            stroke="hsl(260, 30%, 20%)"
-            strokeWidth="2"
-            strokeDasharray="6 6"
-            fill="none"
-            opacity="0.5"
-          />
         </svg>
 
         {/* Nodes */}
