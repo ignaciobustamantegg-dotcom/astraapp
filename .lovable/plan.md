@@ -2,25 +2,22 @@
 
 ## Problem
 
-The DayExperience pages (Day 1 and Day 2) define their own purple gradient background, but they sit inside the `MainLayout` which has a different gradient ending in a warm brownish tone (`hsl(30, 20%, 15%)`). When you scroll past the bottom button, the MainLayout background becomes visible, creating an unwanted color strip below the purple content.
+There's too much space between the purple "Continuar" button and the bottom navigation bar. This happens because of stacked spacing:
 
-## Root Cause
+1. `MainLayout`'s `<main>` has `pb-14` (56px) bottom padding
+2. The button container has `pt-4` (16px) top padding and `pb-2` (8px) bottom padding
 
-- `MainLayout` gradient ends at `hsl(30, 20%, 15%)` (warm/brown)
-- `DayExperience` uses `min-h-[calc(100dvh-6.5rem)]` -- this sizes to the viewport but doesn't extend to fill all scrollable space
-- The `main` element in MainLayout scrolls, and below the DayExperience content the layout's own background shows through
+These combine to push the button far from the navigation bar.
 
 ## Solution
 
-Change the `min-h` on the main container div in both `DayExperience.tsx` and `DayExperience2.tsx` to use `min-h-full` (or a large enough value) so the background always covers the full scrollable area. Alternatively, a simpler and more robust fix is to remove `min-h-[calc(100dvh-6.5rem)]` and replace it with `min-h-full` while also ensuring the background color extends by adding a matching background to the bottom padding area.
+Two changes needed:
 
-### Changes
+### 1. Remove bottom padding from MainLayout's main element (line 40)
+- Change `pb-14` to `pb-0` on the `<main>` tag, since the Day Experience pages manage their own bottom spacing with the fixed button
 
-**1. `src/pages/DayExperience.tsx`**
-- Change the outer container from `min-h-[calc(100dvh-6.5rem)]` to `min-h-full` so it fills the entire scrollable `main` area, not just the viewport minus header
+### 2. Reduce button container padding in both Day files
+- In `src/pages/DayExperience.tsx` (line 432): change `px-8 pb-2 pt-4` to `px-8 pb-1 pt-2`
+- In `src/pages/DayExperience2.tsx` (same line): apply the identical change
 
-**2. `src/pages/DayExperience2.tsx`**
-- Apply the same fix: change `min-h-[calc(100dvh-6.5rem)]` to `min-h-full`
-
-This ensures the purple gradient background covers the entire scrollable content area with no gap at the bottom.
-
+This positions the button snugly above the bottom navigation bar, matching the reference screenshot.
