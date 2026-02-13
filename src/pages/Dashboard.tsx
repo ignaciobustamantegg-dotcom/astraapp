@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Moon, Lock, CheckCircle2, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -23,41 +23,31 @@ type AuditProgress = {
 };
 
 const Dashboard = () => {
-  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
   const [progress, setProgress] = useState<AuditProgress | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(true);
   const pathRef = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/login");
-        return;
-      }
+    const loadData = async () => {
+      if (!user) return;
 
       const [profileRes, progressRes] = await Promise.all([
-        supabase.from("profiles").select("display_name").eq("user_id", session.user.id).maybeSingle(),
-        supabase.from("audit_progress").select("*").eq("user_id", session.user.id).maybeSingle(),
+        supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle(),
+        supabase.from("audit_progress").select("*").eq("user_id", user.id).maybeSingle(),
       ]);
 
-      setDisplayName(profileRes.data?.display_name || session.user.email?.split("@")[0] || "");
+      setDisplayName(profileRes.data?.display_name || user.email?.split("@")[0] || "");
       setProgress(progressRes.data as AuditProgress | null);
       setLoading(false);
     };
 
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_OUT") navigate("/login");
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    loadData();
+  }, [user]);
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await signOut();
   };
 
   const currentDay = progress?.current_day || 1;
