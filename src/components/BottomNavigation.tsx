@@ -23,7 +23,7 @@ const BottomNavigation = () => {
             <NavLink
               key={to}
               to={to}
-              className="flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[44px] transition-colors duration-200 press-scale"
+              className="flex flex-col items-center justify-center gap-0.5 min-w-[64px] min-h-[44px] transition-colors duration-200"
             >
               <div className="relative">
                 <Icon

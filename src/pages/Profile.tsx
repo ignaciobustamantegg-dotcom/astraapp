@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { User, Mail, TrendingUp, LogOut } from "lucide-react";
 
 const Profile = () => {
@@ -27,14 +27,21 @@ const Profile = () => {
     load();
   }, [user]);
 
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-20">
+        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <>
-      {loading ? (
-        <div className="flex-1 flex items-center justify-center py-20">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : (
-        <div className="px-5 pt-8 pb-6">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="px-5 pt-8 pb-6"
+    >
       {/* Avatar */}
       <div className="flex flex-col items-center mb-8">
         <div
@@ -81,9 +88,7 @@ const Profile = () => {
         <LogOut className="w-4 h-4" />
         Cerrar sesión
       </button>
-      </div>
-      )}
-    </>
+    </motion.div>
   );
 };
 

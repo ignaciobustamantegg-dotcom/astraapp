@@ -1,34 +1,30 @@
 
 
-## Corregir contenido vacío y transiciones duplicadas
+## Centrar el mapa desplazando todas las posiciones a la izquierda
 
-### Causa raíz
+### Diagnostico
 
-MainLayout envuelve cada ruta en un `motion.div` con `initial={{ opacity: 0 }}`. Pero dentro de las paginas, los elementos hijos tambien arrancan con `opacity: 0`:
+Dia 1 esta en posicion 50 (que deberia ser el centro exacto) pero aparece visualmente desplazado a la derecha. Esto indica un offset sistematico que afecta a todos los nodos por igual, probablemente causado por la interaccion entre el padding del contenedor (`px-3`) y el posicionamiento absoluto.
 
-- **JourneyMap**: el bloque "Welcome" tiene `initial={{ opacity: 0, y: 12 }}` y cada nodo tiene `initial={{ opacity: 0, scale: 0.8 }}` -- cuando el contenedor padre esta en opacity 0 y los hijos tambien, el contenido queda invisible el doble de tiempo
-- **Profile**: tiene un `AnimatePresence mode="wait"` anidado dentro del `AnimatePresence mode="wait"` de MainLayout, causando conflictos de sincronizacion
+### Solucion
 
-### Cambios
+Restar 5 puntos a cada posicion horizontal para compensar el offset visual. Dia 1 pasa de 50 a 45, que deberia quedar en el centro visual real.
 
-**`src/components/JourneyMap.tsx`**
-- Bloque "Welcome" (linea 96-106): cambiar `motion.div` a `div` simple, eliminar `initial/animate/transition`
-- Nodos del mapa (linea 146-150): cambiar `motion.div` a `div` simple, eliminar `initial/animate/transition` con stagger
-- Mantener el `motion.div` del skeleton con `exit` (lineas 83-90) -- pero este exit no funciona sin un AnimatePresence que lo envuelva, asi que simplificar a un `div` tambien
-- Mantener las animaciones decorativas internas que NO son de entrada (pulse del nodo unlocked)
+Posiciones actuales: `[50, 28, 72, 38, 68, 32, 50]`
+Posiciones nuevas:  `[45, 23, 67, 33, 63, 27, 45]`
 
-**`src/pages/Profile.tsx`**
-- Eliminar el `AnimatePresence mode="wait"` envolvente (linea 31 y 98)
-- Usar renderizado condicional simple: si `loading`, mostrar el spinner en un `div`; si no, mostrar el contenido en un `div`
-- Eliminar todos los `motion.div` con `initial/animate/exit` -- la transicion de ruta ya la maneja MainLayout
+La amplitud del zigzag se mantiene identica (diferencia de ~40 entre extremos).
+
+### Cambios tecnicos
+
+**`src/components/JourneyMap.tsx`** (linea 19)
+- Cambiar `NODE_POSITIONS` de `[50, 28, 72, 38, 68, 32, 50]` a `[45, 23, 67, 33, 63, 27, 45]`
+
+**`src/components/JourneyMapSkeleton.tsx`** (linea 3)
+- Mismo cambio para mantener consistencia entre skeleton y mapa real
 
 ### Lo que NO cambia
-- MainLayout con su AnimatePresence (unica fuente de animacion de ruta)
-- Animacion de pulse en el nodo desbloqueado (decorativa, no de entrada)
-- Estilos, colores, layout, estructura visual
-- BottomNavigation con press-scale
+- Amplitud y forma del zigzag
+- Espaciado vertical, estilos, colores, animaciones
+- Logica de estados ni ningun otro archivo
 
-### Resultado esperado
-- Al tocar un tab, el contenido aparece inmediatamente (una sola animacion de 0.2s desde MainLayout)
-- Sin parpadeo doble ni contenido vacio temporal
-- Transicion loader-contenido en Profile es instantanea (sin fade compuesto)

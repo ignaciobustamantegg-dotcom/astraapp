@@ -1,11 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="px-5 pt-8 pb-6 flex flex-col items-center">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="px-5 pt-8 pb-6 flex flex-col items-center"
+    >
       <div className="w-14 h-14 rounded-full flex items-center justify-center mb-5"
         style={{
           background: "linear-gradient(135deg, hsl(270, 50%, 35%), hsl(260, 40%, 20%))",
@@ -37,7 +43,7 @@ const Home = () => {
         Continuar mi viaje
         <ArrowRight className="w-4 h-4" />
       </button>
-    </div>
+    </motion.div>
   );
 };
 
