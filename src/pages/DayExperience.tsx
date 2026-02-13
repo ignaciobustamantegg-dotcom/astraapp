@@ -235,12 +235,28 @@ const DayExperience = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-6.5rem)] relative">
-      {/* Ambient glow behind text area */}
+    <div
+      className="flex flex-col min-h-[calc(100dvh-6.5rem)] relative"
+      style={{
+        background: `linear-gradient(180deg,
+          hsl(265, 40%, 14%) 0%,
+          hsl(260, 38%, 10%) 35%,
+          hsl(258, 35%, 8%) 65%,
+          hsl(255, 30%, 5%) 100%)`,
+      }}
+    >
+      {/* Primary ambient glow */}
       <div
-        className="absolute top-[35%] left-1/2 -translate-x-1/2 w-[320px] h-[320px] pointer-events-none"
+        className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[360px] h-[400px] pointer-events-none"
         style={{
-          background: "radial-gradient(circle, hsla(270, 55%, 50%, 0.06) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 40%, hsla(270, 60%, 55%, 0.07) 0%, transparent 70%)",
+        }}
+      />
+      {/* Secondary subtle glow lower */}
+      <div
+        className="absolute top-[60%] left-1/2 -translate-x-1/2 w-[280px] h-[280px] pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, hsla(265, 50%, 45%, 0.04) 0%, transparent 65%)",
         }}
       />
 
