@@ -318,8 +318,7 @@ const DayExperience = () => {
                         hl.text ? (
                           <p
                             key={j}
-                            className="text-[17px] leading-[1.9] text-foreground/90 italic"
-                            style={{ fontFamily: dmSerif }}
+                            className="text-[17px] leading-[1.9] text-foreground/85"
                           >
                             {hl.text}
                           </p>
@@ -351,15 +350,16 @@ const DayExperience = () => {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease: "easeOut" }}
-                    className={`leading-[1.9] ${
+                    className={`leading-[2] ${
                       isLead
-                        ? "text-[22px] font-medium text-foreground mb-3"
+                        ? "text-[20px] font-medium text-foreground mb-2"
                         : isClose
-                          ? "text-[20px] font-semibold text-foreground mt-3"
+                          ? "text-[20px] font-medium text-foreground mt-5"
                           : "text-[17px] text-foreground/75"
                     }`}
                     style={{
                       fontFamily: isLead || isClose ? dmSerif : undefined,
+                      letterSpacing: isLead || isClose ? "0.01em" : undefined,
                     }}
                   >
                     {line.text}
