@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-const NODE_POSITIONS = [50, 28, 72, 38, 68, 32, 50];
+const NODE_POSITIONS = [45, 23, 67, 33, 63, 27, 45];
 
 const generatePath = () => {
   const nodeSpacing = 160;
