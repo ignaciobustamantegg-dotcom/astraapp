@@ -1,26 +1,30 @@
 
 
-## Problem
+## Centrar el mapa desplazando todas las posiciones a la izquierda
 
-The DayExperience pages (Day 1 and Day 2) define their own purple gradient background, but they sit inside the `MainLayout` which has a different gradient ending in a warm brownish tone (`hsl(30, 20%, 15%)`). When you scroll past the bottom button, the MainLayout background becomes visible, creating an unwanted color strip below the purple content.
+### Diagnostico
 
-## Root Cause
+Dia 1 esta en posicion 50 (que deberia ser el centro exacto) pero aparece visualmente desplazado a la derecha. Esto indica un offset sistematico que afecta a todos los nodos por igual, probablemente causado por la interaccion entre el padding del contenedor (`px-3`) y el posicionamiento absoluto.
 
-- `MainLayout` gradient ends at `hsl(30, 20%, 15%)` (warm/brown)
-- `DayExperience` uses `min-h-[calc(100dvh-6.5rem)]` -- this sizes to the viewport but doesn't extend to fill all scrollable space
-- The `main` element in MainLayout scrolls, and below the DayExperience content the layout's own background shows through
+### Solucion
 
-## Solution
+Restar 5 puntos a cada posicion horizontal para compensar el offset visual. Dia 1 pasa de 50 a 45, que deberia quedar en el centro visual real.
 
-Change the `min-h` on the main container div in both `DayExperience.tsx` and `DayExperience2.tsx` to use `min-h-full` (or a large enough value) so the background always covers the full scrollable area. Alternatively, a simpler and more robust fix is to remove `min-h-[calc(100dvh-6.5rem)]` and replace it with `min-h-full` while also ensuring the background color extends by adding a matching background to the bottom padding area.
+Posiciones actuales: `[50, 28, 72, 38, 68, 32, 50]`
+Posiciones nuevas:  `[45, 23, 67, 33, 63, 27, 45]`
 
-### Changes
+La amplitud del zigzag se mantiene identica (diferencia de ~40 entre extremos).
 
-**1. `src/pages/DayExperience.tsx`**
-- Change the outer container from `min-h-[calc(100dvh-6.5rem)]` to `min-h-full` so it fills the entire scrollable `main` area, not just the viewport minus header
+### Cambios tecnicos
 
-**2. `src/pages/DayExperience2.tsx`**
-- Apply the same fix: change `min-h-[calc(100dvh-6.5rem)]` to `min-h-full`
+**`src/components/JourneyMap.tsx`** (linea 19)
+- Cambiar `NODE_POSITIONS` de `[50, 28, 72, 38, 68, 32, 50]` a `[45, 23, 67, 33, 63, 27, 45]`
 
-This ensures the purple gradient background covers the entire scrollable content area with no gap at the bottom.
+**`src/components/JourneyMapSkeleton.tsx`** (linea 3)
+- Mismo cambio para mantener consistencia entre skeleton y mapa real
+
+### Lo que NO cambia
+- Amplitud y forma del zigzag
+- Espaciado vertical, estilos, colores, animaciones
+- Logica de estados ni ningun otro archivo
 
