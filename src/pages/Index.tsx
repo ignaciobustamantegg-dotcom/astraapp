@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { Moon, Sparkles, Eye } from "lucide-react";
+import landingBg from "@/assets/landing-bg.png";
 
 const steps = [
   { number: "01", title: "Map", desc: "Identify invisible behavioral patterns", icon: Eye },
@@ -11,9 +12,10 @@ const steps = [
 
 const Index = () => {
   return (
-    <div className="min-h-[100dvh] bg-background relative overflow-hidden flex flex-col">
-      {/* Ambient glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] md:w-[600px] h-[280px] md:h-[600px] rounded-full bg-primary/5 blur-[80px] md:blur-[120px] pointer-events-none" />
+    <div className="min-h-[100dvh] relative overflow-hidden flex flex-col">
+      {/* Background image */}
+      <img src={landingBg} alt="" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+      <div className="absolute inset-0 bg-background/40 pointer-events-none" />
 
       {/* Nav */}
       <nav className="sticky top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-border/50 safe-top">
