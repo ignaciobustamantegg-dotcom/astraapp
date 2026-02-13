@@ -7,77 +7,87 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 
-const SCREENS = [
+type ScreenLine = {
+  text: string;
+  style?: "serif-lead" | "serif-close" | "body" | "spacer" | "highlight-start" | "highlight-end";
+};
+
+type Screen =
+  | { type: "text"; lines: ScreenLine[]; button: string }
+  | { type: "journal"; title: string; prompt: string; hint: string; button: string };
+
+const SCREENS: Screen[] = [
   {
-    type: "text" as const,
-    content: [
-      "A veces no elegimos personas.",
-      "Elegimos sensaciones que nos resultan familiares.",
-      "",
-      "La familiaridad puede sentirse como conexión inmediata.",
-      "Como si algo ya estuviera escrito.",
-      "",
-      "Pero no siempre es destino.",
-      "A veces es repetición.",
+    type: "text",
+    lines: [
+      { text: "A veces no elegimos personas.", style: "serif-lead" },
+      { text: "Elegimos sensaciones que nos resultan familiares.", style: "body" },
+      { text: "", style: "spacer" },
+      { text: "La familiaridad puede sentirse como conexión inmediata.", style: "highlight-start" },
+      { text: "Como si algo ya estuviera escrito.", style: "highlight-end" },
+      { text: "", style: "spacer" },
+      { text: "Pero no siempre es destino.", style: "body" },
+      { text: "A veces es repetición.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
-    type: "text" as const,
-    content: [
-      "Cada persona desarrolla una forma particular de vincularse.",
-      "",
-      "Algunas buscan intensidad.",
-      "Otras buscan validación.",
-      "Otras buscan seguridad.",
-      "",
-      "Y muchas veces, sin notarlo, elegimos vínculos que activan lo que ya conocemos… incluso si eso también nos duele.",
-      "",
-      "No es casualidad.",
-      "Es inercia emocional.",
+    type: "text",
+    lines: [
+      { text: "Cada persona desarrolla una forma particular de vincularse.", style: "serif-lead" },
+      { text: "", style: "spacer" },
+      { text: "Algunas buscan intensidad.", style: "body" },
+      { text: "Otras buscan validación.", style: "body" },
+      { text: "Otras buscan seguridad.", style: "body" },
+      { text: "", style: "spacer" },
+      { text: "Y muchas veces, sin notarlo, elegimos vínculos que activan lo que ya conocemos… incluso si eso también nos duele.", style: "body" },
+      { text: "", style: "spacer" },
+      { text: "No es casualidad.", style: "body" },
+      { text: "Es inercia emocional.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
-    type: "text" as const,
-    content: [
-      "La inercia no significa error.",
-      "Significa hábito.",
-      "",
-      "Tu sistema emocional aprende lo que es familiar,",
-      "aunque no siempre sea lo que te hace bien.",
-      "",
-      "Reconocer esto no implica cambiar nada hoy.",
-      "Solo implica mirar con honestidad.",
+    type: "text",
+    lines: [
+      { text: "La inercia no significa error.", style: "serif-lead" },
+      { text: "Significa hábito.", style: "body" },
+      { text: "", style: "spacer" },
+      { text: "Tu sistema emocional aprende lo que es familiar,", style: "body" },
+      { text: "aunque no siempre sea lo que te hace bien.", style: "body" },
+      { text: "", style: "spacer" },
+      { text: "Reconocer esto no implica cambiar nada hoy.", style: "body" },
+      { text: "Solo implica mirar con honestidad.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
-    type: "text" as const,
-    content: [
-      "Hoy no necesitas tomar decisiones.",
-      "Solo observar.",
-      "",
-      "Pregúntate con calma:",
-      "",
-      "¿Hay un tipo de dinámica que se ha repetido en mis relaciones?",
-      "",
-      "No respondas rápido.",
-      "Permítete sentir antes de explicar.",
+    type: "text",
+    lines: [
+      { text: "Hoy no necesitas tomar decisiones.", style: "serif-lead" },
+      { text: "Solo observar.", style: "body" },
+      { text: "", style: "spacer" },
+      { text: "Pregúntate con calma:", style: "body" },
+      { text: "", style: "spacer" },
+      { text: "¿Hay un tipo de dinámica que se ha repetido en mis relaciones?", style: "highlight-start" },
+      { text: "", style: "highlight-end" },
+      { text: "", style: "spacer" },
+      { text: "No respondas rápido.", style: "body" },
+      { text: "Permítete sentir antes de explicar.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
-    type: "journal" as const,
+    type: "journal",
     title: "Reflexión",
     prompt: "¿Qué tipo de persona o dinámica ha aparecido más de una vez en tu historia?",
     hint: "(No necesitas tener una conclusión. Solo describe.)",
     button: "Guardar y continuar",
   },
   {
-    type: "text" as const,
-    content: [
-      "Reconocer es el primer movimiento consciente.",
+    type: "text",
+    lines: [
+      { text: "Reconocer es el primer movimiento consciente.", style: "serif-close" },
     ],
     button: "Completar Día 1",
   },
@@ -140,15 +150,7 @@ const DayExperience = () => {
 
   const screen = SCREENS[currentScreen];
 
-  // Helper: is this the first non-empty line?
-  const getFirstLineIndex = (content: string[]) => content.findIndex((l) => l !== "");
-  // Helper: is this the last non-empty line?
-  const getLastLineIndex = (content: string[]) => {
-    for (let i = content.length - 1; i >= 0; i--) {
-      if (content[i] !== "") return i;
-    }
-    return -1;
-  };
+  const dmSerif = "'DM Serif Display', 'Playfair Display', serif";
 
   if (showCompletion) {
     return (
@@ -286,35 +288,86 @@ const DayExperience = () => {
             className="flex flex-col"
           >
             {screen.type === "text" && (() => {
-              const firstIdx = getFirstLineIndex(screen.content);
-              const lastIdx = getLastLineIndex(screen.content);
+              // Group lines into segments, collecting highlight blocks
+              const rendered: React.ReactNode[] = [];
+              let highlightBuffer: ScreenLine[] = [];
+              let inHighlight = false;
 
-              return (
-                <div className="space-y-1.5">
-                  {screen.content.map((line, i) =>
-                    line === "" ? (
-                      <div key={i} className="h-5" />
-                    ) : (
-                      <motion.p
-                        key={i}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.08 + i * 0.07, duration: 0.4, ease: "easeOut" }}
-                        className={`leading-[1.85] ${
-                          i === firstIdx
-                            ? "text-[19px] font-medium text-foreground"
-                            : i === lastIdx
-                              ? "text-[18px] font-medium text-foreground/95"
-                              : "text-[17px] text-foreground/80"
-                        }`}
-                        style={{ fontFamily: i === firstIdx || i === lastIdx ? "'Playfair Display', serif" : undefined }}
-                      >
-                        {line}
-                      </motion.p>
-                    )
-                  )}
-                </div>
-              );
+              screen.lines.forEach((line, i) => {
+                if (line.style === "highlight-start") {
+                  inHighlight = true;
+                  highlightBuffer.push(line);
+                  return;
+                }
+                if (line.style === "highlight-end") {
+                  if (line.text) highlightBuffer.push(line);
+                  // Render highlight block
+                  rendered.push(
+                    <motion.div
+                      key={`hl-${i}`}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.12 + i * 0.07, duration: 0.4, ease: "easeOut" }}
+                      className="rounded-2xl px-6 py-5 my-4"
+                      style={{
+                        background: "hsla(260, 30%, 14%, 0.7)",
+                        borderLeft: "2px solid hsla(270, 60%, 60%, 0.2)",
+                      }}
+                    >
+                      {highlightBuffer.map((hl, j) =>
+                        hl.text ? (
+                          <p
+                            key={j}
+                            className="text-[17px] leading-[1.9] text-foreground/90 italic"
+                            style={{ fontFamily: dmSerif }}
+                          >
+                            {hl.text}
+                          </p>
+                        ) : null
+                      )}
+                    </motion.div>
+                  );
+                  highlightBuffer = [];
+                  inHighlight = false;
+                  return;
+                }
+                if (inHighlight) {
+                  highlightBuffer.push(line);
+                  return;
+                }
+
+                // Normal lines
+                if (line.style === "spacer") {
+                  rendered.push(<div key={i} className="h-6" />);
+                  return;
+                }
+
+                const isLead = line.style === "serif-lead";
+                const isClose = line.style === "serif-close";
+
+                rendered.push(
+                  <motion.p
+                    key={i}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease: "easeOut" }}
+                    className={`leading-[1.9] ${
+                      isLead
+                        ? "text-[22px] font-medium text-foreground mb-3"
+                        : isClose
+                          ? "text-[20px] font-semibold text-foreground mt-3"
+                          : "text-[17px] text-foreground/75"
+                    }`}
+                    style={{
+                      fontFamily: isLead || isClose ? dmSerif : undefined,
+                    }}
+                  >
+                    {line.text}
+                  </motion.p>
+                );
+              });
+
+              return <div className="flex flex-col">{rendered}</div>;
             })()}
 
             {screen.type === "journal" && (
