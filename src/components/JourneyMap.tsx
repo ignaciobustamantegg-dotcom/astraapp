@@ -118,17 +118,22 @@ const JourneyMap = () => {
             fill="none"
             opacity="0.5"
           />
-          {currentDay > 1 && (
-            <path
-              d={pathD}
-              stroke="hsl(270, 60%, 65%)"
-              strokeWidth="2.5"
-              fill="none"
-              opacity="0.6"
-              pathLength={6}
-              strokeDasharray={`${currentDay - 1} ${6 - (currentDay - 1)}`}
-            />
-          )}
+          {currentDay > 1 && Array.from({ length: currentDay - 1 }, (_, i) => {
+            const from = points[i];
+            const to = points[i + 1];
+            const midY = (from.y + to.y) / 2;
+            const segD = `M ${from.x} ${from.y} C ${from.x} ${midY}, ${to.x} ${midY}, ${to.x} ${to.y}`;
+            return (
+              <path
+                key={i}
+                d={segD}
+                stroke="hsl(270, 60%, 65%)"
+                strokeWidth="2.5"
+                fill="none"
+                opacity="0.6"
+              />
+            );
+          })}
         </svg>
 
         {/* Nodes */}
