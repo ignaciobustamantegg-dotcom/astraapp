@@ -16,7 +16,7 @@ const AUDIT_DAYS = [
   { day: 7, title: "El Veredicto Final", icon: Gavel },
 ];
 
-const NODE_POSITIONS = [50, 30, 70, 40, 65, 35, 50];
+const NODE_POSITIONS = [50, 28, 72, 38, 68, 32, 50];
 
 type AuditProgress = {
   current_day: number;
@@ -62,7 +62,7 @@ const JourneyMap = () => {
     const nodeSpacing = 160;
     const topOffset = 40;
     const points = NODE_POSITIONS.map((x, i) => ({
-      x: (x / 100) * 380,
+      x: (x / 100) * 400,
       y: topOffset + i * nodeSpacing,
     }));
 
