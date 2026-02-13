@@ -2,27 +2,23 @@
 
 ## Problema
 
-El `MainLayout` agrega `pb-14` (padding inferior) al área de contenido para dejar espacio para la barra de navegación inferior. Cuando las pantallas del Día 1 y Día 2 usan `h-full`, se dimensionan al espacio disponible, pero ese padding de 14 (56px) queda debajo del botón con el color del fondo del MainLayout (marrón/cálido), no el púrpura de la experiencia.
+Actualmente, toda la pantalla del Día 1 y Día 2 se puede hacer scroll porque el contenedor principal en `MainLayout` permite scroll libre (`overflow-y-auto`). Esto causa que el header (con la barra de progreso), el botón inferior y el fondo se muevan juntos, dejando ver un espacio de color diferente debajo.
 
 ## Solución
 
-Hacer que las páginas de DayExperience ignoren ese padding inferior, ocupando todo el espacio visual disponible incluyendo el área detrás de la barra de navegación.
+Cambiar la estructura para que:
+- El **header** (flecha, título, barra de progreso) quede **fijo arriba**
+- El **botón** quede **fijo abajo**
+- Solo el **área de texto** en el medio haga scroll cuando el contenido no quepa en pantalla
 
 ## Cambios técnicos
 
 ### 1. `src/pages/DayExperience.tsx` y `src/pages/DayExperience2.tsx`
 
-- Cambiar el contenedor principal de `h-full` a `min-h-[calc(100dvh-3rem)]` (descontando solo el header de 3rem/48px del MainLayout)
-- Agregar `mb-[-3.5rem]` (margin-bottom negativo) para que el fondo púrpura se extienda sobre el padding inferior del layout
-- Alternativamente, una solución más limpia: cambiar de `h-full` a usar `fixed inset-0` o hacer que el componente se posicione de forma absoluta cubriendo toda la pantalla, con un `pt` para compensar el header del MainLayout
+- Cambiar el contenedor principal de `min-h-full` a `h-full` con `overflow-hidden` para que ocupe exactamente el espacio disponible sin crecer más
+- Mantener el header y el botón como secciones fijas (sin scroll)
+- Agregar `overflow-y-auto` y la clase `no-scrollbar` solo al área de contenido central (el `div` con `flex-1`) para que únicamente esa zona haga scroll cuando el texto lo necesite
+- Cambiar `justify-center` por `justify-start` en el área de contenido para que el texto fluya desde arriba cuando hay scroll
 
-### Enfoque preferido (más limpio)
-
-Cambiar el contenedor principal en ambos archivos para que use posicionamiento fijo (`fixed inset-0`) con `z-20` para cubrir toda la pantalla incluyendo la barra de navegación inferior, ya que durante la experiencia del día no se necesita la navegación inferior. Esto elimina completamente el problema de colores diferentes.
-
-- Contenedor: `fixed inset-0 z-20 flex flex-col overflow-hidden`
-- Se mantiene el gradiente púrpura cubriendo toda la pantalla
-- El header propio de la experiencia (con flecha atrás y progreso) se mantiene arriba
-- El botón se mantiene abajo
-- La barra de navegación inferior queda oculta detrás
+Esto aplica el mismo cambio en ambos archivos (Día 1 y Día 2) para mantener consistencia.
 
