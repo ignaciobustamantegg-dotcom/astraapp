@@ -104,6 +104,42 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          checkout_session_id: string | null
+          created_at: string
+          id: string
+          is_trial: boolean
+          plan: string
+          status: string
+          trial_ends_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checkout_session_id?: string | null
+          created_at?: string
+          id?: string
+          is_trial?: boolean
+          plan?: string
+          status?: string
+          trial_ends_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checkout_session_id?: string | null
+          created_at?: string
+          id?: string
+          is_trial?: boolean
+          plan?: string
+          status?: string
+          trial_ends_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
