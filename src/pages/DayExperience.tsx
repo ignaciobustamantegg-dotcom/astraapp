@@ -219,7 +219,7 @@ const DayExperience = () => {
 
           <button
             onClick={() => navigate("/journey")}
-            className="w-full max-w-[280px] h-[52px] rounded-xl text-sm font-medium press-scale transition-all duration-300 text-primary-foreground"
+            className="w-full max-w-[280px] h-[52px] rounded-xl text-sm font-bold press-scale transition-all duration-300 text-primary-foreground"
             style={{
               background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
               boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
@@ -448,7 +448,7 @@ const DayExperience = () => {
       >
         <button
           onClick={handleContinue}
-          className="w-full h-[52px] rounded-xl text-[15px] font-medium press-scale transition-all duration-300 text-primary-foreground"
+          className="w-full h-[52px] rounded-xl text-[15px] font-bold press-scale transition-all duration-300 text-primary-foreground"
           style={{
             background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
             boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
