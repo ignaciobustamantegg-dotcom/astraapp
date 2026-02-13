@@ -13,6 +13,7 @@ import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import JourneyMap from "./components/JourneyMap";
+import DayExperience from "./pages/DayExperience";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             >
               <Route path="/home" element={<Home />} />
               <Route path="/journey" element={<JourneyMap />} />
+              <Route path="/journey/day/1" element={<DayExperience />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Navigate to="/journey" replace />} />
             </Route>
