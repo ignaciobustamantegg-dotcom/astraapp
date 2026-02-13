@@ -9,11 +9,11 @@ import JourneyMapSkeleton from "./JourneyMapSkeleton";
 const AUDIT_DAYS = [
   { day: 1, title: "Identificación de la Inercia", icon: Compass },
   { day: 2, title: "La Mecánica de la Conexión", icon: GitBranch },
-  { day: 3, title: "El Espejo de las Sombras", icon: Eye },
-  { day: 4, title: "Auditoría de Vitalidad", icon: Zap },
-  { day: 5, title: "Hitos del Destino", icon: Layers },
+  { day: 3, title: "El Espejo Interno", icon: Eye },
+  { day: 4, title: "Revisión de Energía", icon: Zap },
+  { day: 5, title: "Momentos Decisivos", icon: Layers },
   { day: 6, title: "El Costo de la Oportunidad", icon: Scale },
-  { day: 7, title: "El Veredicto Final", icon: Gavel },
+  { day: 7, title: "Tu Nueva Perspectiva", icon: Gavel },
 ];
 
 const NODE_POSITIONS = [37, 15, 59, 25, 55, 19, 37];
