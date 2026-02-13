@@ -1,30 +1,41 @@
 
 
-## Centrar el mapa desplazando todas las posiciones a la izquierda
+## Eliminar animaciones de entrada duplicadas en las páginas
 
-### Diagnostico
+### Problema
 
-Dia 1 esta en posicion 50 (que deberia ser el centro exacto) pero aparece visualmente desplazado a la derecha. Esto indica un offset sistematico que afecta a todos los nodos por igual, probablemente causado por la interaccion entre el padding del contenedor (`px-3`) y el posicionamiento absoluto.
+Al agregar `AnimatePresence` en `MainLayout.tsx` para animar transiciones de ruta, las animaciones de entrada quedaron duplicadas:
+
+- **Nivel 1 (MainLayout):** `opacity: 0 -> 1`, `y: 10 -> 0` en 0.2s
+- **Nivel 2 (cada pagina):** `opacity: 0 -> 1`, `y: 12 -> 0` en 0.5s
+
+Esto causa un "parpadeo doble" visible al cambiar de tab.
 
 ### Solucion
 
-Restar 5 puntos a cada posicion horizontal para compensar el offset visual. Dia 1 pasa de 50 a 45, que deberia quedar en el centro visual real.
-
-Posiciones actuales: `[50, 28, 72, 38, 68, 32, 50]`
-Posiciones nuevas:  `[45, 23, 67, 33, 63, 27, 45]`
-
-La amplitud del zigzag se mantiene identica (diferencia de ~40 entre extremos).
+Dejar que **solo MainLayout** maneje la animacion de entrada/salida entre rutas. Eliminar las animaciones de entrada redundantes dentro de cada pagina.
 
 ### Cambios tecnicos
 
-**`src/components/JourneyMap.tsx`** (linea 19)
-- Cambiar `NODE_POSITIONS` de `[50, 28, 72, 38, 68, 32, 50]` a `[45, 23, 67, 33, 63, 27, 45]`
+**`src/pages/Home.tsx`**
+- Reemplazar `<motion.div initial/animate/transition>` por un `<div>` simple
+- La animacion de entrada ya la maneja MainLayout
 
-**`src/components/JourneyMapSkeleton.tsx`** (linea 3)
-- Mismo cambio para mantener consistencia entre skeleton y mapa real
+**`src/pages/Profile.tsx`**
+- En el bloque de contenido (key="content"), quitar `initial={{ opacity: 0, y: 12 }}` y `animate`
+- Cambiar `motion.div` a `motion.div` sin animacion de entrada (solo mantener el key para AnimatePresence del loader)
+- Mantener el `AnimatePresence` interno que gestiona la transicion loader -> contenido, pero sin animar la entrada del contenido con opacity/y (solo con opacity para el crossfade con el loader)
+
+**`src/components/JourneyMap.tsx`**
+- Quitar el `motion.div` wrapper del contenido principal que tiene `initial={{ opacity: 0 }}` y `animate={{ opacity: 1 }}`
+- Mantener el `motion.div` del skeleton con `exit={{ opacity: 0 }}` para la transicion loader -> contenido
+- Mantener las animaciones internas de los nodos (staggered) ya que son decorativas, no de entrada de pagina
 
 ### Lo que NO cambia
-- Amplitud y forma del zigzag
-- Espaciado vertical, estilos, colores, animaciones
-- Logica de estados ni ningun otro archivo
+- AnimatePresence en MainLayout (es la unica fuente de animacion de ruta)
+- Animaciones internas decorativas (nodos del mapa, stagger)
+- Transiciones loader -> contenido (solo fade del skeleton)
+- Estilos, colores, layout
 
+### Resultado esperado
+Una sola animacion de 0.2s al cambiar de tab, sin parpadeo doble.
