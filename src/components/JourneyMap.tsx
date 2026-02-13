@@ -125,7 +125,8 @@ const JourneyMap = () => {
               strokeWidth="2.5"
               fill="none"
               opacity="0.6"
-              strokeDasharray={`${(currentDay - 1) * 160} 9999`}
+              pathLength={6}
+              strokeDasharray={`${currentDay - 1} ${6 - (currentDay - 1)}`}
             />
           )}
         </svg>
