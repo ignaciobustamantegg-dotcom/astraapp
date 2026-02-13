@@ -28,25 +28,13 @@ const Profile = () => {
   }, [user]);
 
   return (
-    <AnimatePresence mode="wait">
+    <>
       {loading ? (
-        <motion.div
-          key="loader"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
-          className="flex-1 flex items-center justify-center py-20"
-        >
+        <div className="flex-1 flex items-center justify-center py-20">
           <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          key="content"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.15 }}
-          className="px-5 pt-8 pb-6"
-        >
+        <div className="px-5 pt-8 pb-6">
       {/* Avatar */}
       <div className="flex flex-col items-center mb-8">
         <div
@@ -93,9 +81,9 @@ const Profile = () => {
         <LogOut className="w-4 h-4" />
         Cerrar sesión
       </button>
-      </motion.div>
+      </div>
       )}
-    </AnimatePresence>
+    </>
   );
 };
 

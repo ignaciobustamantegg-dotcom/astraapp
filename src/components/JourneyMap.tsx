@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Lock, CheckCircle2, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
 import { motion } from "framer-motion";
+// motion only used for decorative pulse animation on unlocked nodes
 import { useQuery } from "@tanstack/react-query";
 import JourneyMapSkeleton from "./JourneyMapSkeleton";
 
@@ -80,30 +81,19 @@ const JourneyMap = () => {
 
   if (isLoading) {
     return (
-      <motion.div
-        initial={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.15, ease: "easeOut" }}
-      >
-        <JourneyMapSkeleton />
-      </motion.div>
+      <JourneyMapSkeleton />
     );
   }
 
   return (
     <>
       {/* Welcome */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="px-5 pt-5 pb-2 text-center"
-      >
+      <div className="px-5 pt-5 pb-2 text-center">
         <p className="text-xs text-muted-foreground mb-1">Bienvenido, {displayName}</p>
         <h1 className="text-xl font-medium text-foreground">
           Tu Auditoría Emocional
         </h1>
-      </motion.div>
+      </div>
 
       {/* Journey Map */}
       <div className="relative px-3" style={{ height: totalHeight }}>
@@ -143,11 +133,8 @@ const JourneyMap = () => {
           const IconComponent = item.icon;
 
           return (
-            <motion.div
+            <div
               key={item.day}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.08 * i }}
               className="absolute flex flex-col items-center"
               style={{
                 left: `${(point.x / 400) * 100}%`,
@@ -226,7 +213,7 @@ const JourneyMap = () => {
               >
                 {item.title}
               </p>
-            </motion.div>
+            </div>
           );
         })}
       </div>
