@@ -1,10 +1,8 @@
 import { Outlet } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 import { Moon } from "lucide-react";
+import BottomNavigation from "@/components/BottomNavigation";
 
 const MainLayout = () => {
-  const { signOut } = useAuth();
-
   return (
     <div
       className="min-h-[100dvh] relative overflow-hidden flex flex-col"
@@ -38,17 +36,13 @@ const MainLayout = () => {
             Astra
           </span>
         </div>
-        <button
-          onClick={signOut}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-        >
-          Salir
-        </button>
       </nav>
 
-      <main className="flex-1 relative z-10 no-scrollbar overflow-y-auto safe-bottom">
+      <main className="flex-1 relative z-10 no-scrollbar overflow-y-auto pb-14">
         <Outlet />
       </main>
+
+      <BottomNavigation />
     </div>
   );
 };

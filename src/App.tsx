@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import MainLayout from "@/components/MainLayout";
@@ -10,7 +10,9 @@ import Index from "./pages/Index";
 import Plans from "./pages/Plans";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import Dashboard from "./pages/Dashboard";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import JourneyMap from "./components/JourneyMap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,7 +36,10 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/journey" element={<JourneyMap />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/dashboard" element={<Navigate to="/journey" replace />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -43,4 +48,5 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
 export default App;
