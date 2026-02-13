@@ -140,18 +140,36 @@ const DayExperience = () => {
 
   const screen = SCREENS[currentScreen];
 
+  // Helper: is this the first non-empty line?
+  const getFirstLineIndex = (content: string[]) => content.findIndex((l) => l !== "");
+  // Helper: is this the last non-empty line?
+  const getLastLineIndex = (content: string[]) => {
+    for (let i = content.length - 1; i >= 0; i--) {
+      if (content[i] !== "") return i;
+    }
+    return -1;
+  };
+
   if (showCompletion) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center min-h-[80dvh] px-6"
+        className="flex flex-col items-center justify-center min-h-[80dvh] px-8"
       >
+        {/* Ambient glow */}
+        <div
+          className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[300px] h-[300px] pointer-events-none"
+          style={{
+            background: "radial-gradient(circle, hsla(270, 60%, 55%, 0.08) 0%, transparent 70%)",
+          }}
+        />
+
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex flex-col items-center text-center"
+          className="flex flex-col items-center text-center relative z-10"
         >
           <div
             className="w-16 h-16 rounded-full flex items-center justify-center mb-6"
@@ -201,10 +219,12 @@ const DayExperience = () => {
 
           <button
             onClick={() => navigate("/journey")}
-            className="w-full max-w-[280px] h-12 rounded-xl text-sm font-medium text-primary-foreground press-scale transition-all duration-300"
+            className="w-full max-w-[280px] h-[52px] rounded-xl text-sm font-medium press-scale transition-all duration-300"
             style={{
-              background: "linear-gradient(135deg, hsl(150, 50%, 40%), hsl(150, 45%, 35%))",
-              boxShadow: "0 4px 20px hsla(150, 60%, 40%, 0.3)",
+              background: "linear-gradient(135deg, hsl(270, 45%, 30%), hsl(265, 50%, 40%))",
+              boxShadow: "0 0 25px hsla(270, 70%, 55%, 0.2), 0 4px 15px hsla(270, 60%, 40%, 0.15)",
+              border: "1px solid hsla(270, 60%, 60%, 0.15)",
+              color: "hsl(270, 15%, 90%)",
             }}
           >
             Volver al mapa
@@ -215,9 +235,17 @@ const DayExperience = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-6.5rem)]">
+    <div className="flex flex-col min-h-[calc(100dvh-6.5rem)] relative">
+      {/* Ambient glow behind text area */}
+      <div
+        className="absolute top-[35%] left-1/2 -translate-x-1/2 w-[320px] h-[320px] pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, hsla(270, 55%, 50%, 0.06) 0%, transparent 70%)",
+        }}
+      />
+
       {/* Header */}
-      <div className="px-4 pt-3 pb-2">
+      <div className="px-5 pt-3 pb-2 relative z-10">
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={() => {
@@ -247,57 +275,96 @@ const DayExperience = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-center px-6">
+      <div className="flex-1 flex flex-col justify-center px-8 pt-6 relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentScreen}
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
             className="flex flex-col"
           >
-            {screen.type === "text" && (
-              <div className="space-y-1">
-                {screen.content.map((line, i) =>
-                  line === "" ? (
-                    <div key={i} className="h-4" />
-                  ) : (
-                    <motion.p
-                      key={i}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
-                      className="text-[15px] leading-relaxed text-foreground/90"
-                    >
-                      {line}
-                    </motion.p>
-                  )
-                )}
-              </div>
-            )}
+            {screen.type === "text" && (() => {
+              const firstIdx = getFirstLineIndex(screen.content);
+              const lastIdx = getLastLineIndex(screen.content);
+
+              return (
+                <div className="space-y-1.5">
+                  {screen.content.map((line, i) =>
+                    line === "" ? (
+                      <div key={i} className="h-5" />
+                    ) : (
+                      <motion.p
+                        key={i}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.08 + i * 0.07, duration: 0.4, ease: "easeOut" }}
+                        className={`leading-[1.85] ${
+                          i === firstIdx
+                            ? "text-[19px] font-medium text-foreground"
+                            : i === lastIdx
+                              ? "text-[18px] font-medium text-foreground/95"
+                              : "text-[17px] text-foreground/80"
+                        }`}
+                        style={{ fontFamily: i === firstIdx || i === lastIdx ? "'Playfair Display', serif" : undefined }}
+                      >
+                        {line}
+                      </motion.p>
+                    )
+                  )}
+                </div>
+              );
+            })()}
 
             {screen.type === "journal" && (
-              <div className="space-y-4">
-                <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-primary/70">
+              <div className="space-y-5">
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.08, duration: 0.4 }}
+                  className="text-[10px] font-medium tracking-[0.15em] uppercase text-primary/70"
+                >
                   {screen.title}
-                </p>
-                <p className="text-[15px] leading-relaxed text-foreground/90">
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15, duration: 0.4 }}
+                  className="text-[17px] leading-[1.85] text-foreground/80"
+                >
                   Escribe libremente:
-                </p>
-                <p className="text-[15px] leading-relaxed text-foreground/90">
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.22, duration: 0.4 }}
+                  className="text-[18px] leading-[1.85] font-medium text-foreground"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
                   {screen.prompt}
-                </p>
-                <p className="text-[13px] text-muted-foreground">
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.29, duration: 0.4 }}
+                  className="text-[14px] text-muted-foreground"
+                >
                   {screen.hint}
-                </p>
-                <textarea
-                  value={journalText}
-                  onChange={(e) => setJournalText(e.target.value)}
-                  placeholder="Escribe aquí..."
-                  className="w-full min-h-[160px] rounded-xl p-4 text-[15px] leading-relaxed text-foreground bg-secondary/50 border border-border/30 placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/30 resize-none"
-                  style={{ fontSize: "16px" }}
-                />
+                </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.36, duration: 0.4 }}
+                >
+                  <textarea
+                    value={journalText}
+                    onChange={(e) => setJournalText(e.target.value)}
+                    placeholder="Escribe aquí..."
+                    className="w-full min-h-[160px] rounded-xl p-4 text-[16px] leading-[1.8] text-foreground bg-secondary/40 border border-border/20 placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary/20 resize-none transition-all duration-300"
+                    style={{ fontSize: "16px" }}
+                  />
+                </motion.div>
               </div>
             )}
           </motion.div>
@@ -305,13 +372,15 @@ const DayExperience = () => {
       </div>
 
       {/* Bottom button */}
-      <div className="px-6 pb-6 pt-4">
+      <div className="px-8 pb-7 pt-6 relative z-10">
         <button
           onClick={handleContinue}
-          className="w-full h-12 rounded-xl text-sm font-medium text-primary-foreground press-scale transition-all duration-300"
+          className="w-full h-[52px] rounded-xl text-[15px] font-medium press-scale transition-all duration-300"
           style={{
-            background: "linear-gradient(135deg, hsl(150, 50%, 40%), hsl(150, 45%, 35%))",
-            boxShadow: "0 4px 20px hsla(150, 60%, 40%, 0.3)",
+            background: "linear-gradient(135deg, hsl(270, 45%, 30%), hsl(265, 50%, 40%))",
+            boxShadow: "0 0 25px hsla(270, 70%, 55%, 0.2), 0 4px 15px hsla(270, 60%, 40%, 0.15)",
+            border: "1px solid hsla(270, 60%, 60%, 0.15)",
+            color: "hsl(270, 15%, 90%)",
           }}
         >
           {screen.button}
