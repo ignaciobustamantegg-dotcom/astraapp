@@ -1,41 +1,36 @@
 
 
-## Forzar formato movil en escritorio
+## Eliminar flash de carga en la pantalla Viaje
 
-Se aplicara un contenedor con `max-width` y centrado en todas las paginas para que la app siempre luzca como un telefono, incluso en pantallas grandes.
+### Problema
+Cada vez que el usuario navega a `/journey`, el componente `JourneyMap` se monta desde cero. El estado `loading` inicia en `true`, mostrando brevemente el icono de luna pulsante antes de que lleguen los datos de Supabase (milisegundos).
 
-### Cambios
+### Solución propuesta
 
-1. **`index.html`** - Agregar estilos globales al `body` y al `#root` para centrar y limitar el ancho maximo.
+Reemplazar el spinner de luna por un **skeleton/placeholder** que tenga la misma estructura visual que el mapa final. Esto elimina el "flash" perceptible y da una transición mucho más suave.
 
-2. **`src/index.css`** - Agregar reglas CSS al `#root`:
-   - `max-width: 430px` (ancho tipico de telefono grande)
-   - `margin: 0 auto` para centrar horizontalmente
-   - `min-height: 100dvh`
-   - Sombra lateral sutil en escritorio para darle aspecto de dispositivo
-   - Background oscuro en el `body` para que el area fuera del "telefono" se vea separada
+Alternativas disponibles:
 
-3. **`src/App.css`** - Eliminar el `max-width: 1280px` y `padding: 2rem` existentes que interfieren con el nuevo layout.
+1. **Skeleton del mapa (recomendada):** Mostrar círculos grises y una línea punteada tenue en las mismas posiciones que los nodos, para que cuando carguen los datos reales la transición sea casi imperceptible.
 
-### Resultado visual
+2. **Cache con React Query:** Usar `useQuery` de TanStack (ya instalado) para cachear los datos de `audit_progress` y `profiles`. Tras la primera carga, las navegaciones siguientes mostrarían datos cacheados instantáneamente sin loading.
 
-```text
-+------ Escritorio ------+
-|                         |
-|   +--- 430px max ---+   |
-|   |                 |   |
-|   |   Contenido     |   |
-|   |   de la app     |   |
-|   |                 |   |
-|   +-----------------+   |
-|                         |
-+-------------------------+
-```
+3. **Combinación de ambas:** Skeleton para la primera visita + cache para las siguientes.
 
-### Detalles tecnicos
+### Cambios técnicos
 
-- El `body` tendra un fondo mas oscuro (`hsl(225, 30%, 4%)`) para contraste
-- El `#root` actuara como el "telefono virtual" con el fondo normal de la app
-- Se agrega `overflow-x: hidden` al root para evitar scroll horizontal
-- No se modifica ninguna pagina individual, el cambio es global
+#### Opcion recomendada: Cache + skeleton ligero
+
+**Archivo: `src/components/JourneyMap.tsx`**
+- Reemplazar las llamadas directas a Supabase con `useQuery` de `@tanstack/react-query`
+- Usar `staleTime` para evitar re-fetches innecesarios al cambiar de tab
+- Cambiar el bloque `if (loading)` por un skeleton sutil: 7 circulos grises con opacidad baja en las posiciones del mapa, en lugar del icono de luna centrado
+- La estructura del skeleton reutiliza las mismas constantes `NODE_POSITIONS` y `generatePath()` que ya existen
+
+### Lo que NO cambia
+- Diseño visual del mapa final
+- Lógica de estados (locked/unlocked/completed)
+- Animaciones de los nodos
+- AuthContext, ProtectedRoute, MainLayout
+- Rutas ni navegacion inferior
 
