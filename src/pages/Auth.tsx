@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Moon } from "lucide-react";
+import authBg from "@/assets/auth-bg.png";
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -56,9 +57,10 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-background flex flex-col relative overflow-hidden">
-      {/* Ambient glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[500px] h-[300px] md:h-[500px] rounded-full bg-primary/5 blur-[80px] md:blur-[120px] pointer-events-none" />
+    <div className="min-h-screen min-h-[100dvh] flex flex-col relative overflow-hidden">
+      {/* Background image */}
+      <img src={authBg} alt="" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
+      <div className="absolute inset-0 bg-background/40 pointer-events-none" />
 
       <nav className="px-4 md:px-6 h-14 md:h-16 flex items-center relative z-10 safe-top">
         <Link to="/" className="flex items-center gap-2 min-h-[44px]">
