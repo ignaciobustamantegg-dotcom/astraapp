@@ -1,41 +1,34 @@
 
 
-## Eliminar animaciones de entrada duplicadas en las páginas
+## Corregir contenido vacío y transiciones duplicadas
 
-### Problema
+### Causa raíz
 
-Al agregar `AnimatePresence` en `MainLayout.tsx` para animar transiciones de ruta, las animaciones de entrada quedaron duplicadas:
+MainLayout envuelve cada ruta en un `motion.div` con `initial={{ opacity: 0 }}`. Pero dentro de las paginas, los elementos hijos tambien arrancan con `opacity: 0`:
 
-- **Nivel 1 (MainLayout):** `opacity: 0 -> 1`, `y: 10 -> 0` en 0.2s
-- **Nivel 2 (cada pagina):** `opacity: 0 -> 1`, `y: 12 -> 0` en 0.5s
+- **JourneyMap**: el bloque "Welcome" tiene `initial={{ opacity: 0, y: 12 }}` y cada nodo tiene `initial={{ opacity: 0, scale: 0.8 }}` -- cuando el contenedor padre esta en opacity 0 y los hijos tambien, el contenido queda invisible el doble de tiempo
+- **Profile**: tiene un `AnimatePresence mode="wait"` anidado dentro del `AnimatePresence mode="wait"` de MainLayout, causando conflictos de sincronizacion
 
-Esto causa un "parpadeo doble" visible al cambiar de tab.
-
-### Solucion
-
-Dejar que **solo MainLayout** maneje la animacion de entrada/salida entre rutas. Eliminar las animaciones de entrada redundantes dentro de cada pagina.
-
-### Cambios tecnicos
-
-**`src/pages/Home.tsx`**
-- Reemplazar `<motion.div initial/animate/transition>` por un `<div>` simple
-- La animacion de entrada ya la maneja MainLayout
-
-**`src/pages/Profile.tsx`**
-- En el bloque de contenido (key="content"), quitar `initial={{ opacity: 0, y: 12 }}` y `animate`
-- Cambiar `motion.div` a `motion.div` sin animacion de entrada (solo mantener el key para AnimatePresence del loader)
-- Mantener el `AnimatePresence` interno que gestiona la transicion loader -> contenido, pero sin animar la entrada del contenido con opacity/y (solo con opacity para el crossfade con el loader)
+### Cambios
 
 **`src/components/JourneyMap.tsx`**
-- Quitar el `motion.div` wrapper del contenido principal que tiene `initial={{ opacity: 0 }}` y `animate={{ opacity: 1 }}`
-- Mantener el `motion.div` del skeleton con `exit={{ opacity: 0 }}` para la transicion loader -> contenido
-- Mantener las animaciones internas de los nodos (staggered) ya que son decorativas, no de entrada de pagina
+- Bloque "Welcome" (linea 96-106): cambiar `motion.div` a `div` simple, eliminar `initial/animate/transition`
+- Nodos del mapa (linea 146-150): cambiar `motion.div` a `div` simple, eliminar `initial/animate/transition` con stagger
+- Mantener el `motion.div` del skeleton con `exit` (lineas 83-90) -- pero este exit no funciona sin un AnimatePresence que lo envuelva, asi que simplificar a un `div` tambien
+- Mantener las animaciones decorativas internas que NO son de entrada (pulse del nodo unlocked)
+
+**`src/pages/Profile.tsx`**
+- Eliminar el `AnimatePresence mode="wait"` envolvente (linea 31 y 98)
+- Usar renderizado condicional simple: si `loading`, mostrar el spinner en un `div`; si no, mostrar el contenido en un `div`
+- Eliminar todos los `motion.div` con `initial/animate/exit` -- la transicion de ruta ya la maneja MainLayout
 
 ### Lo que NO cambia
-- AnimatePresence en MainLayout (es la unica fuente de animacion de ruta)
-- Animaciones internas decorativas (nodos del mapa, stagger)
-- Transiciones loader -> contenido (solo fade del skeleton)
-- Estilos, colores, layout
+- MainLayout con su AnimatePresence (unica fuente de animacion de ruta)
+- Animacion de pulse en el nodo desbloqueado (decorativa, no de entrada)
+- Estilos, colores, layout, estructura visual
+- BottomNavigation con press-scale
 
 ### Resultado esperado
-Una sola animacion de 0.2s al cambiar de tab, sin parpadeo doble.
+- Al tocar un tab, el contenido aparece inmediatamente (una sola animacion de 0.2s desde MainLayout)
+- Sin parpadeo doble ni contenido vacio temporal
+- Transicion loader-contenido en Profile es instantanea (sin fade compuesto)
