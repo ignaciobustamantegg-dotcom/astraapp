@@ -240,7 +240,7 @@ const DayExperience2 = () => {
 
   return (
     <div
-      className="flex flex-col min-h-[calc(100dvh-6.5rem)] relative"
+      className="flex flex-col min-h-full relative"
       style={{
         background: `linear-gradient(180deg,
           hsl(265, 40%, 14%) 0%,
@@ -263,7 +263,7 @@ const DayExperience2 = () => {
       />
 
       {/* Header */}
-      <div className="px-5 pt-3 pb-2 relative z-10">
+      <div className="sticky top-0 px-5 pt-3 pb-2 z-20" style={{ background: "linear-gradient(180deg, hsla(258,35%,8%,0.85) 0%, hsla(258,35%,8%,0.55) 60%, transparent 100%)", backdropFilter: "blur(10px)" }}>
         <div className="flex items-center justify-between mb-3">
           <button
             onClick={() => {
@@ -293,7 +293,7 @@ const DayExperience2 = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-center px-8 pt-6 relative z-10">
+      <div className="flex-1 flex flex-col px-8 pt-6 relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentScreen}
@@ -444,7 +444,8 @@ const DayExperience2 = () => {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15, duration: 0.35, ease: "easeOut" }}
-        className="px-8 pb-7 pt-6 relative z-10"
+        className="sticky bottom-14 px-8 pb-6 pt-4 z-20"
+        style={{ background: "linear-gradient(0deg, hsla(255,30%,5%,0.95) 0%, hsla(255,30%,5%,0.55) 55%, transparent 100%)", backdropFilter: "blur(10px)" }}
       >
         <button
           onClick={handleContinue}
