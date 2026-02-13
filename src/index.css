@@ -53,12 +53,23 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    background: hsl(225, 30%, 4%);
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
+  }
+
+  #root {
+    @apply bg-background;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    position: relative;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
   }
 
   /* Prevent text selection on interactive elements for native feel */
