@@ -79,11 +79,23 @@ const JourneyMap = () => {
   const { d: pathD, points, totalHeight } = generatePath();
 
   if (isLoading) {
-    return <JourneyMapSkeleton />;
+    return (
+      <motion.div
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
+      >
+        <JourneyMapSkeleton />
+      </motion.div>
+    );
   }
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+    >
       {/* Welcome */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -222,7 +234,7 @@ const JourneyMap = () => {
           );
         })}
       </div>
-    </>
+    </motion.div>
   );
 };
 
