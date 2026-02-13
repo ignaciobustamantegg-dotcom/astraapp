@@ -16,7 +16,7 @@ const AUDIT_DAYS = [
   { day: 7, title: "El Veredicto Final", icon: Gavel },
 ];
 
-const NODE_POSITIONS = [40, 18, 62, 28, 58, 22, 40];
+const NODE_POSITIONS = [37, 15, 59, 25, 55, 19, 37];
 
 type AuditProgress = {
   current_day: number;
