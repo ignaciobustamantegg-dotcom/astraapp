@@ -219,12 +219,11 @@ const DayExperience = () => {
 
           <button
             onClick={() => navigate("/journey")}
-            className="w-full max-w-[280px] h-[52px] rounded-xl text-sm font-medium press-scale transition-all duration-300"
+            className="w-full max-w-[280px] h-[52px] rounded-xl text-sm font-medium press-scale transition-all duration-300 text-primary-foreground"
             style={{
-              background: "linear-gradient(135deg, hsl(270, 45%, 30%), hsl(265, 50%, 40%))",
-              boxShadow: "0 0 25px hsla(270, 70%, 55%, 0.2), 0 4px 15px hsla(270, 60%, 40%, 0.15)",
-              border: "1px solid hsla(270, 60%, 60%, 0.15)",
-              color: "hsl(270, 15%, 90%)",
+              background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
+              boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
+              border: "1px solid hsla(270, 60%, 75%, 0.2)",
             }}
           >
             Volver al mapa
@@ -449,12 +448,11 @@ const DayExperience = () => {
       >
         <button
           onClick={handleContinue}
-          className="w-full h-[52px] rounded-xl text-[15px] font-medium press-scale transition-all duration-300"
+          className="w-full h-[52px] rounded-xl text-[15px] font-medium press-scale transition-all duration-300 text-primary-foreground"
           style={{
-            background: "linear-gradient(135deg, hsl(270, 45%, 30%), hsl(265, 50%, 40%))",
-            boxShadow: "0 0 25px hsla(270, 70%, 55%, 0.2), 0 4px 15px hsla(270, 60%, 40%, 0.15)",
-            border: "1px solid hsla(270, 60%, 60%, 0.15)",
-            color: "hsl(270, 15%, 90%)",
+            background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))",
+            boxShadow: "0 0 20px hsla(270, 60%, 70%, 0.25), 0 4px 12px hsla(270, 60%, 70%, 0.15)",
+            border: "1px solid hsla(270, 60%, 75%, 0.2)",
           }}
         >
           {screen.button}
