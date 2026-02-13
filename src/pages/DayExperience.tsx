@@ -277,8 +277,8 @@ const DayExperience = () => {
               Día 1
             </p>
             <p
-              className="text-sm text-foreground"
-              style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: 1.1 }}
+              className="text-sm text-foreground/70"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.1 }}
             >
               Identificación de la Inercia
             </p>
