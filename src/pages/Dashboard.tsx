@@ -71,20 +71,20 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-background flex items-center justify-center">
         <Moon className="w-8 h-8 text-primary animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-background relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-background relative overflow-hidden flex flex-col">
       {/* Ambient glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[600px] h-[250px] md:h-[400px] rounded-full bg-primary/5 blur-[80px] md:blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[280px] h-[200px] rounded-full bg-primary/5 blur-[80px] pointer-events-none" />
 
       {/* Header */}
-      <nav className="bg-background/60 backdrop-blur-xl border-b border-border/50 px-4 md:px-6 h-14 md:h-16 flex items-center justify-between relative z-10 safe-top">
-        <div className="flex items-center gap-2">
+      <nav className="sticky top-0 z-50 bg-background/60 backdrop-blur-xl border-b border-border/50 px-4 h-12 flex items-center justify-between safe-top">
+        <div className="flex items-center gap-2 min-h-[44px]">
           <Moon className="w-5 h-5 text-primary" />
           <span className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
             Astra
@@ -95,26 +95,26 @@ const Dashboard = () => {
         </button>
       </nav>
 
-      <main className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-10 relative z-10 pb-16">
+      <main className="flex-1 px-4 py-5 relative z-10 no-scrollbar overflow-y-auto safe-bottom">
         {/* Welcome & Progress */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 md:mb-10"
+          className="mb-5"
         >
-          <p className="text-sm text-muted-foreground mb-1">Welcome, {displayName}</p>
-          <h1 className="text-xl md:text-3xl font-medium text-foreground mb-4 md:mb-6">
+          <p className="text-xs text-muted-foreground mb-0.5">Welcome, {displayName}</p>
+          <h1 className="text-xl font-medium text-foreground mb-4">
             Your Emotional Audit
           </h1>
 
-          <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4 md:p-6">
-            <div className="flex items-baseline justify-between mb-3">
+          <div className="bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4">
+            <div className="flex items-baseline justify-between mb-2.5">
               <span className="text-sm font-medium text-foreground">
                 Day {currentDay} of 7
               </span>
               <span className="text-xs text-primary font-medium">
-                {progressPercent}% Complete
+                {progressPercent}%
               </span>
             </div>
             <Progress value={progressPercent} className="h-1.5 bg-secondary" />
@@ -122,7 +122,7 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Timeline */}
-        <div className="space-y-3">
+        <div className="space-y-2.5 pb-4">
           {AUDIT_DAYS.map((item, i) => {
             const status = getDayStatus(item.day);
             const isLocked = status === "reserved";
@@ -132,48 +132,48 @@ const Dashboard = () => {
                 key={item.day}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 * i }}
-                className={`bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4 md:p-6 transition-all ${
-                  isLocked ? "opacity-40" : "hover:border-primary/30 hover:shadow-[0_0_30px_rgba(217,170,60,0.05)]"
+                transition={{ duration: 0.4, delay: 0.06 * i }}
+                className={`bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 p-4 transition-all press-scale ${
+                  isLocked ? "opacity-40" : ""
                 }`}
               >
-                <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-xs font-medium tracking-[0.1em] uppercase text-primary">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-[0.65rem] font-medium tracking-[0.1em] uppercase text-primary">
                         Day {item.day}
                       </span>
                       {status === "completed" && (
-                        <Badge className="text-[10px] font-medium tracking-wide bg-primary/15 text-primary border-0 gap-1">
+                        <Badge className="text-[10px] font-medium tracking-wide bg-primary/15 text-primary border-0 gap-1 h-5">
                           <CheckCircle2 className="w-3 h-3" />
-                          Completed
+                          Done
                         </Badge>
                       )}
                       {status === "unlocked" && (
-                        <Badge className="text-[10px] font-medium tracking-wide bg-primary text-background border-0 gap-1">
+                        <Badge className="text-[10px] font-medium tracking-wide bg-primary text-background border-0 gap-1 h-5">
                           <Sparkles className="w-3 h-3" />
-                          Unlocked
+                          Active
                         </Badge>
                       )}
                       {status === "reserved" && (
-                        <Badge variant="outline" className="text-[10px] font-medium tracking-wide text-muted-foreground border-border/50">
-                          Reserved
+                        <Badge variant="outline" className="text-[10px] font-medium tracking-wide text-muted-foreground border-border/50 h-5">
+                          Locked
                         </Badge>
                       )}
                     </div>
-                    <h3 className="text-sm md:text-lg font-medium text-foreground leading-snug">
+                    <h3 className="text-[0.9rem] font-medium text-foreground leading-snug">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-1 font-light">
+                    <p className="text-xs text-muted-foreground mt-0.5 font-light leading-relaxed">
                       {item.desc}
                     </p>
                   </div>
 
-                  <div className="flex-shrink-0 pt-1">
+                  <div className="flex-shrink-0 pt-0.5">
                     {isLocked ? (
                       <Lock className="w-4 h-4 text-muted-foreground/40" />
                     ) : status === "unlocked" ? (
-                      <Button size="sm" className="h-9 rounded-full px-5 text-xs font-semibold tracking-wide bg-primary text-background hover:bg-primary/90">
+                      <Button size="sm" className="h-9 rounded-full px-5 text-xs font-semibold tracking-wide bg-primary text-background hover:bg-primary/90 press-scale">
                         Begin
                       </Button>
                     ) : null}

@@ -57,12 +57,12 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen min-h-[100dvh] flex flex-col relative overflow-hidden">
+    <div className="min-h-[100dvh] flex flex-col relative overflow-hidden">
       {/* Background image */}
       <img src={authBg} alt="" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
-      <div className="absolute inset-0 bg-background/40 pointer-events-none" />
+      <div className="absolute inset-0 bg-background/50 pointer-events-none" />
 
-      <nav className="px-4 md:px-6 h-14 md:h-16 flex items-center relative z-10 safe-top">
+      <nav className="px-4 h-12 flex items-center relative z-10 safe-top">
         <Link to="/" className="flex items-center gap-2 min-h-[44px]">
           <Moon className="w-5 h-5 text-primary" />
           <span className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
@@ -71,16 +71,16 @@ const Auth = () => {
         </Link>
       </nav>
 
-      <div className="flex-1 flex items-center justify-center px-5 md:px-6 pb-10 md:pb-20 relative z-10">
+      <div className="flex-1 flex items-end justify-center px-5 pb-8 relative z-10 safe-bottom">
         <motion.div
           className="w-full max-w-sm"
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="text-center mb-8 md:mb-10">
-            <Moon className="w-8 h-8 text-primary mx-auto mb-4" />
-            <h1 className="text-2xl md:text-3xl font-medium text-foreground mb-2">
+          <div className="text-center mb-6">
+            <Moon className="w-7 h-7 text-primary mx-auto mb-3" />
+            <h1 className="text-2xl font-medium text-foreground mb-1">
               {isSignUp ? "Create Your Account" : "Welcome Back"}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -90,22 +90,22 @@ const Auth = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {isSignUp && (
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="name" className="text-xs tracking-wide uppercase text-muted-foreground">
                   Display Name
                 </Label>
-              <Input
+                <Input
                   id="name"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Your name"
-                  className="h-12 bg-card border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground text-base"
+                  className="h-12 bg-card/80 backdrop-blur-sm border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground text-base rounded-xl"
                 />
               </div>
             )}
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="email" className="text-xs tracking-wide uppercase text-muted-foreground">
                 Email
               </Label>
@@ -116,10 +116,10 @@ const Auth = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="h-12 bg-card border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground text-base"
+                className="h-12 bg-card/80 backdrop-blur-sm border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground text-base rounded-xl"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="password" className="text-xs tracking-wide uppercase text-muted-foreground">
                 Password
               </Label>
@@ -131,14 +131,14 @@ const Auth = () => {
                 placeholder="••••••••"
                 required
                 minLength={6}
-                className="h-12 bg-card border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground text-base"
+                className="h-12 bg-card/80 backdrop-blur-sm border-border/50 focus-visible:ring-1 focus-visible:ring-primary text-foreground placeholder:text-muted-foreground text-base rounded-xl"
               />
             </div>
 
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-full text-sm font-semibold tracking-wide bg-foreground text-background hover:bg-foreground/90"
+              className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide bg-foreground text-background hover:bg-foreground/90 press-scale mt-2"
             >
               {loading
                 ? "Please wait..."
@@ -148,11 +148,11 @@ const Auth = () => {
             </Button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
+          <p className="text-center text-sm text-muted-foreground mt-6">
             {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
             <button
               onClick={() => setIsSignUp(!isSignUp)}
-              className="text-primary font-medium hover:underline underline-offset-4"
+              className="text-primary font-medium hover:underline underline-offset-4 min-h-[44px] inline-flex items-center"
             >
               {isSignUp ? "Sign In" : "Sign Up"}
             </button>
