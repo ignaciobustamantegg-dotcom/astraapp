@@ -11,21 +11,21 @@ const steps = [
 
 const Index = () => {
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-background relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-background relative overflow-hidden flex flex-col">
       {/* Ambient glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] rounded-full bg-primary/5 blur-[80px] md:blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] md:w-[600px] h-[280px] md:h-[600px] rounded-full bg-primary/5 blur-[80px] md:blur-[120px] pointer-events-none" />
 
       {/* Nav */}
-      <nav className="fixed top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-border/50 safe-top">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+      <nav className="sticky top-0 w-full z-50 bg-background/60 backdrop-blur-xl border-b border-border/50 safe-top">
+        <div className="px-4 h-12 flex items-center justify-between">
+          <div className="flex items-center gap-2 min-h-[44px]">
             <Moon className="w-5 h-5 text-primary" />
             <span className="text-sm font-semibold tracking-[0.2em] uppercase text-foreground">
               Astra
             </span>
           </div>
           <Link to="/auth">
-            <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary min-h-[44px] min-w-[44px]">
+            <Button variant="ghost" size="sm" className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary min-h-[44px] px-4">
               Sign In
             </Button>
           </Link>
@@ -33,42 +33,37 @@ const Index = () => {
       </nav>
 
       {/* Hero */}
-      <main className="pt-28 md:pt-36 pb-16 md:pb-20 px-5 md:px-6 relative z-10 flex flex-col items-center justify-center">
-        <div className="max-w-3xl mx-auto text-center">
+      <main className="flex-1 flex flex-col px-5 pb-8 relative z-10 no-scrollbar overflow-y-auto">
+        <div className="flex-1 flex flex-col items-center justify-center py-8 md:py-16">
           <motion.div
+            className="text-center w-full max-w-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             {/* Crescent icon */}
             <motion.div
-              className="mx-auto mb-8 md:mb-10 w-16 h-16 md:w-20 md:h-20 relative"
+              className="mx-auto mb-6 w-14 h-14 relative"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
             >
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-b from-primary to-primary/70 shadow-[0_0_40px_rgba(217,170,60,0.3)] md:shadow-[0_0_60px_rgba(217,170,60,0.3)]" style={{
-                clipPath: "path('M40 0 A40 40 0 1 1 40 80 A28 28 0 1 0 40 0')"
+              <div className="w-14 h-14 rounded-full bg-gradient-to-b from-primary to-primary/70 shadow-[0_0_40px_rgba(217,170,60,0.3)]" style={{
+                clipPath: "path('M28 0 A28 28 0 1 1 28 56 A20 20 0 1 0 28 0')"
               }} />
             </motion.div>
 
-            <h1 className="text-3xl md:text-5xl lg:text-7xl font-medium leading-[1.15] tracking-tight text-foreground mb-4 md:mb-6">
+            <h1 className="text-[1.75rem] leading-[1.2] md:text-5xl font-medium tracking-tight text-foreground mb-3">
               Decode the Invisible Architecture of Your Relationships
             </h1>
-            <p className="text-base md:text-xl text-muted-foreground max-w-xl mx-auto mb-8 md:mb-10 font-light leading-relaxed">
+            <p className="text-[0.9rem] leading-relaxed text-muted-foreground max-w-xs mx-auto mb-6 font-light">
               A 7-day guided emotional audit to reveal hidden patterns and calibrate your destiny.
             </p>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Link to="/auth">
+            <Link to="/auth" className="block">
               <Button
                 size="lg"
-                className="h-14 w-full md:w-auto px-10 text-base font-semibold rounded-full tracking-wide bg-foreground text-background hover:bg-foreground/90"
+                className="h-[52px] w-full text-[0.9rem] font-semibold rounded-full tracking-wide bg-foreground text-background hover:bg-foreground/90 press-scale"
               >
                 Begin Your Audit
               </Button>
@@ -78,37 +73,41 @@ const Index = () => {
 
         {/* Steps */}
         <motion.div
-          className="w-full max-w-3xl mx-auto mt-16 md:mt-28 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4"
+          className="w-full max-w-lg mx-auto space-y-2.5 mb-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
           {steps.map((step) => (
-            <div key={step.number} className="text-center bg-card/60 border border-border/50 rounded-2xl p-5 md:p-6 backdrop-blur-sm">
-              <step.icon className="w-6 h-6 text-primary mx-auto mb-3" />
-              <span className="text-xs font-medium tracking-[0.15em] text-primary uppercase">
-                Step {step.number}
-              </span>
-              <h3 className="text-lg md:text-xl font-medium text-foreground mt-2 mb-1.5">
-                {step.title}
-              </h3>
-              <p className="text-sm text-muted-foreground font-light">
-                {step.desc}
-              </p>
+            <div key={step.number} className="flex items-center gap-4 bg-card/60 border border-border/50 rounded-2xl p-4 backdrop-blur-sm">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <step.icon className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-[0.65rem] font-medium tracking-[0.15em] text-primary uppercase">
+                  Step {step.number}
+                </span>
+                <h3 className="text-base font-medium text-foreground leading-snug">
+                  {step.title}
+                </h3>
+                <p className="text-xs text-muted-foreground font-light mt-0.5">
+                  {step.desc}
+                </p>
+              </div>
             </div>
           ))}
         </motion.div>
 
         {/* Social proof */}
         <motion.div
-          className="max-w-xl mx-auto mt-16 md:mt-28 text-center pb-8"
+          className="text-center pb-4 safe-bottom"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.0 }}
         >
-          <div className="w-8 h-[1px] bg-primary/40 mx-auto mb-6" />
-          <p className="text-sm text-muted-foreground tracking-wide">
-            Trusted by <span className="text-primary font-medium">2,400+</span> individuals navigating their emotional architecture
+          <div className="w-8 h-[1px] bg-primary/40 mx-auto mb-4" />
+          <p className="text-xs text-muted-foreground tracking-wide">
+            Trusted by <span className="text-primary font-medium">2,400+</span> individuals
           </p>
         </motion.div>
       </main>
