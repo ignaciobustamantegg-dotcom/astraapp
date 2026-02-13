@@ -240,7 +240,7 @@ const DayExperience2 = () => {
 
   return (
     <div
-      className="flex flex-col h-full overflow-hidden relative"
+      className="fixed inset-0 z-20 flex flex-col overflow-hidden"
       style={{
         background: `linear-gradient(180deg,
           hsl(265, 40%, 14%) 0%,
