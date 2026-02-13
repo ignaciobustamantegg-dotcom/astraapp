@@ -368,13 +368,13 @@ const DayExperience = () => {
                     transition={{ delay: 0.08 + i * 0.06, duration: 0.4, ease: "easeOut" }}
                     className={`${
                       isLead
-                        ? "text-[18px] text-foreground mb-3 leading-[1.7]"
+                        ? "text-[20px] text-foreground mb-3 leading-[1.7] font-bold"
                         : isClose
                           ? "text-[16px] text-foreground mt-7 leading-[1.7]"
                           : "text-[16px] text-foreground/70 leading-[1.7]"
                     }`}
                     style={{
-                      fontWeight: isLead ? 300 : isClose ? 500 : 300,
+                      fontWeight: isLead ? 700 : isClose ? 500 : 300,
                       letterSpacing: isLead ? "-0.01em" : undefined,
                     }}
                   >
