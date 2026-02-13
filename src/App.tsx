@@ -17,6 +17,7 @@ import DayExperience from "./pages/DayExperience";
 import DayExperience2 from "./pages/DayExperience2";
 import DayExperience3 from "./pages/DayExperience3";
 import DayExperience4 from "./pages/DayExperience4";
+import DayExperience5 from "./pages/DayExperience5";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
               <Route path="/journey/day/2" element={<DayExperience2 />} />
               <Route path="/journey/day/3" element={<DayExperience3 />} />
               <Route path="/journey/day/4" element={<DayExperience4 />} />
+              <Route path="/journey/day/5" element={<DayExperience5 />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Navigate to="/journey" replace />} />
             </Route>
