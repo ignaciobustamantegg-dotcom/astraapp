@@ -118,16 +118,6 @@ const JourneyMap = () => {
             fill="none"
             opacity="0.5"
           />
-          {currentDay > 1 && (
-            <path
-              d={pathD}
-              stroke="hsl(270, 60%, 65%)"
-              strokeWidth="2.5"
-              fill="none"
-              opacity="0.6"
-              strokeDasharray={`${(currentDay - 1) * 160} 9999`}
-            />
-          )}
         </svg>
 
         {/* Nodes */}
