@@ -235,7 +235,7 @@ const DayExperience = () => {
 
   return (
     <div
-      className="flex flex-col min-h-[calc(100dvh-6.5rem)] relative"
+      className="flex flex-col h-full min-h-full w-full relative"
       style={{
         background: `linear-gradient(180deg,
           hsl(265, 40%, 14%) 0%,
