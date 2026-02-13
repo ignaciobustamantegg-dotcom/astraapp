@@ -42,9 +42,9 @@ const Profile = () => {
       ) : (
         <motion.div
           key="content"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.15 }}
           className="px-5 pt-8 pb-6"
         >
       {/* Avatar */}
