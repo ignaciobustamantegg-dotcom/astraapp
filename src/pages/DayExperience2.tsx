@@ -434,7 +434,7 @@ const DayExperience2 = () => {
       </div>
 
       {/* Fixed Bottom button */}
-      <div className="px-8 pb-1 pt-2 relative z-10 shrink-0">
+      <div className="px-8 pb-3 pt-2 relative z-10 shrink-0">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
