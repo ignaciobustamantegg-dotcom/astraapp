@@ -7,12 +7,11 @@ const MainLayout = () => {
     <div
       className="h-[100dvh] relative overflow-hidden flex flex-col"
       style={{
-        background: `linear-gradient(180deg, 
-          hsl(260, 40%, 6%) 0%, 
-          hsl(255, 35%, 10%) 30%, 
-          hsl(250, 30%, 12%) 60%, 
-          hsl(245, 28%, 14%) 85%,
-          hsl(30, 20%, 15%) 100%)`,
+        background: `linear-gradient(180deg,
+          hsl(265, 40%, 14%) 0%,
+          hsl(260, 38%, 10%) 35%,
+          hsl(258, 35%, 8%) 65%,
+          hsl(255, 30%, 5%) 100%)`,
       }}
     >
       {/* Ambient mist layers */}
