@@ -93,7 +93,7 @@ const JourneyMap = () => {
       >
         <p className="text-xs text-muted-foreground mb-1">Bienvenido, {displayName}</p>
         <h1 className="text-xl font-medium text-foreground">
-          Tu Auditoría Emocional
+          Tu Ritual de Claridad Relacional
         </h1>
       </motion.div>
 
