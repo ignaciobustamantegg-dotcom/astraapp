@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Lock, CheckCircle2, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
@@ -25,6 +26,7 @@ type AuditProgress = {
 
 const JourneyMap = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const pathRef = useRef<SVGSVGElement>(null);
 
   const { data: profileData } = useQuery({
@@ -156,6 +158,9 @@ const JourneyMap = () => {
 
               <button
                 disabled={status === "locked"}
+                onClick={() => {
+                  if (status !== "locked") navigate(`/journey/day/${item.day}`);
+                }}
                 className={`relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-500 press-scale ${
                   status === "locked"
                     ? "opacity-30 cursor-not-allowed"
