@@ -8,13 +8,13 @@ import { useQuery } from "@tanstack/react-query";
 import JourneyMapSkeleton from "./JourneyMapSkeleton";
 
 const AUDIT_DAYS = [
-  { day: 1, title: "Identificación de la Inercia", icon: Compass },
-  { day: 2, title: "La Mecánica de la Conexión", icon: GitBranch },
-  { day: 3, title: "El Espejo Interno", icon: Eye },
-  { day: 4, title: "Revisión de Energía", icon: Zap },
+  { day: 1, title: "Identificação da Inércia", icon: Compass },
+  { day: 2, title: "A Mecânica da Conexão", icon: GitBranch },
+  { day: 3, title: "O Espelho Interno", icon: Eye },
+  { day: 4, title: "Revisão de Energia", icon: Zap },
   { day: 5, title: "Momentos Decisivos", icon: Layers },
-  { day: 6, title: "El Costo de la Oportunidad", icon: Scale },
-  { day: 7, title: "Tu Nueva Perspectiva", icon: Gavel },
+  { day: 6, title: "O Custo da Oportunidade", icon: Scale },
+  { day: 7, title: "Sua Nova Perspectiva", icon: Gavel },
 ];
 
 const NODE_POSITIONS = [37, 15, 59, 25, 55, 19, 37];
@@ -93,9 +93,9 @@ const JourneyMap = () => {
         transition={{ duration: 0.5 }}
         className="px-5 pt-5 pb-2 text-center"
       >
-        <p className="text-xs text-muted-foreground mb-1">Bienvenido, {displayName}</p>
+        <p className="text-xs text-muted-foreground mb-1">Bem-vindo(a), {displayName}</p>
         <h1 className="text-xl font-medium text-foreground">
-          Tu mapa de 7 días
+          Seu mapa de 7 dias
         </h1>
       </motion.div>
 
@@ -135,7 +135,7 @@ const JourneyMap = () => {
               <span className={`text-[10px] font-medium tracking-[0.15em] uppercase mb-2 ${
                 status === "locked" ? "text-muted-foreground/40" : "text-primary/70"
               }`}>
-                Día {item.day}
+                Dia {item.day}
               </span>
 
               <button

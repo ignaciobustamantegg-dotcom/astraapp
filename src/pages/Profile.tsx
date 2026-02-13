@@ -63,7 +63,7 @@ const Profile = () => {
         >
           <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
           <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-0.5">Correo</p>
+            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-0.5">E-mail</p>
             <p className="text-sm text-foreground truncate">{user?.email}</p>
           </div>
         </div>
@@ -73,8 +73,8 @@ const Profile = () => {
         >
           <TrendingUp className="w-4 h-4 text-muted-foreground shrink-0" />
           <div>
-            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-0.5">Progreso</p>
-            <p className="text-sm text-foreground">Día {currentDay} de 7</p>
+            <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground mb-0.5">Progresso</p>
+            <p className="text-sm text-foreground">Dia {currentDay} de 7</p>
           </div>
         </div>
       </div>
@@ -86,7 +86,7 @@ const Profile = () => {
         style={{ background: "hsla(0, 72%, 51%, 0.05)" }}
       >
         <LogOut className="w-4 h-4" />
-        Cerrar sesión
+        Sair da conta
       </button>
     </motion.div>
   );

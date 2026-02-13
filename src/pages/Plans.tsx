@@ -8,9 +8,9 @@ import { X, Star, Check } from "lucide-react";
 type PlanId = "weekly" | "annual" | "lifetime";
 
 const PLANS: { id: PlanId; name: string; price: string; subtitle: string }[] = [
-  { id: "weekly", name: "Semanal", price: "$6.990", subtitle: "semanales" },
-  { id: "annual", name: "Anualmente", price: "$69.990", subtitle: "con pago anual" },
-  { id: "lifetime", name: "De por vida", price: "$99.990", subtitle: "con pago único" },
+  { id: "weekly", name: "Semanal", price: "$6.990", subtitle: "semanais" },
+  { id: "annual", name: "Anual", price: "$69.990", subtitle: "com pagamento anual" },
+  { id: "lifetime", name: "Vitalício", price: "$99.990", subtitle: "pagamento único" },
 ];
 
 // Placeholder checkout URLs — replace with real CartPanda links
@@ -30,19 +30,17 @@ const Plans = () => {
     const key = selectedPlan === "weekly" && trialEnabled ? "weekly-trial" : selectedPlan;
     const checkoutUrl = CHECKOUT_URLS[key];
 
-    // Store selected plan info for post-checkout signup
     localStorage.setItem(
       "astra_pending_plan",
       JSON.stringify({ plan: selectedPlan, trial: trialEnabled })
     );
 
-    // Redirect to CartPanda checkout
     window.location.href = checkoutUrl;
   };
 
   const ctaLabel =
     selectedPlan === "weekly" && trialEnabled
-      ? "Continúa con los 3 días de prueba"
+      ? "Continuar com os 3 dias de teste"
       : "Continuar";
 
   return (
@@ -73,12 +71,12 @@ const Plans = () => {
             ))}
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-2">
-            Pequeños cambios, gran impacto
+            Pequenas mudanças, grande impacto
           </h2>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
-            ¡Me encanta! Esta aplicación ha transformado cómo me siento conmigo mismo y con mi vida.
+            Amei! Este aplicativo transformou como eu me sinto comigo mesma e com a minha vida.
           </p>
-          <p className="text-xs text-primary mt-2">María R. ★★★★★</p>
+          <p className="text-xs text-primary mt-2">Maria R. ★★★★★</p>
         </motion.div>
 
         {/* Plans */}
@@ -88,7 +86,7 @@ const Plans = () => {
           transition={{ duration: 0.5, delay: 0.15 }}
         >
           <h3 className="text-center text-base font-semibold text-foreground mb-4">
-            Plan con acceso completo
+            Plano com acesso completo
           </h3>
 
           <div className="space-y-3">
@@ -110,12 +108,12 @@ const Plans = () => {
                     <div>
                       <p className="text-[0.9rem] font-medium text-foreground">
                         {isWeekly && trialEnabled
-                          ? "3 días de prueba gratis"
+                          ? "3 dias de teste grátis"
                           : plan.name}
                       </p>
                       <p className="text-sm font-semibold text-primary mt-0.5">
                         {isWeekly && trialEnabled
-                          ? `luego ${plan.price} semanales`
+                          ? `depois ${plan.price} semanais`
                           : `${plan.price} ${plan.subtitle}`}
                       </p>
                     </div>
@@ -134,7 +132,7 @@ const Plans = () => {
                   {isWeekly && isSelected && (
                     <div className="border-t border-border/50 px-4 py-3 flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">
-                        Activar la prueba gratuita
+                        Ativar o teste gratuito
                       </span>
                       <Switch
                         checked={trialEnabled}
@@ -166,17 +164,17 @@ const Plans = () => {
           </Button>
 
           <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
-            La suscripción se paga semanal y se renueva automáticamente.
+            A assinatura é paga semanalmente e renovada automaticamente.
             <br />
-            Puedes cancelarla en cualquier momento.
+            Você pode cancelar a qualquer momento.
           </p>
 
           <div className="flex justify-center gap-6 mt-4">
             <button className="text-xs text-primary underline underline-offset-4">
-              Condiciones de uso
+              Termos de uso
             </button>
             <button className="text-xs text-primary underline underline-offset-4">
-              Política de confidencialidad
+              Política de privacidade
             </button>
           </div>
         </motion.div>

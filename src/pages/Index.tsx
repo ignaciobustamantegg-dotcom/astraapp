@@ -41,7 +41,7 @@ const Index = () => {
             Astra
           </h1>
           <p className="text-sm text-muted-foreground font-light">
-            Protocolo de Auditoría Emocional
+            Protocolo de Auditoria Emocional
           </p>
         </motion.div>
       </div>
@@ -55,7 +55,7 @@ const Index = () => {
       >
         <Link to="/plans" className="block">
           <Button className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide bg-foreground text-background hover:bg-foreground/90 press-scale">
-            Empezar
+            Começar
           </Button>
         </Link>
         <Link to="/login" className="block">
@@ -63,7 +63,7 @@ const Index = () => {
             variant="outline"
             className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide border-primary/50 text-primary hover:bg-primary/10 press-scale"
           >
-            Ya tengo una cuenta
+            Já tenho uma conta
           </Button>
         </Link>
       </motion.div>

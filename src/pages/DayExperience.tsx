@@ -20,76 +20,76 @@ const SCREENS: Screen[] = [
   {
     type: "text",
     lines: [
-      { text: "A veces no elegimos personas.", style: "serif-lead" },
-      { text: "Elegimos sensaciones que nos resultan familiares.", style: "body" },
+      { text: "Às vezes não escolhemos pessoas.", style: "serif-lead" },
+      { text: "Escolhemos sensações que nos parecem familiares.", style: "body" },
       { text: "", style: "spacer" },
-      { text: "La familiaridad puede sentirse como conexión inmediata.", style: "highlight-start" },
-      { text: "Como si algo ya estuviera escrito.", style: "highlight-end" },
+      { text: "A familiaridade pode parecer uma conexão imediata.", style: "highlight-start" },
+      { text: "Como se algo já estivesse escrito.", style: "highlight-end" },
       { text: "", style: "spacer" },
-      { text: "Pero no siempre es destino.", style: "body" },
-      { text: "A veces es repetición.", style: "serif-close" },
+      { text: "Mas nem sempre é destino.", style: "body" },
+      { text: "Às vezes é repetição.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
     type: "text",
     lines: [
-      { text: "Cada persona desarrolla una forma particular de vincularse.", style: "serif-lead" },
+      { text: "Cada pessoa desenvolve uma forma particular de se vincular.", style: "serif-lead" },
       { text: "", style: "spacer" },
-      { text: "Algunas buscan intensidad.", style: "body" },
-      { text: "Otras buscan validación.", style: "body" },
-      { text: "Otras buscan seguridad.", style: "body" },
+      { text: "Algumas buscam intensidade.", style: "body" },
+      { text: "Outras buscam validação.", style: "body" },
+      { text: "Outras buscam segurança.", style: "body" },
       { text: "", style: "spacer" },
-      { text: "Y muchas veces, sin notarlo, elegimos vínculos que activan lo que ya conocemos… incluso si eso también nos duele.", style: "body" },
+      { text: "E muitas vezes, sem perceber, escolhemos vínculos que ativam o que já conhecemos… mesmo que isso também nos machuque.", style: "body" },
       { text: "", style: "spacer" },
-      { text: "No es casualidad.", style: "body" },
-      { text: "Es inercia emocional.", style: "serif-close" },
+      { text: "Não é coincidência.", style: "body" },
+      { text: "É inércia emocional.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
     type: "text",
     lines: [
-      { text: "La inercia no significa error.", style: "serif-lead" },
+      { text: "A inércia não significa erro.", style: "serif-lead" },
       { text: "Significa hábito.", style: "body" },
       { text: "", style: "spacer" },
-      { text: "Tu sistema emocional aprende lo que es familiar,", style: "body" },
-      { text: "aunque no siempre sea lo que te hace bien.", style: "body" },
+      { text: "Seu sistema emocional aprende o que é familiar,", style: "body" },
+      { text: "mesmo que nem sempre seja o que te faz bem.", style: "body" },
       { text: "", style: "spacer" },
-      { text: "Reconocer esto no implica cambiar nada hoy.", style: "body" },
-      { text: "Solo implica mirar con honestidad.", style: "serif-close" },
+      { text: "Reconhecer isso não significa mudar algo hoje.", style: "body" },
+      { text: "Significa apenas olhar com honestidade.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
     type: "text",
     lines: [
-      { text: "Hoy no necesitas tomar decisiones.", style: "serif-lead" },
-      { text: "Solo observar.", style: "body" },
+      { text: "Hoje você não precisa tomar decisões.", style: "serif-lead" },
+      { text: "Apenas observar.", style: "body" },
       { text: "", style: "spacer" },
-      { text: "Pregúntate con calma:", style: "body" },
+      { text: "Pergunte-se com calma:", style: "body" },
       { text: "", style: "spacer" },
-      { text: "¿Hay un tipo de dinámica que se ha repetido en mis relaciones?", style: "highlight-start" },
+      { text: "Existe algum tipo de dinâmica que se repetiu nos meus relacionamentos?", style: "highlight-start" },
       { text: "", style: "highlight-end" },
       { text: "", style: "spacer" },
-      { text: "No respondas rápido.", style: "body" },
-      { text: "Permítete sentir antes de explicar.", style: "serif-close" },
+      { text: "Não responda rápido.", style: "body" },
+      { text: "Permita-se sentir antes de explicar.", style: "serif-close" },
     ],
     button: "Continuar",
   },
   {
     type: "journal",
-    title: "Reflexión",
-    prompt: "¿Qué tipo de persona o dinámica ha aparecido más de una vez en tu historia?",
-    hint: "(No necesitas tener una conclusión. Solo describe.)",
-    button: "Guardar y continuar",
+    title: "Reflexão",
+    prompt: "Que tipo de pessoa ou dinâmica apareceu mais de uma vez na sua história?",
+    hint: "(Você não precisa ter uma conclusão. Apenas descreva.)",
+    button: "Salvar e continuar",
   },
   {
     type: "text",
     lines: [
-      { text: "Reconocer es el primer movimiento consciente.", style: "serif-lead" },
+      { text: "Reconhecer é o primeiro movimento consciente.", style: "serif-lead" },
     ],
-    button: "Completar Día 1",
+    button: "Completar Dia 1",
   },
 ];
 
@@ -104,13 +104,11 @@ const DayExperience = () => {
   const [showCompletion, setShowCompletion] = useState(false);
   const [rating, setRating] = useState(0);
 
-  // Load saved journal from localStorage
   useEffect(() => {
     const saved = localStorage.getItem(`astra_day1_journal_${user?.id}`);
     if (saved) setJournalText(saved);
   }, [user?.id]);
 
-  // Auto-save journal
   useEffect(() => {
     if (journalText && user?.id) {
       localStorage.setItem(`astra_day1_journal_${user.id}`, journalText);
@@ -157,7 +155,6 @@ const DayExperience = () => {
         animate={{ opacity: 1 }}
         className="flex flex-col items-center justify-center min-h-[80dvh] px-8"
       >
-        {/* Ambient glow */}
         <div
           className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[300px] h-[300px] pointer-events-none"
           style={{
@@ -191,14 +188,13 @@ const DayExperience = () => {
             className="text-xl text-foreground mb-2"
             style={{ fontWeight: 200, letterSpacing: "-0.02em", lineHeight: 1.1 }}
           >
-            Día 1 completado
+            Dia 1 completado
           </h2>
 
           <p className="text-sm text-muted-foreground mb-8">
-            ¿Cómo fue esta experiencia para ti?
+            Como foi essa experiência para você?
           </p>
 
-          {/* Rating */}
           <div className="flex gap-3 mb-10">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -226,7 +222,7 @@ const DayExperience = () => {
               border: "1px solid hsla(270, 60%, 75%, 0.2)",
             }}
           >
-            Volver al mapa
+            Voltar ao mapa
           </button>
         </motion.div>
       </motion.div>
@@ -235,7 +231,6 @@ const DayExperience = () => {
 
   return (
     <div className="flex flex-col h-full relative">
-      {/* Ambient glows */}
       <div
         className="absolute top-[30%] left-1/2 -translate-x-1/2 w-[360px] h-[400px] pointer-events-none"
         style={{
@@ -249,7 +244,6 @@ const DayExperience = () => {
         }}
       />
 
-      {/* Fixed Header */}
       <div className="px-5 pt-3 pb-2 relative z-10 shrink-0">
         <div className="flex items-center justify-between mb-3">
           <button
@@ -263,13 +257,13 @@ const DayExperience = () => {
           </button>
           <div className="text-center">
             <p className="text-[10px] font-medium tracking-[0.15em] uppercase text-primary/70">
-              Día 1
+              Dia 1
             </p>
             <p
               className="text-sm text-foreground/70"
               style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, letterSpacing: "-0.02em", lineHeight: 1.1 }}
             >
-              Identificación de la Inercia
+              Identificação da Inércia
             </p>
           </div>
           <div className="min-h-[44px] min-w-[44px] flex items-center justify-center">
@@ -279,7 +273,6 @@ const DayExperience = () => {
         <Progress value={progress} className="h-1 bg-secondary" />
       </div>
 
-      {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto no-scrollbar relative z-10">
         <div className="flex flex-col justify-center px-8 pt-6 pb-4 min-h-full">
           <AnimatePresence mode="wait">
@@ -389,7 +382,7 @@ const DayExperience = () => {
                     transition={{ delay: 0.15, duration: 0.4 }}
                     className="text-[17px] leading-[1.85] text-foreground/80"
                   >
-                    Escribe libremente:
+                    Escreva livremente:
                   </motion.p>
                   <motion.p
                     initial={{ opacity: 0, y: 12 }}
@@ -416,7 +409,7 @@ const DayExperience = () => {
                     <textarea
                       value={journalText}
                       onChange={(e) => setJournalText(e.target.value)}
-                      placeholder="Escribe aquí..."
+                      placeholder="Escreva aqui..."
                       className="w-full min-h-[160px] rounded-xl p-4 text-[16px] leading-[1.8] text-foreground bg-secondary/40 border border-border/20 placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary/20 resize-none transition-all duration-300"
                       style={{ fontSize: "16px" }}
                     />
@@ -428,7 +421,6 @@ const DayExperience = () => {
         </div>
       </div>
 
-      {/* Fixed Bottom button */}
       <div className="px-8 pb-4 pt-2 relative z-10 shrink-0">
         <motion.div
           initial={{ opacity: 0, y: 8 }}

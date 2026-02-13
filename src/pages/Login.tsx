@@ -26,7 +26,7 @@ const Login = () => {
       navigate("/home");
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: "Erro",
         description: error.message,
         variant: "destructive",
       });
@@ -55,19 +55,19 @@ const Login = () => {
         transition={{ duration: 0.4 }}
       >
         <h1 className="text-[1.75rem] font-semibold text-foreground mb-8">
-          Iniciar sesión
+          Entrar
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-foreground">
-              Correo electrónico
+              E-mail
             </Label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Escribe tu correo electrónico"
+              placeholder="Digite seu e-mail"
               required
               className="h-12 bg-transparent border-border/60 rounded-xl text-base text-foreground placeholder:text-muted-foreground"
             />
@@ -75,14 +75,14 @@ const Login = () => {
 
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-foreground">
-              Contraseña
+              Senha
             </Label>
             <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Escribe la contraseña"
+                placeholder="Digite sua senha"
                 required
                 minLength={6}
                 className="h-12 bg-transparent border-border/60 rounded-xl text-base text-foreground placeholder:text-muted-foreground pr-12"
@@ -102,13 +102,13 @@ const Login = () => {
             disabled={loading}
             className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide bg-muted text-muted-foreground hover:bg-muted/80 press-scale mt-2"
           >
-            {loading ? "Cargando..." : "Iniciar sesión"}
+            {loading ? "Carregando..." : "Entrar"}
           </Button>
         </form>
 
         <div className="text-center mt-6">
           <button className="text-sm text-primary font-medium">
-            ¿Olvidaste la contraseña?
+            Esqueceu a senha?
           </button>
         </div>
       </motion.div>
