@@ -132,11 +132,29 @@ const JourneyMap = () => {
                 width: 140,
               }}
             >
-              <span className={`text-[10px] font-medium tracking-[0.15em] uppercase mb-2 ${
-                status === "locked" ? "text-muted-foreground/40" : "text-primary/70"
-              }`}>
+              <motion.span
+                className={`text-[10px] font-bold tracking-[0.2em] uppercase mb-2 ${
+                  status === "locked" ? "text-muted-foreground/40" : ""
+                }`}
+                style={status !== "locked" ? {
+                  color: 'hsl(175, 70%, 55%)',
+                  textShadow: '0 0 8px hsla(180, 80%, 80%, 0.4)',
+                } : undefined}
+                animate={status !== "locked" ? {
+                  textShadow: [
+                    '0 0 8px hsla(180, 80%, 80%, 0.3)',
+                    '0 0 14px hsla(180, 80%, 90%, 0.6)',
+                    '0 0 8px hsla(180, 80%, 80%, 0.3)',
+                  ],
+                } : undefined}
+                transition={status !== "locked" ? {
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                } : undefined}
+              >
                 Dia {item.day}
-              </span>
+              </motion.span>
 
               {status === "completed" ? (
                 <button
