@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import StartScreen from "@/components/quiz/StartScreen";
 import QuestionScreen from "@/components/quiz/QuestionScreen";
 import TransitionScreen from "@/components/quiz/TransitionScreen";
@@ -6,6 +6,7 @@ import EmailScreen from "@/components/quiz/EmailScreen";
 import ResultsScreen from "@/components/quiz/ResultsScreen";
 import { quizQuestions } from "@/data/quizQuestions";
 import { useQuizSounds } from "@/hooks/useQuizSounds";
+import { getSessionId, captureUtms, getVariant, trackEvent, submitLead, submitQuizAnswers } from "@/lib/session";
 
 type Screen =
   | { type: "start" }
@@ -18,15 +19,26 @@ type Screen =
 const Quiz = () => {
   const [screen, setScreen] = useState<Screen>({ type: "start" });
   const { playSwoosh } = useQuizSounds();
+  const answersRef = useRef<Record<number, number>>({});
+
+  // Session bootstrap on mount
+  useEffect(() => {
+    getSessionId();
+    captureUtms();
+    getVariant();
+    trackEvent("view_quiz");
+  }, []);
 
   const handleStart = useCallback(() => {
     playSwoosh();
+    trackEvent("quiz_started");
     setScreen({ type: "question", index: 0 });
   }, [playSwoosh]);
 
   const handleAnswer = useCallback(
-    (_answerIndex: number) => {
+    (answerIndex: number) => {
       if (screen.type !== "question") return;
+      answersRef.current[screen.index] = answerIndex;
       const nextIndex = screen.index + 1;
 
       if (screen.index === 6) {
@@ -51,8 +63,16 @@ const Quiz = () => {
     setScreen({ type: "question", index: 7 });
   }, [playSwoosh]);
 
-  const handleEmailSubmit = useCallback((email: string) => {
-    console.log("Email captured:", email);
+  const handleEmailSubmit = useCallback(async (email: string) => {
+    // Submit lead + quiz answers in parallel
+    try {
+      await Promise.all([
+        submitLead(email),
+        submitQuizAnswers(answersRef.current),
+      ]);
+    } catch (e) {
+      console.warn("Submit error:", e);
+    }
     setScreen({ type: "transition2" });
   }, []);
 
