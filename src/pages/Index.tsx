@@ -24,25 +24,26 @@ const Index = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <motion.div
-            className="mx-auto mb-4 w-16 h-16 relative"
+            className="flex items-center justify-center gap-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
           >
+            <h1
+              className="text-4xl text-foreground"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, letterSpacing: "-0.03em", lineHeight: 1 }}
+            >
+              Astra
+            </h1>
             <div
-              className="w-16 h-16 rounded-full bg-gradient-to-b from-primary to-primary/70 shadow-[0_0_50px_rgba(217,170,60,0.35)]"
+              className="w-7 h-7 rounded-full"
               style={{
-                clipPath:
-                  "path('M32 0 A32 32 0 1 1 32 64 A22 22 0 1 0 32 0')",
+                background: 'linear-gradient(135deg, hsl(45, 80%, 65%), hsl(40, 70%, 55%))',
+                clipPath: "path('M14 0 A14 14 0 1 1 14 28 A10 10 0 1 0 14 0')",
+                boxShadow: '0 0 18px rgba(230, 195, 80, 0.45), 0 0 40px rgba(230, 195, 80, 0.2)',
               }}
             />
           </motion.div>
-          <h1 className="text-3xl font-semibold tracking-tight text-foreground mb-1">
-            Astra
-          </h1>
-          <p className="text-sm text-muted-foreground font-light">
-            Protocolo de Auditoria Emocional
-          </p>
         </motion.div>
       </div>
 
