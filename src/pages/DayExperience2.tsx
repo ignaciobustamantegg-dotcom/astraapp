@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star } from "lucide-react";
@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
+import DayLoadingScreen, { DAY_TITLES } from "@/components/DayLoadingScreen";
 
 type ScreenLine = {
   text: string;
@@ -108,10 +109,12 @@ const DayExperience2 = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(0);
   const [journalText, setJournalText] = useState("");
   const [showCompletion, setShowCompletion] = useState(false);
   const [rating, setRating] = useState(0);
+  const handleLoadingComplete = useCallback(() => setIsLoading(false), []);
 
   useEffect(() => {
     const saved = localStorage.getItem(`astra_day2_journal_${user?.id}`);
@@ -150,6 +153,10 @@ const DayExperience2 = () => {
   };
 
   const screen = SCREENS[currentScreen];
+
+  if (isLoading) {
+    return <DayLoadingScreen dayNumber={2} dayTitle={DAY_TITLES[2]} onComplete={handleLoadingComplete} />;
+  }
 
   if (showCompletion) {
     return (
