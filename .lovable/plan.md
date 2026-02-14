@@ -1,51 +1,29 @@
 
-# Integrar Quiz como nueva pantalla
 
-## Resumen
-Se integrara el quiz completo del proyecto "love-pattern-break" como una nueva pantalla dentro de la app Astra, accesible desde una nueva ruta `/quiz`.
+# Terms and Conditions Page
 
-## Archivos a copiar desde el ZIP
+Create a new `/terms` route with a Terms and Conditions page following the existing visual pattern from `/support`.
 
-### Componentes del Quiz (17 archivos)
-Se copiaran todos los archivos de `src/components/quiz/` al proyecto:
-- AudioPlayer.tsx
-- BeforeAfter.tsx
-- BeforeAfterImages.tsx
-- BlurredContent.tsx
-- EmailScreen.tsx
-- MiniRelato.tsx
-- Orbs.tsx
-- OrderBump.tsx
-- QuestionScreen.tsx
-- ResultsScreen.tsx
-- SocialProofAvatars.tsx
-- SocialProofPopup.tsx
-- StartScreen.tsx
-- ThermometerGauge.tsx
-- TransitionScreen.tsx
-- UpsellBanner.tsx
-- UrgencyTimer.tsx
+## Changes
 
-### Datos del Quiz (2 archivos)
-- `src/data/encouragements.ts`
-- `src/data/quizQuestions.ts`
+### 1. Create `src/pages/Terms.tsx`
+- Use the same layout as `Support.tsx`: dark gradient background with `Orbs`, centered container, glass cards
+- Content sections:
+  - Header with decorative dot + "Termos e Condições" title
+  - **Uso do Serviço** - rules for using the platform
+  - **Pagamentos e Reembolsos** - payment terms, 7-day refund policy (consistent with Support page)
+  - **Propriedade Intelectual** - content ownership and usage rights
+  - **Privacidade** - brief privacy statement with reference to future privacy policy
+  - **Limitação de Responsabilidade** - liability limitations
+  - **Alterações nos Termos** - right to modify terms
+  - **Contato** - support email (suporte@astraapp.com.br)
+- Footer link back to `/quiz`
+- All text in PT-BR with feminine-oriented language
 
-### Hooks (1 archivo)
-- `src/hooks/useQuizSounds.ts`
+### 2. Update `src/App.tsx`
+- Import `Terms` component
+- Add `<Route path="/terms" element={<Terms />} />` alongside other public routes
 
-## Nueva pagina
-Se creara `src/pages/Quiz.tsx` basado en la pagina Index/Dashboard del proyecto original, que orquesta todos los componentes del quiz.
+### 3. Update `src/pages/Plans.tsx`
+- Wire the existing "Termos de uso" button to navigate to `/terms` using an `<a href="/terms">` or `<Link>`
 
-## Cambios en archivos existentes
-
-### `src/App.tsx`
-- Importar la nueva pagina Quiz
-- Agregar la ruta `/quiz` (fuera de las rutas protegidas, similar a `/plans`)
-
-## Detalles tecnicos
-
-1. **Extraccion del ZIP**: Se extraeran los archivos del zip y se copiaran a las carpetas correspondientes del proyecto
-2. **Ajuste de imports**: Se verificaran y ajustaran los imports para que sean compatibles con la estructura del proyecto actual (usando alias `@/`)
-3. **Dependencias**: El proyecto ya cuenta con todas las dependencias necesarias (framer-motion, lucide-react, radix-ui, etc.)
-4. **Sin cambios en base de datos**: Esta integracion es puramente frontend, no requiere cambios en el backend
-5. **Ruta publica**: El quiz se agregara como ruta publica (`/quiz`) ya que tipicamente es un punto de entrada para nuevos usuarios
