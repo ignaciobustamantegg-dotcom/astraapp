@@ -8,10 +8,17 @@ import BeforeAfterImages from "./BeforeAfterImages";
 import SocialProofAvatars from "./SocialProofAvatars";
 import UrgencyTimer from "./UrgencyTimer";
 
-const ResultsScreen = () => {
+interface ResultsScreenProps {
+  onCheckout?: () => void;
+}
+
+const ResultsScreen = ({ onCheckout }: ResultsScreenProps) => {
   const handleCheckout = () => {
-    // Placeholder for checkout action
-    console.log("Checkout clicked");
+    if (onCheckout) {
+      onCheckout();
+    } else {
+      console.log("Checkout clicked");
+    }
   };
 
   return (

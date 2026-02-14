@@ -1,1 +1,19 @@
 project_id = "bukkfucjwayueksehgxm"
+
+[functions.lead]
+verify_jwt = false
+
+[functions.submit-quiz]
+verify_jwt = false
+
+[functions.track]
+verify_jwt = false
+
+[functions.cartpanda-webhook]
+verify_jwt = false
+
+[functions.verify-order]
+verify_jwt = false
+
+[functions.verify-token]
+verify_jwt = false
