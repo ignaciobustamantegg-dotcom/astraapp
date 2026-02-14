@@ -133,7 +133,7 @@ const JourneyMap = () => {
               }}
             >
               <motion.span
-                className={`text-[10px] font-bold tracking-[0.2em] uppercase mb-2 ${
+                className={`text-[10px] font-bold tracking-[0.2em] mb-2 ${
                   status === "locked" ? "text-muted-foreground/40" : ""
                 }`}
                 style={status !== "locked" ? {
