@@ -159,8 +159,8 @@ const JourneyMap = () => {
                   <div
                     className="w-[54px] h-[54px] rounded-full flex items-center justify-center"
                     style={{
-                      background: 'linear-gradient(180deg, hsl(45, 70%, 72%), hsl(38, 75%, 55%))',
-                      boxShadow: 'inset 0 2px 4px hsla(45, 80%, 85%, 0.4), inset 0 -2px 4px hsla(35, 70%, 35%, 0.3)',
+                      background: 'radial-gradient(circle at center, hsl(45, 100%, 97%), hsl(42, 80%, 65%))',
+                      boxShadow: 'inset 0 2px 4px hsla(45, 80%, 90%, 0.5), inset 0 -2px 4px hsla(35, 70%, 35%, 0.2)',
                       border: '2.5px solid hsl(40, 75%, 50%)',
                     }}
                   >
