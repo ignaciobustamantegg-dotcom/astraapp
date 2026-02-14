@@ -97,21 +97,16 @@ const JourneyMap = () => {
         <h1 className="text-xl font-medium text-foreground">
           Seu mapa de{" "}
           <motion.span
-            className="font-bold"
+            className="font-bold bg-clip-text text-transparent"
             style={{
-              color: 'hsl(230, 85%, 75%)',
-              textShadow: '0 0 12px hsla(230, 90%, 70%, 0.6)',
+              backgroundImage: 'linear-gradient(90deg, hsl(270, 60%, 65%), hsl(185, 60%, 55%))',
+              filter: 'drop-shadow(0 0 8px hsla(230, 80%, 70%, 0.5))',
             }}
             animate={{
-              textShadow: [
-                '0 0 10px hsla(230, 90%, 70%, 0.4)',
-                '0 0 20px hsla(210, 80%, 75%, 0.7)',
-                '0 0 10px hsla(230, 90%, 70%, 0.4)',
-              ],
-              color: [
-                'hsl(230, 85%, 75%)',
-                'hsl(200, 80%, 72%)',
-                'hsl(230, 85%, 75%)',
+              filter: [
+                'drop-shadow(0 0 8px hsla(230, 80%, 70%, 0.4))',
+                'drop-shadow(0 0 16px hsla(210, 80%, 70%, 0.7))',
+                'drop-shadow(0 0 8px hsla(230, 80%, 70%, 0.4))',
               ],
             }}
             transition={{
