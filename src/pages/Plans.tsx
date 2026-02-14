@@ -170,9 +170,9 @@ const Plans = () => {
           </p>
 
           <div className="flex justify-center gap-6 mt-4">
-            <button className="text-xs text-primary underline underline-offset-4">
+            <a href="/terms" className="text-xs text-primary underline underline-offset-4">
               Termos de uso
-            </button>
+            </a>
             <button className="text-xs text-primary underline underline-offset-4">
               Política de privacidade
             </button>
