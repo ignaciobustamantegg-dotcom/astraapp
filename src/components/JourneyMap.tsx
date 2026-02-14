@@ -137,14 +137,14 @@ const JourneyMap = () => {
                   status === "locked" ? "text-muted-foreground/40" : ""
                 }`}
                 style={status !== "locked" ? {
-                  color: 'hsl(175, 70%, 55%)',
-                  textShadow: '0 0 8px hsla(180, 80%, 80%, 0.4)',
+                  color: 'hsl(270, 80%, 75%)',
+                  textShadow: '0 0 8px hsla(270, 80%, 80%, 0.4)',
                 } : undefined}
                 animate={status !== "locked" ? {
                   textShadow: [
-                    '0 0 8px hsla(180, 80%, 80%, 0.3)',
-                    '0 0 14px hsla(180, 80%, 90%, 0.6)',
-                    '0 0 8px hsla(180, 80%, 80%, 0.3)',
+                    '0 0 8px hsla(270, 80%, 80%, 0.3)',
+                    '0 0 14px hsla(270, 80%, 90%, 0.6)',
+                    '0 0 8px hsla(270, 80%, 80%, 0.3)',
                   ],
                 } : undefined}
                 transition={status !== "locked" ? {
