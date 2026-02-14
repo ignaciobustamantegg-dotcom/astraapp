@@ -25,6 +25,7 @@ import Checkout from "./pages/Checkout";
 import PostCheckout from "./pages/PostCheckout";
 import GatedApp from "./pages/GatedApp";
 import Support from "./pages/Support";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/post-checkout" element={<PostCheckout />} />
             <Route path="/app" element={<GatedApp />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route
