@@ -95,7 +95,33 @@ const JourneyMap = () => {
       >
         <p className="text-xs text-muted-foreground mb-1">Bem-vindo(a), {displayName}</p>
         <h1 className="text-xl font-medium text-foreground">
-          Seu mapa de 7 dias
+          Seu mapa de{" "}
+          <motion.span
+            className="font-bold"
+            style={{
+              color: 'hsl(230, 85%, 75%)',
+              textShadow: '0 0 12px hsla(230, 90%, 70%, 0.6)',
+            }}
+            animate={{
+              textShadow: [
+                '0 0 10px hsla(230, 90%, 70%, 0.4)',
+                '0 0 20px hsla(210, 80%, 75%, 0.7)',
+                '0 0 10px hsla(230, 90%, 70%, 0.4)',
+              ],
+              color: [
+                'hsl(230, 85%, 75%)',
+                'hsl(200, 80%, 72%)',
+                'hsl(230, 85%, 75%)',
+              ],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            7 dias
+          </motion.span>
         </h1>
       </motion.div>
 
