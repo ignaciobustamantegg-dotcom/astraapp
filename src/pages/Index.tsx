@@ -59,12 +59,12 @@ const Index = () => {
           </Button>
         </Link>
         <Link to="/login" className="block">
-          <Button
-            variant="outline"
-            className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide border-primary/50 text-primary hover:bg-primary/10 press-scale"
+          <button
+            className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide press-scale transition-all duration-300 text-primary-foreground"
+            style={{ background: 'linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))' }}
           >
             Já tenho uma conta
-          </Button>
+          </button>
         </Link>
       </motion.div>
     </div>
