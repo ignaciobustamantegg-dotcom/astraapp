@@ -11,71 +11,117 @@ function generateToken(length = 48): string {
   return Array.from(arr, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, length);
 }
 
+function getParams(req: Request, body: Record<string, any> | null): Record<string, string | null> {
+  const url = new URL(req.url);
+  const get = (key: string) => body?.[key]?.toString() || url.searchParams.get(key) || null;
+
+  return {
+    order_id: get("order_id") || get("id") || get("external_id"),
+    email: get("email") || get("customer_email") || get("buyer_email"),
+    total_price: get("total_price"),
+    amount_net: get("amount_net"),
+    currency: get("currency"),
+    product_id: get("product_id"),
+    product_name: get("product_name"),
+    order_type: get("order_type"),
+    upsell_no: get("upsell_no"),
+    utm_source: get("utm_source"),
+    utm_medium: get("utm_medium"),
+    utm_campaign: get("utm_campaign"),
+    utm_term: get("utm_term"),
+    utm_content: get("utm_content"),
+    campaignkey: get("campaignkey"),
+    cid: get("cid"),
+    gclid: get("gclid"),
+    is_test: get("is_test"),
+    datetime_unix: get("datetime_unix"),
+    country: get("country"),
+    status: get("status") || get("payment_status") || get("financial_status"),
+    session_id: get("session_id"),
+    token: get("token"),
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
-  if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
 
   try {
-    // Validate webhook secret
+    // Parse body for POST, null for GET
+    let body: Record<string, any> | null = null;
+    if (req.method === "POST") {
+      try { body = await req.json(); } catch { /* fallback to query params */ }
+    }
+
+    const params = getParams(req, body);
+    console.log("Webhook params:", JSON.stringify(params));
+
+    // Validate token
     const webhookSecret = Deno.env.get("CARTPANDA_WEBHOOK_SECRET");
-    const authHeader = req.headers.get("x-webhook-secret") || req.headers.get("authorization");
-    if (webhookSecret && authHeader !== webhookSecret && authHeader !== `Bearer ${webhookSecret}`) {
-      console.error("Invalid webhook secret");
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (webhookSecret && params.token !== webhookSecret) {
+      console.error("Invalid or missing token");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const body = await req.json();
-    console.log("Webhook payload:", JSON.stringify(body));
-
-    // Extract fields - adapt to Cartpanda's actual payload structure
-    const external_order_id = body.id?.toString() || body.order_id?.toString() || body.external_id?.toString();
+    const external_order_id = params.order_id;
     if (!external_order_id) {
-      return new Response(JSON.stringify({ error: "Missing order ID" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ error: "Missing order_id" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-
-    const status = body.status || body.payment_status || body.financial_status;
-    const isPaid = ["paid", "approved", "completed", "captured"].includes(status?.toLowerCase?.() || "");
-    const customer_email = body.customer?.email || body.email || body.buyer_email || null;
-    const session_id = body.metadata?.session_id || body.note_attributes?.find?.((n: any) => n.name === "session_id")?.value || body.session_id || null;
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    // Check if order exists
-    const { data: existing } = await supabase.from("orders").select("id, access_token, status").eq("external_order_id", external_order_id).maybeSingle();
+    const now = new Date().toISOString();
+    const access_token = generateToken();
+
+    const { data: existing } = await supabase
+      .from("orders")
+      .select("id, access_token")
+      .eq("external_order_id", external_order_id)
+      .maybeSingle();
 
     if (existing) {
-      // Update existing order
-      const updates: Record<string, any> = { status: isPaid ? "paid" : status?.toLowerCase() || existing.status, updated_at: new Date().toISOString() };
-      if (isPaid && !existing.access_token) {
-        updates.access_token = generateToken();
-        updates.paid_at = new Date().toISOString();
-      }
-      if (customer_email) updates.customer_email = customer_email;
-
+      const updates: Record<string, any> = {
+        status: "paid",
+        updated_at: now,
+        paid_at: now,
+        customer_email: params.email || undefined,
+      };
+      if (!existing.access_token) updates.access_token = access_token;
       await supabase.from("orders").update(updates).eq("id", existing.id);
     } else {
-      // Insert new order
-      const newOrder: Record<string, any> = {
+      await supabase.from("orders").insert({
         external_order_id,
-        status: isPaid ? "paid" : status?.toLowerCase() || "pending",
-        customer_email,
-        session_id,
-      };
-      if (isPaid) {
-        newOrder.access_token = generateToken();
-        newOrder.paid_at = new Date().toISOString();
-      }
-      await supabase.from("orders").insert(newOrder);
+        status: "paid",
+        customer_email: params.email,
+        session_id: params.session_id,
+        access_token,
+        paid_at: now,
+      });
     }
 
     // Track event
-    if (session_id) {
-      await supabase.from("events").insert({ session_id, event_name: "purchase_webhook", event_payload: { external_order_id, status, isPaid } });
+    if (params.session_id) {
+      await supabase.from("events").insert({
+        session_id: params.session_id,
+        event_name: "purchase_webhook",
+        event_payload: params,
+      });
     }
 
-    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (e) {
     console.error("webhook error:", e);
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
