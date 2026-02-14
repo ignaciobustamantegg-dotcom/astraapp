@@ -144,20 +144,20 @@ const JourneyMap = () => {
                   className="relative w-[78px] h-[78px] rounded-full flex items-center justify-center cursor-pointer press-scale"
                   style={{
                     background: 'hsl(220, 20%, 12%)',
-                    border: '3px solid hsl(42, 70%, 40%)',
+                    border: '3.5px solid hsl(42, 70%, 40%)',
                     boxShadow: '0 0 20px hsla(42, 80%, 50%, 0.15)',
                   }}
                 >
                   {/* Outer golden ring */}
                   <div
-                    className="absolute inset-[-3px] rounded-full"
+                    className="absolute inset-[-2px] rounded-full"
                     style={{
-                      border: '3px solid hsla(45, 60%, 75%, 0.7)',
+                      border: '3.5px solid hsla(45, 60%, 75%, 0.7)',
                     }}
                   />
                   {/* Inner golden circle */}
                   <div
-                    className="w-[54px] h-[54px] rounded-full flex items-center justify-center"
+                    className="w-[60px] h-[60px] rounded-full flex items-center justify-center"
                     style={{
                       background: 'radial-gradient(circle at center, hsl(45, 100%, 97%), hsl(42, 80%, 65%))',
                       boxShadow: 'inset 0 2px 4px hsla(45, 80%, 90%, 0.5), inset 0 -2px 4px hsla(35, 70%, 35%, 0.2)',
