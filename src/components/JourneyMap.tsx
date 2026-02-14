@@ -162,7 +162,7 @@ const JourneyMap = () => {
                   className="relative w-[78px] h-[78px] rounded-full flex items-center justify-center cursor-pointer press-scale"
                   style={{
                     background: 'hsl(220, 20%, 12%)',
-                    border: '3.5px solid hsl(42, 70%, 40%)',
+                    border: '5px solid hsl(42, 70%, 40%)',
                     boxShadow: '0 0 20px hsla(42, 80%, 50%, 0.15)',
                   }}
                 >
