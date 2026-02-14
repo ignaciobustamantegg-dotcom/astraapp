@@ -167,53 +167,56 @@ const JourneyMap = () => {
                     <IconComponent className="w-5 h-5" style={{ color: 'hsl(35, 50%, 25%)' }} />
                   </div>
                 </button>
-              ) : (
+              ) : status === "unlocked" ? (
                 <button
-                  disabled={status === "locked"}
-                  onClick={() => {
-                    if (status !== "locked") navigate(`/journey/day/${item.day}`);
-                  }}
-                  className={`relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-500 press-scale ${
-                    status === "locked"
-                      ? "opacity-30 cursor-not-allowed"
-                      : "cursor-pointer"
-                  }`}
+                  onClick={() => navigate(`/journey/day/${item.day}`)}
+                  className="relative w-[78px] h-[78px] rounded-full flex items-center justify-center cursor-pointer press-scale"
                   style={{
-                    background: status === "locked"
-                      ? 'hsl(260, 25%, 14%)'
-                      : 'linear-gradient(135deg, hsl(270, 50%, 35%), hsl(260, 40%, 20%))',
-                    boxShadow: status === "unlocked"
-                      ? '0 0 30px hsla(270, 80%, 65%, 0.35), 0 0 60px hsla(270, 70%, 55%, 0.15), inset 0 1px 1px hsla(270, 60%, 80%, 0.1)'
-                      : 'none',
-                    border: status === "locked"
-                      ? '2px solid hsl(260, 20%, 20%)'
-                      : '2px solid hsl(270, 60%, 55%)',
+                    background: 'hsl(220, 20%, 12%)',
+                    border: '3.5px solid hsl(220, 10%, 35%)',
+                    boxShadow: '0 0 20px hsla(42, 80%, 50%, 0.1)',
                   }}
                 >
-                  {status === "unlocked" && (
-                    <motion.div
-                      className="absolute inset-[-4px] rounded-full"
-                      style={{
-                        border: '1.5px solid hsl(270, 70%, 65%)',
-                        opacity: 0.4,
-                      }}
-                      animate={{
-                        scale: [1, 1.12, 1],
-                        opacity: [0.4, 0.15, 0.4],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  )}
-
-                  {status === "locked" ? (
-                    <Lock className="w-5 h-5 text-muted-foreground/50" />
-                  ) : (
-                    <IconComponent className="w-6 h-6 text-primary" />
-                  )}
+                  {/* Animated light ring */}
+                  <motion.div
+                    className="absolute inset-[-3px] rounded-full"
+                    style={{
+                      border: '3px solid transparent',
+                      backgroundImage: 'conic-gradient(from 0deg, transparent 0%, hsla(45, 80%, 75%, 0.8) 15%, transparent 30%, transparent 100%)',
+                      backgroundOrigin: 'border-box',
+                      backgroundClip: 'border-box',
+                      maskImage: 'radial-gradient(farthest-side, transparent calc(100% - 3px), white calc(100% - 3px))',
+                      WebkitMaskImage: 'radial-gradient(farthest-side, transparent calc(100% - 3px), white calc(100% - 3px))',
+                    }}
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                  />
+                  {/* Inner golden circle */}
+                  <div
+                    className="w-[60px] h-[60px] rounded-full flex items-center justify-center"
+                    style={{
+                      background: 'radial-gradient(circle at center, hsl(45, 100%, 97%), hsl(42, 80%, 65%))',
+                      boxShadow: 'inset 0 2px 4px hsla(45, 80%, 90%, 0.5), inset 0 -2px 4px hsla(35, 70%, 35%, 0.2), 0 0 15px hsla(42, 80%, 55%, 0.2)',
+                      border: '2.5px solid hsl(40, 75%, 50%)',
+                    }}
+                  >
+                    <IconComponent className="w-5 h-5" style={{ color: 'hsl(35, 50%, 25%)' }} />
+                  </div>
+                </button>
+              ) : (
+                <button
+                  disabled
+                  className="relative w-[72px] h-[72px] rounded-full flex items-center justify-center opacity-30 cursor-not-allowed"
+                  style={{
+                    background: 'hsl(260, 25%, 14%)',
+                    border: '2px solid hsl(260, 20%, 20%)',
+                  }}
+                >
+                  <Lock className="w-5 h-5 text-muted-foreground/50" />
                 </button>
               )}
 
