@@ -20,6 +20,7 @@ import DayExperience4 from "./pages/DayExperience4";
 import DayExperience5 from "./pages/DayExperience5";
 import DayExperience6 from "./pages/DayExperience6";
 import DayExperience7 from "./pages/DayExperience7";
+import Quiz from "./pages/Quiz";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/plans" element={<Plans />} />
+            <Route path="/quiz" element={<Quiz />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route
