@@ -147,9 +147,14 @@ export type Database = {
       orders: {
         Row: {
           access_token: string | null
+          amount_net: string | null
+          campaignkey: string | null
+          cid: string | null
+          country: string | null
           created_at: string
           customer_email: string | null
           external_order_id: string
+          gclid: string | null
           id: string
           paid_at: string | null
           provider: string
@@ -157,12 +162,22 @@ export type Database = {
           status: string
           token_expires_at: string | null
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           access_token?: string | null
+          amount_net?: string | null
+          campaignkey?: string | null
+          cid?: string | null
+          country?: string | null
           created_at?: string
           customer_email?: string | null
           external_order_id: string
+          gclid?: string | null
           id?: string
           paid_at?: string | null
           provider?: string
@@ -170,12 +185,22 @@ export type Database = {
           status?: string
           token_expires_at?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           access_token?: string | null
+          amount_net?: string | null
+          campaignkey?: string | null
+          cid?: string | null
+          country?: string | null
           created_at?: string
           customer_email?: string | null
           external_order_id?: string
+          gclid?: string | null
           id?: string
           paid_at?: string | null
           provider?: string
@@ -183,6 +208,11 @@ export type Database = {
           status?: string
           token_expires_at?: string | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: [
           {

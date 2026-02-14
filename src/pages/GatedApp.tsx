@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Navigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { verifyToken } from "@/lib/session";
-import { Loader2, Lock } from "lucide-react";
+import { Loader2, Lock, Mail } from "lucide-react";
 
 const GatedApp = () => {
   const [params] = useSearchParams();
   const token = params.get("token") || "";
-  const [state, setState] = useState<"loading" | "valid" | "invalid">("loading");
+  const [state, setState] = useState<"loading" | "valid" | "invalid" | "expired">("loading");
 
   useEffect(() => {
     if (!token) { setState("invalid"); return; }
 
     verifyToken(token).then((res) => {
-      setState(res.ok ? "valid" : "invalid");
+      if (res.ok) setState("valid");
+      else if (res.reason === "expired") setState("expired");
+      else setState("invalid");
     }).catch(() => setState("invalid"));
   }, [token]);
 
@@ -24,20 +26,37 @@ const GatedApp = () => {
     );
   }
 
-  if (state === "invalid") {
+  if (state === "invalid" || state === "expired") {
     return (
       <div className="min-h-screen flex items-center justify-center px-5 bg-gradient-deep">
         <div className="max-w-md w-full text-center animate-fade-in-up">
           <Lock className="w-12 h-12 text-muted-foreground mx-auto mb-6" />
-          <h1 className="text-2xl font-light text-foreground mb-3">Acesso não autorizado</h1>
+          <h1 className="text-2xl font-light text-foreground mb-3">
+            {state === "expired" ? "Acesso expirado" : "Acesso não autorizado"}
+          </h1>
           <p className="text-muted-foreground text-sm mb-6">
-            Seu link de acesso é inválido ou expirou. Faça o quiz e adquira o plano para desbloquear.
+            {state === "expired"
+              ? "Seu link de acesso expirou. Solicite um novo link por email."
+              : "Seu link de acesso é inválido. Faça o quiz e adquira o plano para desbloquear."}
           </p>
+
+          <a
+            href="mailto:suporte@astraapp.com.br?subject=Recuperar%20acesso&body=Olá,%20gostaria%20de%20recuperar%20meu%20acesso%20ao%20conteúdo."
+            className="flex items-center justify-center gap-2 w-full px-8 py-3 rounded-2xl bg-primary text-primary-foreground font-medium glow-button hover:brightness-110 transition-all mb-3"
+          >
+            <Mail className="w-4 h-4" />
+            Recuperar acesso por email
+          </a>
+
           <a
             href="/quiz"
-            className="inline-block px-8 py-3 rounded-2xl bg-primary text-primary-foreground font-medium glow-button hover:brightness-110 transition-all"
+            className="flex items-center justify-center gap-2 w-full px-8 py-3 rounded-2xl border border-border text-secondary-foreground font-medium hover:bg-secondary/50 transition-all mb-3"
           >
             Fazer o Quiz
+          </a>
+
+          <a href="/support" className="block text-muted-foreground text-xs mt-2 underline">
+            Precisa de ajuda?
           </a>
         </div>
       </div>
