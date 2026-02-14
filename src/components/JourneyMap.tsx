@@ -104,13 +104,13 @@ const JourneyMap = () => {
             }}
             animate={{
               filter: [
-                'drop-shadow(0 0 8px hsla(230, 80%, 70%, 0.4))',
-                'drop-shadow(0 0 16px hsla(210, 80%, 70%, 0.7))',
-                'drop-shadow(0 0 8px hsla(230, 80%, 70%, 0.4))',
+                'drop-shadow(0 0 6px hsla(230, 80%, 70%, 0.3)) brightness(1)',
+                'drop-shadow(0 0 14px hsla(0, 0%, 100%, 0.6)) brightness(1.25)',
+                'drop-shadow(0 0 6px hsla(230, 80%, 70%, 0.3)) brightness(1)',
               ],
             }}
             transition={{
-              duration: 3,
+              duration: 2.5,
               repeat: Infinity,
               ease: "easeInOut",
             }}
