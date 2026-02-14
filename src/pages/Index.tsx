@@ -24,17 +24,11 @@ const Index = () => {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           <motion.div
-            className="flex items-center justify-center gap-3"
+            className="flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
           >
-            <h1
-              className="text-4xl text-foreground"
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, letterSpacing: "-0.03em", lineHeight: 1 }}
-            >
-              Astra
-            </h1>
             <div
               className="w-7 h-7 rounded-full"
               style={{
