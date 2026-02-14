@@ -153,20 +153,20 @@ const JourneyMap = () => {
                     <div
                       className="absolute inset-[-5px] rounded-full"
                       style={{
-                        background: "linear-gradient(135deg, hsla(270, 70%, 75%, 0.25), hsla(185, 60%, 60%, 0.2))",
-                        border: "2px solid hsla(270, 60%, 70%, 0.35)",
+                        background: "linear-gradient(135deg, hsla(45, 80%, 60%, 0.25), hsla(35, 70%, 50%, 0.2))",
+                        border: "2px solid hsla(45, 70%, 55%, 0.4)",
                       }}
                     />
                     {/* Main circle */}
                     <div
                       className="absolute inset-0 rounded-full"
                       style={{
-                        background: "linear-gradient(145deg, hsl(270, 55%, 55%), hsl(265, 50%, 42%))",
-                        boxShadow: "0 4px 20px hsla(270, 60%, 55%, 0.3), inset 0 2px 4px hsla(270, 80%, 80%, 0.15)",
+                        background: "linear-gradient(145deg, hsl(42, 65%, 52%), hsl(35, 55%, 40%))",
+                        boxShadow: "0 4px 20px hsla(42, 70%, 50%, 0.3), inset 0 2px 4px hsla(45, 80%, 75%, 0.2)",
                       }}
                     />
                     {/* Check icon */}
-                    <div className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "hsla(0, 0%, 100%, 0.15)" }}>
+                    <div className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "hsla(0, 0%, 100%, 0.18)" }}>
                       <Check className="w-5 h-5" style={{ color: "hsl(0, 0%, 100%)" }} strokeWidth={3} />
                     </div>
                   </>
