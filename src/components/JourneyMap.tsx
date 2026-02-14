@@ -137,20 +137,7 @@ const JourneyMap = () => {
                   status === "locked" ? "text-muted-foreground/40" : ""
                 }`}
                 style={status !== "locked" ? {
-                  color: 'hsl(270, 80%, 75%)',
-                  textShadow: '0 0 8px hsla(270, 80%, 80%, 0.4)',
-                } : undefined}
-                animate={status !== "locked" ? {
-                  textShadow: [
-                    '0 0 8px hsla(270, 80%, 80%, 0.3)',
-                    '0 0 14px hsla(270, 80%, 90%, 0.6)',
-                    '0 0 8px hsla(270, 80%, 80%, 0.3)',
-                  ],
-                } : undefined}
-                transition={status !== "locked" ? {
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
+                  color: 'hsl(0, 0%, 100%)',
                 } : undefined}
               >
                 Dia {item.day}
