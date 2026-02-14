@@ -21,9 +21,9 @@ const DayLoadingScreen = ({ dayNumber, dayTitle, onComplete }: DayLoadingScreenP
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase(1), 600);
-    const t2 = setTimeout(() => setPhase(2), 1800);
-    const t3 = setTimeout(() => onComplete(), 3000);
+    const t1 = setTimeout(() => setPhase(1), 500);
+    const t2 = setTimeout(() => setPhase(2), 1600);
+    const t3 = setTimeout(() => onComplete(), 2700);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [onComplete]);
 
@@ -51,7 +51,7 @@ const DayLoadingScreen = ({ dayNumber, dayTitle, onComplete }: DayLoadingScreenP
             scale: [0.6, 1, 0.85],
             opacity: [0, 1, 0.9],
           }}
-          transition={{ duration: 2.8, ease: "easeInOut" }}
+          transition={{ duration: 2.5, ease: "easeInOut" }}
           className="relative mb-10"
         >
           <div
@@ -78,7 +78,7 @@ const DayLoadingScreen = ({ dayNumber, dayTitle, onComplete }: DayLoadingScreenP
           <motion.div
             initial={{ opacity: 0, rotate: 0 }}
             animate={{ opacity: [0, 0.4, 0.4], rotate: 360 }}
-            transition={{ duration: 3, ease: "linear" }}
+            transition={{ duration: 2.7, ease: "linear" }}
             className="absolute inset-[-12px] rounded-full"
             style={{
               border: "1px solid hsla(270, 60%, 70%, 0.12)",
