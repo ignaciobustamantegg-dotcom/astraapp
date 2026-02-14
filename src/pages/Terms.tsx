@@ -81,11 +81,11 @@ const Terms = () => {
             Em caso de dúvidas sobre estes termos, entre em contato conosco.
           </p>
           <a
-            href="mailto:brendamattos.info@gmail.com"
+            href="mailto:negociossbmarketing@gmail.com"
             className="flex items-center justify-center gap-2 w-full px-6 py-3 rounded-2xl bg-primary text-primary-foreground font-medium glow-button hover:brightness-110 transition-all"
           >
             <Mail className="w-4 h-4" />
-            brendamattos.info@gmail.com
+            negociossbmarketing@gmail.com
           </a>
         </div>
 
