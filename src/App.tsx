@@ -21,6 +21,9 @@ import DayExperience5 from "./pages/DayExperience5";
 import DayExperience6 from "./pages/DayExperience6";
 import DayExperience7 from "./pages/DayExperience7";
 import Quiz from "./pages/Quiz";
+import Checkout from "./pages/Checkout";
+import PostCheckout from "./pages/PostCheckout";
+import GatedApp from "./pages/GatedApp";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,9 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/plans" element={<Plans />} />
             <Route path="/quiz" element={<Quiz />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/post-checkout" element={<PostCheckout />} />
+            <Route path="/app" element={<GatedApp />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
             <Route

@@ -1,5 +1,6 @@
+import { useNavigate } from "react-router-dom";
 import { Unlock, Shield, CreditCard } from "lucide-react";
-import Orbs from "./Orbs";
+import { trackEvent } from "@/lib/session";
 import SocialProofPopup from "./SocialProofPopup";
 import ThermometerGauge from "./ThermometerGauge";
 import BeforeAfter from "./BeforeAfter";
@@ -8,10 +9,14 @@ import BeforeAfterImages from "./BeforeAfterImages";
 import SocialProofAvatars from "./SocialProofAvatars";
 import UrgencyTimer from "./UrgencyTimer";
 
+import Orbs from "./Orbs";
+
 const ResultsScreen = () => {
+  const navigate = useNavigate();
+  
   const handleCheckout = () => {
-    // Placeholder for checkout action
-    console.log("Checkout clicked");
+    trackEvent("click_checkout_from_results");
+    navigate("/checkout");
   };
 
   return (

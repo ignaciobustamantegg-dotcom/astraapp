@@ -1,0 +1,35 @@
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method !== "POST") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
+
+  try {
+    const { session_id, email, whatsapp, utm_source, utm_medium, utm_campaign, utm_content, utm_term, variant, referrer, landing_path, user_agent } = await req.json();
+
+    if (!session_id) return new Response(JSON.stringify({ error: "session_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    if (!email && !whatsapp) return new Response(JSON.stringify({ error: "email or whatsapp required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    // Upsert session
+    await supabase.from("sessions").upsert({ id: session_id, utm_source, utm_medium, utm_campaign, utm_content, utm_term, variant, referrer, landing_path, user_agent }, { onConflict: "id" });
+
+    // Insert lead
+    const { error: leadErr } = await supabase.from("leads").insert({ session_id, email: email || null, whatsapp: whatsapp || null });
+    if (leadErr) throw leadErr;
+
+    // Track event
+    await supabase.from("events").insert({ session_id, event_name: "lead_captured", event_payload: { email: !!email, whatsapp: !!whatsapp } });
+
+    return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  } catch (e) {
+    console.error("lead error:", e);
+    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+});
