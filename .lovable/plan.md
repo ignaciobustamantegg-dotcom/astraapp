@@ -1,16 +1,51 @@
 
-## Cambiar el estilo del boton "Ja tenho uma conta"
+# Integrar Quiz como nueva pantalla
 
-Se reemplazara el boton outline actual por el estilo con gradiente purpura del boton "Continuar" del Dia 1.
+## Resumen
+Se integrara el quiz completo del proyecto "love-pattern-break" como una nueva pantalla dentro de la app Astra, accesible desde una nueva ruta `/quiz`.
 
-### Cambio en `src/pages/Index.tsx`
+## Archivos a copiar desde el ZIP
 
-El boton "Ja tenho uma conta" actualmente usa el componente `Button` con `variant="outline"` y clases de borde/texto. Se cambiara a un `button` nativo (o se ajustaran las clases) con el mismo gradiente y estilo:
+### Componentes del Quiz (17 archivos)
+Se copiaran todos los archivos de `src/components/quiz/` al proyecto:
+- AudioPlayer.tsx
+- BeforeAfter.tsx
+- BeforeAfterImages.tsx
+- BlurredContent.tsx
+- EmailScreen.tsx
+- MiniRelato.tsx
+- Orbs.tsx
+- OrderBump.tsx
+- QuestionScreen.tsx
+- ResultsScreen.tsx
+- SocialProofAvatars.tsx
+- SocialProofPopup.tsx
+- StartScreen.tsx
+- ThermometerGauge.tsx
+- TransitionScreen.tsx
+- UpsellBanner.tsx
+- UrgencyTimer.tsx
 
-- Fondo: `linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))`
-- Clases: `w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide press-scale transition-all duration-300 text-primary-foreground`
-- Se mantiene `rounded-full` para consistencia con el boton superior de la misma pantalla
+### Datos del Quiz (2 archivos)
+- `src/data/encouragements.ts`
+- `src/data/quizQuestions.ts`
 
-### Detalle tecnico
+### Hooks (1 archivo)
+- `src/hooks/useQuizSounds.ts`
 
-Se reemplazara el `<Button variant="outline">` envuelto en `<Link>` por un `<Link>` con un `<button>` estilizado inline, manteniendo la navegacion a `/login`.
+## Nueva pagina
+Se creara `src/pages/Quiz.tsx` basado en la pagina Index/Dashboard del proyecto original, que orquesta todos los componentes del quiz.
+
+## Cambios en archivos existentes
+
+### `src/App.tsx`
+- Importar la nueva pagina Quiz
+- Agregar la ruta `/quiz` (fuera de las rutas protegidas, similar a `/plans`)
+
+## Detalles tecnicos
+
+1. **Extraccion del ZIP**: Se extraeran los archivos del zip y se copiaran a las carpetas correspondientes del proyecto
+2. **Ajuste de imports**: Se verificaran y ajustaran los imports para que sean compatibles con la estructura del proyecto actual (usando alias `@/`)
+3. **Dependencias**: El proyecto ya cuenta con todas las dependencias necesarias (framer-motion, lucide-react, radix-ui, etc.)
+4. **Sin cambios en base de datos**: Esta integracion es puramente frontend, no requiere cambios en el backend
+5. **Ruta publica**: El quiz se agregara como ruta publica (`/quiz`) ya que tipicamente es un punto de entrada para nuevos usuarios
