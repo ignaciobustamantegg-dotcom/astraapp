@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Lock, CheckCircle2, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
+import { Lock, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import JourneyMapSkeleton from "./JourneyMapSkeleton";
@@ -138,61 +138,84 @@ const JourneyMap = () => {
                 Dia {item.day}
               </span>
 
-              <button
-                disabled={status === "locked"}
-                onClick={() => {
-                  if (status !== "locked") navigate(`/journey/day/${item.day}`);
-                }}
-                className={`relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-500 press-scale ${
-                  status === "locked"
-                    ? "opacity-30 cursor-not-allowed"
-                    : "cursor-pointer"
-                }`}
-                style={{
-                  background: status === "locked"
-                    ? 'hsl(260, 25%, 14%)'
-                    : status === "completed"
-                      ? 'linear-gradient(135deg, hsl(270, 45%, 30%), hsl(270, 40%, 22%))'
-                      : 'linear-gradient(135deg, hsl(270, 50%, 35%), hsl(260, 40%, 20%))',
-                  boxShadow: status === "unlocked"
-                    ? '0 0 30px hsla(270, 80%, 65%, 0.35), 0 0 60px hsla(270, 70%, 55%, 0.15), inset 0 1px 1px hsla(270, 60%, 80%, 0.1)'
-                    : status === "completed"
-                      ? '0 0 20px hsla(270, 50%, 60%, 0.2), inset 0 1px 1px hsla(270, 60%, 80%, 0.08)'
-                      : 'none',
-                  border: status === "locked"
-                    ? '2px solid hsl(260, 20%, 20%)'
-                    : status === "unlocked"
-                      ? '2px solid hsl(270, 60%, 55%)'
-                      : '2px solid hsl(270, 40%, 35%)',
-                }}
-              >
-                {status === "unlocked" && (
-                  <motion.div
-                    className="absolute inset-[-4px] rounded-full"
+              {status === "completed" ? (
+                <button
+                  onClick={() => navigate(`/journey/day/${item.day}`)}
+                  className="relative w-[78px] h-[78px] rounded-full flex items-center justify-center cursor-pointer press-scale"
+                  style={{
+                    background: 'hsl(220, 20%, 12%)',
+                    border: '3px solid hsl(42, 70%, 40%)',
+                    boxShadow: '0 0 20px hsla(42, 80%, 50%, 0.15)',
+                  }}
+                >
+                  {/* Outer golden ring */}
+                  <div
+                    className="absolute inset-[-2px] rounded-full"
                     style={{
-                      border: '1.5px solid hsl(270, 70%, 65%)',
-                      opacity: 0.4,
-                    }}
-                    animate={{
-                      scale: [1, 1.12, 1],
-                      opacity: [0.4, 0.15, 0.4],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
+                      border: '2.5px solid hsl(42, 60%, 35%)',
                     }}
                   />
-                )}
+                  {/* Inner golden circle */}
+                  <div
+                    className="w-[54px] h-[54px] rounded-full flex items-center justify-center"
+                    style={{
+                      background: 'linear-gradient(180deg, hsl(45, 70%, 72%), hsl(38, 75%, 55%))',
+                      boxShadow: 'inset 0 2px 4px hsla(45, 80%, 85%, 0.4), inset 0 -2px 4px hsla(35, 70%, 35%, 0.3)',
+                      border: '2.5px solid hsl(40, 75%, 50%)',
+                    }}
+                  >
+                    <IconComponent className="w-5 h-5" style={{ color: 'hsl(35, 50%, 25%)' }} />
+                  </div>
+                </button>
+              ) : (
+                <button
+                  disabled={status === "locked"}
+                  onClick={() => {
+                    if (status !== "locked") navigate(`/journey/day/${item.day}`);
+                  }}
+                  className={`relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-500 press-scale ${
+                    status === "locked"
+                      ? "opacity-30 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  style={{
+                    background: status === "locked"
+                      ? 'hsl(260, 25%, 14%)'
+                      : 'linear-gradient(135deg, hsl(270, 50%, 35%), hsl(260, 40%, 20%))',
+                    boxShadow: status === "unlocked"
+                      ? '0 0 30px hsla(270, 80%, 65%, 0.35), 0 0 60px hsla(270, 70%, 55%, 0.15), inset 0 1px 1px hsla(270, 60%, 80%, 0.1)'
+                      : 'none',
+                    border: status === "locked"
+                      ? '2px solid hsl(260, 20%, 20%)'
+                      : '2px solid hsl(270, 60%, 55%)',
+                  }}
+                >
+                  {status === "unlocked" && (
+                    <motion.div
+                      className="absolute inset-[-4px] rounded-full"
+                      style={{
+                        border: '1.5px solid hsl(270, 70%, 65%)',
+                        opacity: 0.4,
+                      }}
+                      animate={{
+                        scale: [1, 1.12, 1],
+                        opacity: [0.4, 0.15, 0.4],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  )}
 
-                {status === "locked" ? (
-                  <Lock className="w-5 h-5 text-muted-foreground/50" />
-                ) : status === "completed" ? (
-                  <CheckCircle2 className="w-6 h-6 text-primary/80" />
-                ) : (
-                  <IconComponent className="w-6 h-6 text-primary" />
-                )}
-              </button>
+                  {status === "locked" ? (
+                    <Lock className="w-5 h-5 text-muted-foreground/50" />
+                  ) : (
+                    <IconComponent className="w-6 h-6 text-primary" />
+                  )}
+                </button>
+              )}
 
               <p className={`text-center text-[13px] font-medium leading-tight mt-2.5 max-w-[130px] ${
                 status === "locked"
