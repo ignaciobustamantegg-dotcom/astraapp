@@ -1,5 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback } from "react";
 import StartScreen from "@/components/quiz/StartScreen";
 import QuestionScreen from "@/components/quiz/QuestionScreen";
 import TransitionScreen from "@/components/quiz/TransitionScreen";
@@ -7,16 +6,6 @@ import EmailScreen from "@/components/quiz/EmailScreen";
 import ResultsScreen from "@/components/quiz/ResultsScreen";
 import { quizQuestions } from "@/data/quizQuestions";
 import { useQuizSounds } from "@/hooks/useQuizSounds";
-import {
-  getOrCreateSessionId,
-  captureUtms,
-  getUtms,
-  getVariant,
-  storeAnswer,
-  getAnswers,
-  clearAnswers,
-} from "@/lib/session";
-import { submitLead, submitQuiz, trackEvent } from "@/lib/api";
 
 type Screen =
   | { type: "start" }
@@ -29,29 +18,15 @@ type Screen =
 const Quiz = () => {
   const [screen, setScreen] = useState<Screen>({ type: "start" });
   const { playSwoosh } = useQuizSounds();
-  const navigate = useNavigate();
-  const sessionBootstrapped = useRef(false);
-
-  // Bootstrap session on mount
-  useEffect(() => {
-    if (sessionBootstrapped.current) return;
-    sessionBootstrapped.current = true;
-    const sid = getOrCreateSessionId();
-    captureUtms();
-    trackEvent(sid, "view_quiz").catch(console.error);
-  }, []);
 
   const handleStart = useCallback(() => {
     playSwoosh();
-    clearAnswers();
     setScreen({ type: "question", index: 0 });
   }, [playSwoosh]);
 
   const handleAnswer = useCallback(
-    (answerIndex: number) => {
+    (_answerIndex: number) => {
       if (screen.type !== "question") return;
-
-      storeAnswer(screen.index, answerIndex);
       const nextIndex = screen.index + 1;
 
       if (screen.index === 6) {
@@ -76,42 +51,14 @@ const Quiz = () => {
     setScreen({ type: "question", index: 7 });
   }, [playSwoosh]);
 
-  const handleEmailSubmit = useCallback(async (email: string) => {
-    const sid = getOrCreateSessionId();
-    const utms = getUtms();
-    const variant = getVariant();
-
-    try {
-      await submitLead({
-        session_id: sid,
-        email,
-        ...utms,
-        variant: variant || undefined,
-        user_agent: navigator.userAgent,
-      });
-    } catch (e) {
-      console.error("Lead submit error:", e);
-    }
-
+  const handleEmailSubmit = useCallback((email: string) => {
+    console.log("Email captured:", email);
     setScreen({ type: "transition2" });
   }, []);
 
-  const handleTransition2Complete = useCallback(async () => {
-    const sid = getOrCreateSessionId();
-    const answers = getAnswers();
-
-    try {
-      await submitQuiz(sid, answers);
-    } catch (e) {
-      console.error("Quiz submit error:", e);
-    }
-
+  const handleTransition2Complete = useCallback(() => {
     setScreen({ type: "results" });
   }, []);
-
-  const handleCheckout = useCallback(() => {
-    navigate("/checkout");
-  }, [navigate]);
 
   switch (screen.type) {
     case "start":
@@ -143,7 +90,7 @@ const Quiz = () => {
         />
       );
     case "results":
-      return <ResultsScreen onCheckout={handleCheckout} />;
+      return <ResultsScreen />;
   }
 };
 
