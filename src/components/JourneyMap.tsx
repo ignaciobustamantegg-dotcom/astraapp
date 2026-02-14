@@ -150,9 +150,9 @@ const JourneyMap = () => {
                 >
                   {/* Outer golden ring */}
                   <div
-                    className="absolute inset-[-2px] rounded-full"
+                    className="absolute inset-[-3px] rounded-full"
                     style={{
-                      border: '2.5px solid hsl(42, 60%, 35%)',
+                      border: '3px solid hsla(45, 60%, 75%, 0.7)',
                     }}
                   />
                   {/* Inner golden circle */}
