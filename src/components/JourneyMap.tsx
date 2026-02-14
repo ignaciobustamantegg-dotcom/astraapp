@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { Lock, CheckCircle2, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
+import { Lock, Check, Compass, Eye, Layers, Zap, GitBranch, Scale, Gavel } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import JourneyMapSkeleton from "./JourneyMapSkeleton";
@@ -51,7 +51,6 @@ const JourneyMap = () => {
 
   const displayName = profileData?.display_name || user?.email?.split("@")[0] || "";
   const progress = progressData ?? null;
-
   const currentDay = progress?.current_day || 1;
 
   const getDayStatus = (day: number): "completed" | "unlocked" | "locked" => {
@@ -101,7 +100,6 @@ const JourneyMap = () => {
 
       {/* Journey Map */}
       <div className="relative px-3" style={{ height: totalHeight }}>
-        {/* SVG Path */}
         <svg
           ref={pathRef}
           className="absolute inset-0 w-full"
@@ -133,7 +131,7 @@ const JourneyMap = () => {
               }}
             >
               <span className={`text-[10px] font-medium tracking-[0.15em] uppercase mb-2 ${
-                status === "locked" ? "text-muted-foreground/40" : "text-primary/70"
+                status === "locked" ? "text-muted-foreground/30" : status === "completed" ? "text-primary/60" : "text-primary/80"
               }`}>
                 Dia {item.day}
               </span>
@@ -143,63 +141,118 @@ const JourneyMap = () => {
                 onClick={() => {
                   if (status !== "locked") navigate(`/journey/day/${item.day}`);
                 }}
-                className={`relative w-[72px] h-[72px] rounded-full flex items-center justify-center transition-all duration-500 press-scale ${
-                  status === "locked"
-                    ? "opacity-30 cursor-not-allowed"
-                    : "cursor-pointer"
+                className={`relative flex items-center justify-center press-scale ${
+                  status === "locked" ? "cursor-not-allowed" : "cursor-pointer"
                 }`}
-                style={{
-                  background: status === "locked"
-                    ? 'hsl(260, 25%, 14%)'
-                    : status === "completed"
-                      ? 'linear-gradient(135deg, hsl(270, 45%, 30%), hsl(270, 40%, 22%))'
-                      : 'linear-gradient(135deg, hsl(270, 50%, 35%), hsl(260, 40%, 20%))',
-                  boxShadow: status === "unlocked"
-                    ? '0 0 30px hsla(270, 80%, 65%, 0.35), 0 0 60px hsla(270, 70%, 55%, 0.15), inset 0 1px 1px hsla(270, 60%, 80%, 0.1)'
-                    : status === "completed"
-                      ? '0 0 20px hsla(270, 50%, 60%, 0.2), inset 0 1px 1px hsla(270, 60%, 80%, 0.08)'
-                      : 'none',
-                  border: status === "locked"
-                    ? '2px solid hsl(260, 20%, 20%)'
-                    : status === "unlocked"
-                      ? '2px solid hsl(270, 60%, 55%)'
-                      : '2px solid hsl(270, 40%, 35%)',
-                }}
+                style={{ width: 82, height: 82 }}
               >
-                {status === "unlocked" && (
-                  <motion.div
-                    className="absolute inset-[-4px] rounded-full"
-                    style={{
-                      border: '1.5px solid hsl(270, 70%, 65%)',
-                      opacity: 0.4,
-                    }}
-                    animate={{
-                      scale: [1, 1.12, 1],
-                      opacity: [0.4, 0.15, 0.4],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  />
+                {/* === COMPLETED STATE === */}
+                {status === "completed" && (
+                  <>
+                    {/* Outer glow ring */}
+                    <div
+                      className="absolute inset-[-5px] rounded-full"
+                      style={{
+                        background: "linear-gradient(135deg, hsla(270, 70%, 75%, 0.25), hsla(185, 60%, 60%, 0.2))",
+                        border: "2px solid hsla(270, 60%, 70%, 0.35)",
+                      }}
+                    />
+                    {/* Main circle */}
+                    <div
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: "linear-gradient(145deg, hsl(270, 55%, 55%), hsl(265, 50%, 42%))",
+                        boxShadow: "0 4px 20px hsla(270, 60%, 55%, 0.3), inset 0 2px 4px hsla(270, 80%, 80%, 0.15)",
+                      }}
+                    />
+                    {/* Check icon */}
+                    <div className="relative z-10 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: "hsla(0, 0%, 100%, 0.15)" }}>
+                      <Check className="w-5 h-5" style={{ color: "hsl(0, 0%, 100%)" }} strokeWidth={3} />
+                    </div>
+                  </>
                 )}
 
-                {status === "locked" ? (
-                  <Lock className="w-5 h-5 text-muted-foreground/50" />
-                ) : status === "completed" ? (
-                  <CheckCircle2 className="w-6 h-6 text-primary/80" />
-                ) : (
-                  <IconComponent className="w-6 h-6 text-primary" />
+                {/* === UNLOCKED (CURRENT) STATE === */}
+                {status === "unlocked" && (
+                  <>
+                    {/* Animated outer pulse */}
+                    <motion.div
+                      className="absolute inset-[-8px] rounded-full"
+                      style={{
+                        border: "2px solid hsla(270, 70%, 75%, 0.3)",
+                        background: "hsla(270, 60%, 65%, 0.05)",
+                      }}
+                      animate={{
+                        scale: [1, 1.15, 1],
+                        opacity: [0.6, 0.1, 0.6],
+                      }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    {/* Static outer ring */}
+                    <div
+                      className="absolute inset-[-4px] rounded-full"
+                      style={{
+                        border: "2.5px solid hsla(270, 65%, 70%, 0.5)",
+                        background: "transparent",
+                      }}
+                    />
+                    {/* Bright main circle */}
+                    <div
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: "linear-gradient(145deg, hsl(270, 65%, 68%), hsl(265, 55%, 55%))",
+                        boxShadow: "0 0 30px hsla(270, 70%, 65%, 0.4), 0 0 60px hsla(270, 60%, 55%, 0.15), inset 0 2px 6px hsla(270, 80%, 85%, 0.2)",
+                      }}
+                    />
+                    {/* Shimmer overlay */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full overflow-hidden"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    >
+                      <div
+                        className="absolute w-full h-full"
+                        style={{
+                          background: "conic-gradient(from 0deg, transparent 0%, hsla(0, 0%, 100%, 0.08) 15%, transparent 30%)",
+                        }}
+                      />
+                    </motion.div>
+                    {/* Icon */}
+                    <IconComponent className="w-7 h-7 relative z-10" style={{ color: "hsl(0, 0%, 100%)" }} />
+                  </>
+                )}
+
+                {/* === LOCKED STATE === */}
+                {status === "locked" && (
+                  <>
+                    {/* Outer ring */}
+                    <div
+                      className="absolute inset-[-3px] rounded-full"
+                      style={{
+                        border: "2px solid hsla(260, 20%, 22%, 0.8)",
+                        background: "transparent",
+                      }}
+                    />
+                    {/* Dark main circle */}
+                    <div
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        background: "linear-gradient(145deg, hsl(260, 22%, 16%), hsl(260, 25%, 12%))",
+                        boxShadow: "inset 0 2px 6px hsla(260, 30%, 8%, 0.5), inset 0 -1px 3px hsla(260, 20%, 25%, 0.2)",
+                      }}
+                    />
+                    {/* Lock icon */}
+                    <Lock className="w-5 h-5 relative z-10 text-muted-foreground/35" />
+                  </>
                 )}
               </button>
 
               <p className={`text-center text-[13px] font-medium leading-tight mt-2.5 max-w-[130px] ${
                 status === "locked"
-                  ? "text-muted-foreground/30"
+                  ? "text-muted-foreground/25"
                   : status === "completed"
-                    ? "text-foreground/70"
-                    : "text-foreground"
+                    ? "text-foreground/60"
+                    : "text-foreground/90"
               }`}
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
