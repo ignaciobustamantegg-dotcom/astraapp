@@ -1,23 +1,16 @@
 
+## Cambiar el estilo del boton "Ja tenho uma conta"
 
-## Problem
+Se reemplazara el boton outline actual por el estilo con gradiente purpura del boton "Continuar" del Dia 1.
 
-There's too much space between the purple "Continuar" button and the bottom navigation bar. This happens because of stacked spacing:
+### Cambio en `src/pages/Index.tsx`
 
-1. `MainLayout`'s `<main>` has `pb-14` (56px) bottom padding
-2. The button container has `pt-4` (16px) top padding and `pb-2` (8px) bottom padding
+El boton "Ja tenho uma conta" actualmente usa el componente `Button` con `variant="outline"` y clases de borde/texto. Se cambiara a un `button` nativo (o se ajustaran las clases) con el mismo gradiente y estilo:
 
-These combine to push the button far from the navigation bar.
+- Fondo: `linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))`
+- Clases: `w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide press-scale transition-all duration-300 text-primary-foreground`
+- Se mantiene `rounded-full` para consistencia con el boton superior de la misma pantalla
 
-## Solution
+### Detalle tecnico
 
-Two changes needed:
-
-### 1. Remove bottom padding from MainLayout's main element (line 40)
-- Change `pb-14` to `pb-0` on the `<main>` tag, since the Day Experience pages manage their own bottom spacing with the fixed button
-
-### 2. Reduce button container padding in both Day files
-- In `src/pages/DayExperience.tsx` (line 432): change `px-8 pb-2 pt-4` to `px-8 pb-1 pt-2`
-- In `src/pages/DayExperience2.tsx` (same line): apply the identical change
-
-This positions the button snugly above the bottom navigation bar, matching the reference screenshot.
+Se reemplazara el `<Button variant="outline">` envuelto en `<Link>` por un `<Link>` con un `<button>` estilizado inline, manteniendo la navegacion a `/login`.
