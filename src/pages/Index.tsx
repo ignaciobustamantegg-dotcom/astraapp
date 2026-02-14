@@ -13,7 +13,7 @@ const Index = () => {
         alt=""
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
       />
-      <div className="absolute inset-0 bg-background/30 pointer-events-none" />
+      {/* No overlay – imagen clara y brillante */}
 
       {/* Center content: Logo + tagline */}
       <div className="flex-1 flex flex-col items-center justify-center relative z-10">
@@ -54,17 +54,17 @@ const Index = () => {
         transition={{ duration: 0.6, delay: 0.5 }}
       >
         <Link to="/plans" className="block">
-          <Button className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide bg-foreground text-background hover:bg-foreground/90 press-scale">
-            Começar
-          </Button>
-        </Link>
-        <Link to="/login" className="block">
           <button
             className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide press-scale transition-all duration-300 text-primary-foreground"
             style={{ background: 'linear-gradient(135deg, hsl(270, 60%, 65%), hsl(270, 60%, 70%), hsl(275, 55%, 75%))' }}
           >
-            Já tenho uma conta
+            Começar
           </button>
+        </Link>
+        <Link to="/login" className="block">
+          <Button className="w-full h-[52px] rounded-full text-[0.9rem] font-semibold tracking-wide bg-foreground text-background hover:bg-foreground/90 press-scale">
+            Já tenho uma conta
+          </Button>
         </Link>
       </motion.div>
     </div>
