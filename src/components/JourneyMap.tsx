@@ -162,24 +162,24 @@ const JourneyMap = () => {
                   className="relative w-[78px] h-[78px] rounded-full flex items-center justify-center cursor-pointer press-scale"
                   style={{
                     background: 'hsl(220, 20%, 12%)',
-                    border: '3.5px solid hsl(45, 40%, 60%)',
-                    boxShadow: '0 0 20px hsla(45, 50%, 70%, 0.12)',
+                    border: '3.5px solid hsl(42, 70%, 40%)',
+                    boxShadow: '0 0 20px hsla(42, 80%, 50%, 0.15)',
                   }}
                 >
                   {/* Outer golden ring */}
                   <div
                     className="absolute inset-[-2px] rounded-full"
                     style={{
-                      border: '3.5px solid hsla(45, 40%, 80%, 0.6)',
+                      border: '3.5px solid hsla(45, 60%, 75%, 0.7)',
                     }}
                   />
                   {/* Inner golden circle */}
                   <div
                     className="w-[60px] h-[60px] rounded-full flex items-center justify-center"
                     style={{
-                      background: 'radial-gradient(circle at center, hsl(0, 0%, 100%), hsl(45, 50%, 85%))',
-                      boxShadow: 'inset 0 2px 4px hsla(0, 0%, 100%, 0.5), inset 0 -2px 4px hsla(35, 40%, 50%, 0.15)',
-                      border: '2.5px solid hsl(45, 40%, 70%)',
+                      background: 'radial-gradient(circle at center, hsl(45, 100%, 97%), hsl(42, 80%, 65%))',
+                      boxShadow: 'inset 0 2px 4px hsla(45, 80%, 90%, 0.5), inset 0 -2px 4px hsla(35, 70%, 35%, 0.2)',
+                      border: '2.5px solid hsl(40, 75%, 50%)',
                     }}
                   >
                     <IconComponent className="w-5 h-5" style={{ color: 'hsl(35, 50%, 25%)' }} />
@@ -217,9 +217,9 @@ const JourneyMap = () => {
                   <div
                     className="w-[60px] h-[60px] rounded-full flex items-center justify-center"
                     style={{
-                      background: 'radial-gradient(circle at center, hsl(0, 0%, 100%), hsl(45, 50%, 85%))',
-                      boxShadow: 'inset 0 2px 4px hsla(0, 0%, 100%, 0.5), inset 0 -2px 4px hsla(35, 40%, 50%, 0.15), 0 0 15px hsla(42, 60%, 70%, 0.15)',
-                      border: '2.5px solid hsl(45, 40%, 70%)',
+                      background: 'radial-gradient(circle at center, hsl(45, 100%, 97%), hsl(42, 80%, 65%))',
+                      boxShadow: 'inset 0 2px 4px hsla(45, 80%, 90%, 0.5), inset 0 -2px 4px hsla(35, 70%, 35%, 0.2), 0 0 15px hsla(42, 80%, 55%, 0.2)',
+                      border: '2.5px solid hsl(40, 75%, 50%)',
                     }}
                   >
                     <IconComponent className="w-5 h-5" style={{ color: 'hsl(35, 50%, 25%)' }} />
