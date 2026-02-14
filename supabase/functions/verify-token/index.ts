@@ -29,6 +29,17 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ ok: false, reason: "expired" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
+    // Log access granted
+    if (data.session_id) {
+      try {
+        await supabase.from("events").insert({
+          session_id: data.session_id,
+          event_name: "app_access_granted",
+          event_payload: { external_order_id: data.external_order_id },
+        });
+      } catch {}
+    }
+
     return new Response(JSON.stringify({ ok: true, session_id: data.session_id, external_order_id: data.external_order_id }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("verify-token error:", e);
