@@ -191,7 +191,7 @@ const JourneyMap = () => {
                   className="relative w-[78px] h-[78px] rounded-full flex items-center justify-center cursor-pointer press-scale"
                   style={{
                     background: 'hsl(220, 20%, 12%)',
-                    border: '3.5px solid hsl(220, 10%, 35%)',
+                    border: '5px solid hsl(220, 10%, 35%)',
                     boxShadow: '0 0 20px hsla(42, 80%, 50%, 0.1)',
                   }}
                 >
@@ -219,7 +219,7 @@ const JourneyMap = () => {
                     style={{
                       background: 'radial-gradient(circle at center, hsl(45, 100%, 97%), hsl(42, 80%, 65%))',
                       boxShadow: 'inset 0 2px 4px hsla(45, 80%, 90%, 0.5), inset 0 -2px 4px hsla(35, 70%, 35%, 0.2), 0 0 15px hsla(42, 80%, 55%, 0.2)',
-                      border: '2.5px solid hsl(40, 75%, 50%)',
+                      border: '3.5px solid hsl(40, 75%, 50%)',
                     }}
                   >
                     <IconComponent className="w-5 h-5" style={{ color: 'hsl(35, 50%, 25%)' }} />
