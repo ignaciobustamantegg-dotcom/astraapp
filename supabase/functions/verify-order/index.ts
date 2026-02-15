@@ -5,6 +5,13 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function badReq(code: string) {
+  return new Response(JSON.stringify({ error: code }), {
+    status: 400,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "GET") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
@@ -12,7 +19,13 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const order_id = url.searchParams.get("order_id");
-    if (!order_id) return new Response(JSON.stringify({ error: "order_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+    if (!order_id || typeof order_id !== "string" || order_id.length > 64 || order_id.length < 1) {
+      return badReq("invalid_order_id");
+    }
+
+    // Reject if contains suspicious chars (only allow alphanumeric, dash, underscore)
+    if (!/^[\w\-]+$/.test(order_id)) return badReq("invalid_order_id");
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -27,6 +40,6 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ ok: false, status: data?.status || "not_found" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("verify-order error:", e);
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: "internal_error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });

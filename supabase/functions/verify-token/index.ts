@@ -5,6 +5,13 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function badReq(code: string) {
+  return new Response(JSON.stringify({ error: code }), {
+    status: 400,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "GET") return new Response("Method not allowed", { status: 405, headers: corsHeaders });
@@ -12,7 +19,13 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const token = url.searchParams.get("token");
-    if (!token) return new Response(JSON.stringify({ error: "token required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
+    if (!token || typeof token !== "string" || token.length > 128 || token.length < 8) {
+      return badReq("invalid_token");
+    }
+
+    // Only allow alphanumeric tokens
+    if (!/^[\w]+$/.test(token)) return badReq("invalid_token");
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
@@ -24,12 +37,10 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ ok: false }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Check expiration
     if (data.token_expires_at && new Date(data.token_expires_at) < new Date()) {
       return new Response(JSON.stringify({ ok: false, reason: "expired" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // Log access granted
     if (data.session_id) {
       try {
         await supabase.from("events").insert({
@@ -37,12 +48,12 @@ Deno.serve(async (req) => {
           event_name: "app_access_granted",
           event_payload: { external_order_id: data.external_order_id },
         });
-      } catch {}
+      } catch { /* non-critical */ }
     }
 
     return new Response(JSON.stringify({ ok: true, session_id: data.session_id, external_order_id: data.external_order_id }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("verify-token error:", e);
-    return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    return new Response(JSON.stringify({ error: "internal_error" }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 });
