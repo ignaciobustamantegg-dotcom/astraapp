@@ -21,7 +21,7 @@ import DayExperience5 from "./pages/DayExperience5";
 import DayExperience6 from "./pages/DayExperience6";
 import DayExperience7 from "./pages/DayExperience7";
 import Quiz from "./pages/Quiz";
-import Checkout from "./pages/Checkout";
+
 import PostCheckout from "./pages/PostCheckout";
 import GatedApp from "./pages/GatedApp";
 import Support from "./pages/Support";
@@ -41,7 +41,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/plans" element={<Plans />} />
             <Route path="/quiz" element={<Quiz />} />
-            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/checkout" element={<Navigate to="/quiz" replace />} />
             <Route path="/post-checkout" element={<PostCheckout />} />
             <Route path="/app" element={<GatedApp />} />
             <Route path="/support" element={<Support />} />
