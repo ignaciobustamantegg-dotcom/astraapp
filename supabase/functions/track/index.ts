@@ -12,7 +12,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f
 const ALLOWED_EVENTS = new Set([
   "page_view", "start_quiz", "answer", "complete_quiz",
   "submit_lead_step1", "submit_lead_step2",
-  "view_checkout", "initiate_checkout", "purchase", "error",
+  "view_quiz", "view_checkout", "initiate_checkout", "purchase", "error",
   "quiz_started", "quiz_completed", "lead_captured",
   "checkout_redirect", "app_access_granted", "webhook_received",
   "order_paid", "token_generated",
