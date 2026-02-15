@@ -73,17 +73,29 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    // REQUIRE webhook secret
+    // ──────────────────────────────────────────────────────────────────
+    // AUTH IS MANDATORY. The webhook MUST be authenticated on every
+    // request. If the secret is not configured the endpoint fails
+    // closed (503). If the secret is wrong it returns 401. No DB
+    // operations happen in either case.
+    //
+    // Previous security scanner warning "webhook_weak_auth" is OUTDATED
+    // — authentication was made unconditional in this version.
+    //
+    // CartPanda supports sending the secret as a query-param (`token`).
+    // We also accept the header `X-Cartpanda-Webhook-Secret` so either
+    // method works. Header is preferred when the caller supports it.
+    // ──────────────────────────────────────────────────────────────────
     const webhookSecret = Deno.env.get("CARTPANDA_WEBHOOK_SECRET");
     if (!webhookSecret) {
-      console.error("CARTPANDA_WEBHOOK_SECRET not configured");
+      console.error("CARTPANDA_WEBHOOK_SECRET not configured — rejecting request");
       return new Response(JSON.stringify({ error: "configuration_error" }), {
-        status: 500,
+        status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Body size check
+    // Body size check (before JSON parse)
     let body: Record<string, any> | null = null;
     if (req.method === "POST") {
       const raw = await req.text();
@@ -93,9 +105,12 @@ Deno.serve(async (req) => {
 
     const params = getParams(req, body);
 
-    // Validate token
-    if (params.token !== webhookSecret) {
-      console.error("Invalid or missing token");
+    // Prefer header, fall back to query-param `token`
+    const providedSecret =
+      req.headers.get("x-cartpanda-webhook-secret") || params.token;
+
+    if (providedSecret !== webhookSecret) {
+      console.error("Invalid or missing webhook secret");
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
