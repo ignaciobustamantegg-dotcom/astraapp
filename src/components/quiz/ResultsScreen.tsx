@@ -15,7 +15,7 @@ const ResultsScreen = () => {
   const navigate = useNavigate();
   
   const handleCheckout = () => {
-    trackEvent("click_checkout_from_results");
+    trackEvent("checkout_redirect");
     navigate("/checkout");
   };
 

@@ -15,7 +15,12 @@ const PostCheckout = () => {
   const orderId = params.get("order_id") || params.get("orderId") || "";
 
   const startPolling = useCallback(() => {
-    if (!orderId) { setStatus("timeout"); return; }
+    if (!orderId) {
+      console.warn("PostCheckout: order_id missing from query params");
+      setErrorMsg("ID do pedido não encontrado na URL.");
+      setStatus("error");
+      return;
+    }
     setStatus("polling");
     setErrorMsg("");
 

@@ -1,6 +1,8 @@
 const SESSION_KEY = "quiz_session_id";
 const UTM_KEY = "quiz_utms";
 const VARIANT_KEY = "quiz_variant";
+const CLICK_ID_KEY = "quiz_click_ids";
+const CLICK_ID_PARAMS = ["fbclid", "ttclid", "gclid", "cid", "campaignkey"];
 
 export function getSessionId(): string {
   let sid = localStorage.getItem(SESSION_KEY);
@@ -21,7 +23,22 @@ export function captureUtms(): Record<string, string> {
   if (Object.keys(utms).length > 0) {
     localStorage.setItem(UTM_KEY, JSON.stringify(utms));
   }
+
+  // Capture click IDs for ads attribution
+  const clickIds: Record<string, string> = {};
+  for (const key of CLICK_ID_PARAMS) {
+    const val = params.get(key);
+    if (val) clickIds[key] = val;
+  }
+  if (Object.keys(clickIds).length > 0) {
+    localStorage.setItem(CLICK_ID_KEY, JSON.stringify(clickIds));
+  }
+
   return { ...JSON.parse(localStorage.getItem(UTM_KEY) || "{}"), ...utms };
+}
+
+export function getClickIds(): Record<string, string> {
+  return JSON.parse(localStorage.getItem(CLICK_ID_KEY) || "{}");
 }
 
 export function getVariant(): string {
