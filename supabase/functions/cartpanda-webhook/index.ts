@@ -155,6 +155,8 @@ Deno.serve(async (req) => {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     const now = new Date().toISOString();
+    // Set token expiration to 1 year from purchase for lifecycle management
+    const tokenExpiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
     const eventMeta = { external_order_id, email };
 
     await logEvent(supabase, session_id, "webhook_received", { ...eventMeta, status: rawStatus });
@@ -177,13 +179,17 @@ Deno.serve(async (req) => {
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         campaignkey, cid, gclid, country, amount_net,
       };
-      if (!existing.access_token) updates.access_token = access_token;
+      if (!existing.access_token) {
+        updates.access_token = access_token;
+        updates.token_expires_at = tokenExpiresAt;
+      }
       await supabase.from("orders").update(updates).eq("id", existing.id);
     } else {
       access_token = generateToken();
       await supabase.from("orders").insert({
         external_order_id, status: "paid", customer_email: email,
         session_id, access_token, paid_at: now,
+        token_expires_at: tokenExpiresAt,
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         campaignkey, cid, gclid, country, amount_net,
       });
