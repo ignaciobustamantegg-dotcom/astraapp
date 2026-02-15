@@ -7,6 +7,10 @@ const CHECKOUT_URL = import.meta.env.VITE_CARTPANDA_CHECKOUT_URL || localStorage
 
 const Checkout = () => {
   useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.warn("[Checkout] VITE_CARTPANDA_CHECKOUT_URL:", import.meta.env.VITE_CARTPANDA_CHECKOUT_URL ? "SET" : "NOT SET");
+      console.warn("[Checkout] Resolved CHECKOUT_URL:", CHECKOUT_URL || "(empty)");
+    }
     trackEvent("view_checkout");
   }, []);
 
