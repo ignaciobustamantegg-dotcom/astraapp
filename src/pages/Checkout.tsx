@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getSessionId, trackEvent } from "@/lib/session";
+import { getSessionId, trackEvent, getClickIds } from "@/lib/session";
 import Orbs from "@/components/quiz/Orbs";
 import { ExternalLink } from "lucide-react";
 
@@ -11,18 +11,26 @@ const Checkout = () => {
   }, []);
 
   const handleCheckout = () => {
-    const sid = getSessionId();
-    const utms = JSON.parse(localStorage.getItem("quiz_utms") || "{}");
-    const params = new URLSearchParams({ sid, ...utms });
-    const url = CHECKOUT_URL ? `${CHECKOUT_URL}?${params.toString()}` : "";
-
-    if (!url) {
+    if (!CHECKOUT_URL) {
       alert("URL de checkout não configurada.");
       return;
     }
 
-    trackEvent("click_checkout", { url });
-    window.location.href = url;
+    const url = new URL(CHECKOUT_URL);
+    url.searchParams.set("sid", getSessionId());
+
+    const utms = JSON.parse(localStorage.getItem("quiz_utms") || "{}");
+    for (const [key, val] of Object.entries(utms)) {
+      if (val) url.searchParams.set(key, val as string);
+    }
+
+    const clickIds = getClickIds();
+    for (const [key, val] of Object.entries(clickIds)) {
+      if (val) url.searchParams.set(key, val as string);
+    }
+
+    trackEvent("initiate_checkout", { url: url.toString() });
+    window.location.href = url.toString();
   };
 
   return (

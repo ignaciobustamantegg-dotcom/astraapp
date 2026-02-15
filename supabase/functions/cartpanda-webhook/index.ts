@@ -8,7 +8,16 @@ const corsHeaders = {
 const MAX_BODY_BYTES = 32 * 1024;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const VALID_STATUSES = new Set(["paid", "approved", "refunded", "chargeback", "canceled", "pending"]);
+const VALID_STATUSES = new Set(["paid", "approved", "completed", "refunded", "chargeback", "canceled", "cancelled", "pending"]);
+
+function mapStatus(raw: string | null): string {
+  if (!raw) return "pending";
+  const s = raw.toLowerCase();
+  if (["paid", "approved", "completed"].includes(s)) return "paid";
+  if (["refunded", "chargeback"].includes(s)) return "refunded";
+  if (["canceled", "cancelled"].includes(s)) return "canceled";
+  return "pending";
+}
 
 function generateToken(length = 48): string {
   const arr = new Uint8Array(length);
@@ -167,37 +176,49 @@ Deno.serve(async (req) => {
       .eq("external_order_id", external_order_id)
       .maybeSingle();
 
-    let access_token: string;
+    const mappedStatus = mapStatus(rawStatus);
+    let access_token: string | null = null;
 
     if (existing) {
-      access_token = existing.access_token || generateToken();
       const updates: Record<string, any> = {
-        status: "paid",
+        status: mappedStatus,
         updated_at: now,
-        paid_at: now,
         customer_email: email || undefined,
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         campaignkey, cid, gclid, country, amount_net,
       };
-      if (!existing.access_token) {
-        updates.access_token = access_token;
-        updates.token_expires_at = tokenExpiresAt;
+
+      if (mappedStatus === "paid") {
+        access_token = existing.access_token || generateToken();
+        updates.paid_at = now;
+        if (!existing.access_token) {
+          updates.access_token = access_token;
+          updates.token_expires_at = tokenExpiresAt;
+        }
+      } else if (mappedStatus === "refunded" || mappedStatus === "canceled") {
+        updates.access_token = null;
+        updates.token_expires_at = null;
       }
+
       await supabase.from("orders").update(updates).eq("id", existing.id);
     } else {
-      access_token = generateToken();
+      if (mappedStatus === "paid") {
+        access_token = generateToken();
+      }
       await supabase.from("orders").insert({
-        external_order_id, status: "paid", customer_email: email,
-        session_id, access_token, paid_at: now,
-        token_expires_at: tokenExpiresAt,
+        external_order_id, status: mappedStatus, customer_email: email,
+        session_id,
+        access_token,
+        paid_at: mappedStatus === "paid" ? now : null,
+        token_expires_at: mappedStatus === "paid" ? tokenExpiresAt : null,
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         campaignkey, cid, gclid, country, amount_net,
       });
     }
 
-    await logEvent(supabase, session_id, "order_paid", eventMeta);
-    if (!existing?.access_token) {
-      await logEvent(supabase, session_id, "token_generated", { ...eventMeta, token_prefix: access_token.slice(0, 8) });
+    await logEvent(supabase, session_id, mappedStatus === "paid" ? "order_paid" : `order_${mappedStatus}`, eventMeta);
+    if (mappedStatus === "paid" && !existing?.access_token) {
+      await logEvent(supabase, session_id, "token_generated", { ...eventMeta, token_prefix: access_token!.slice(0, 8) });
     }
 
     return new Response(JSON.stringify({ success: true }), {
