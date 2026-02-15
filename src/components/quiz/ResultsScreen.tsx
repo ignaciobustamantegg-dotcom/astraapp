@@ -1,6 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { Unlock, Shield, CreditCard } from "lucide-react";
-import { trackEvent } from "@/lib/session";
+import { trackEvent, getSessionId, getClickIds } from "@/lib/session";
 import SocialProofPopup from "./SocialProofPopup";
 import ThermometerGauge from "./ThermometerGauge";
 import BeforeAfter from "./BeforeAfter";
@@ -11,12 +10,30 @@ import UrgencyTimer from "./UrgencyTimer";
 
 import Orbs from "./Orbs";
 
+const CHECKOUT_URL = import.meta.env.VITE_CARTPANDA_CHECKOUT_URL || "";
+
 const ResultsScreen = () => {
-  const navigate = useNavigate();
-  
   const handleCheckout = () => {
-    trackEvent("checkout_redirect");
-    navigate("/checkout");
+    if (!CHECKOUT_URL) {
+      alert("URL de checkout não configurada.");
+      return;
+    }
+
+    const url = new URL(CHECKOUT_URL);
+    url.searchParams.set("sid", getSessionId());
+
+    const utms = JSON.parse(localStorage.getItem("quiz_utms") || "{}");
+    for (const [key, val] of Object.entries(utms)) {
+      if (val) url.searchParams.set(key, val as string);
+    }
+
+    const clickIds = getClickIds();
+    for (const [key, val] of Object.entries(clickIds)) {
+      if (val) url.searchParams.set(key, val as string);
+    }
+
+    trackEvent("initiate_checkout", { url: url.toString() });
+    window.location.href = url.toString();
   };
 
   return (
