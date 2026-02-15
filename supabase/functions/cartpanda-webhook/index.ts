@@ -5,10 +5,28 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const MAX_BODY_BYTES = 32 * 1024;
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const VALID_STATUSES = new Set(["paid", "approved", "refunded", "chargeback", "canceled", "pending"]);
+
 function generateToken(length = 48): string {
   const arr = new Uint8Array(length);
   crypto.getRandomValues(arr);
   return Array.from(arr, (b) => b.toString(36).padStart(2, "0")).join("").slice(0, length);
+}
+
+function badReq(code: string) {
+  return new Response(JSON.stringify({ error: code }), {
+    status: 400,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function safeStr(val: unknown, max: number): string | null {
+  if (val === undefined || val === null) return null;
+  if (typeof val !== "string" && typeof val !== "number") return null;
+  return String(val).slice(0, max);
 }
 
 function getParams(req: Request, body: Record<string, any> | null): Record<string, string | null> {
@@ -55,41 +73,77 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    // REQUIRE webhook secret
+    const webhookSecret = Deno.env.get("CARTPANDA_WEBHOOK_SECRET");
+    if (!webhookSecret) {
+      console.error("CARTPANDA_WEBHOOK_SECRET not configured");
+      return new Response(JSON.stringify({ error: "configuration_error" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Body size check
     let body: Record<string, any> | null = null;
     if (req.method === "POST") {
-      try { body = await req.json(); } catch { /* fallback to query params */ }
+      const raw = await req.text();
+      if (raw.length > MAX_BODY_BYTES) return badReq("body_too_large");
+      try { body = JSON.parse(raw); } catch { /* fallback to query params */ }
     }
 
     const params = getParams(req, body);
-    console.log("Webhook params:", JSON.stringify(params));
 
     // Validate token
-    const webhookSecret = Deno.env.get("CARTPANDA_WEBHOOK_SECRET");
-    if (webhookSecret && params.token !== webhookSecret) {
+    if (params.token !== webhookSecret) {
       console.error("Invalid or missing token");
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const external_order_id = params.order_id;
-    if (!external_order_id) {
-      return new Response(JSON.stringify({ error: "Missing order_id" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Validate order_id
+    const external_order_id = safeStr(params.order_id, 64);
+    if (!external_order_id) return badReq("missing_order_id");
+
+    // Validate email format if provided
+    let email = safeStr(params.email, 254);
+    if (email) {
+      email = email.trim().toLowerCase();
+      if (!EMAIL_RE.test(email)) email = null;
     }
+
+    // Validate status if provided
+    const rawStatus = safeStr(params.status, 32);
+    if (rawStatus && !VALID_STATUSES.has(rawStatus.toLowerCase())) {
+      return badReq("invalid_status");
+    }
+
+    // Validate session_id format if provided
+    const session_id = safeStr(params.session_id, 128);
+    if (session_id && !UUID_RE.test(session_id)) {
+      return badReq("invalid_session_id");
+    }
+
+    // Sanitize remaining fields
+    const utm_source = safeStr(params.utm_source, 250);
+    const utm_medium = safeStr(params.utm_medium, 250);
+    const utm_campaign = safeStr(params.utm_campaign, 250);
+    const utm_term = safeStr(params.utm_term, 250);
+    const utm_content = safeStr(params.utm_content, 250);
+    const campaignkey = safeStr(params.campaignkey, 250);
+    const cid = safeStr(params.cid, 250);
+    const gclid = safeStr(params.gclid, 250);
+    const country = safeStr(params.country, 64);
+    const amount_net = safeStr(params.amount_net, 32);
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     const now = new Date().toISOString();
-    const eventMeta = { external_order_id, email: params.email };
+    const eventMeta = { external_order_id, email };
 
-    // Log webhook received
-    await logEvent(supabase, params.session_id, "webhook_received", { ...eventMeta, raw_params: params });
+    await logEvent(supabase, session_id, "webhook_received", { ...eventMeta, status: rawStatus });
 
-    // Idempotent upsert: check existing order
     const { data: existing } = await supabase
       .from("orders")
       .select("id, access_token, status")
@@ -99,52 +153,30 @@ Deno.serve(async (req) => {
     let access_token: string;
 
     if (existing) {
-      // Keep existing token (idempotency)
       access_token = existing.access_token || generateToken();
       const updates: Record<string, any> = {
         status: "paid",
         updated_at: now,
         paid_at: now,
-        customer_email: params.email || undefined,
-        utm_source: params.utm_source,
-        utm_medium: params.utm_medium,
-        utm_campaign: params.utm_campaign,
-        utm_term: params.utm_term,
-        utm_content: params.utm_content,
-        campaignkey: params.campaignkey,
-        cid: params.cid,
-        gclid: params.gclid,
-        country: params.country,
-        amount_net: params.amount_net,
+        customer_email: email || undefined,
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        campaignkey, cid, gclid, country, amount_net,
       };
       if (!existing.access_token) updates.access_token = access_token;
       await supabase.from("orders").update(updates).eq("id", existing.id);
     } else {
       access_token = generateToken();
       await supabase.from("orders").insert({
-        external_order_id,
-        status: "paid",
-        customer_email: params.email,
-        session_id: params.session_id,
-        access_token,
-        paid_at: now,
-        utm_source: params.utm_source,
-        utm_medium: params.utm_medium,
-        utm_campaign: params.utm_campaign,
-        utm_term: params.utm_term,
-        utm_content: params.utm_content,
-        campaignkey: params.campaignkey,
-        cid: params.cid,
-        gclid: params.gclid,
-        country: params.country,
-        amount_net: params.amount_net,
+        external_order_id, status: "paid", customer_email: email,
+        session_id, access_token, paid_at: now,
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        campaignkey, cid, gclid, country, amount_net,
       });
     }
 
-    // Log lifecycle events
-    await logEvent(supabase, params.session_id, "order_paid", eventMeta);
+    await logEvent(supabase, session_id, "order_paid", eventMeta);
     if (!existing?.access_token) {
-      await logEvent(supabase, params.session_id, "token_generated", { ...eventMeta, token_prefix: access_token.slice(0, 8) });
+      await logEvent(supabase, session_id, "token_generated", { ...eventMeta, token_prefix: access_token.slice(0, 8) });
     }
 
     return new Response(JSON.stringify({ success: true }), {
@@ -153,7 +185,7 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("webhook error:", e);
-    return new Response(JSON.stringify({ error: e.message }), {
+    return new Response(JSON.stringify({ error: "internal_error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
