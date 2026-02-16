@@ -133,12 +133,20 @@ const DayExperience = () => {
 
     try {
       const now = new Date().toISOString();
+      const { data: current } = await supabase
+        .from("audit_progress")
+        .select("current_day")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      const updateData: Record<string, any> = { day_1_completed_at: now };
+      if (!current || current.current_day < 2) {
+        updateData.current_day = 2;
+      }
+
       await supabase
         .from("audit_progress")
-        .update({
-          day_1_completed_at: now,
-          current_day: 2,
-        })
+        .update(updateData)
         .eq("user_id", user.id);
 
       queryClient.invalidateQueries({ queryKey: ["audit_progress", user.id] });
