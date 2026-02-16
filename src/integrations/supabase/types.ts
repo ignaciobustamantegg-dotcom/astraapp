@@ -19,18 +19,25 @@ export type Database = {
           created_at: string
           current_day: number
           day_1_completed_at: string | null
+          day_1_rating: number | null
           day_1_started_at: string | null
           day_2_completed_at: string | null
+          day_2_rating: number | null
           day_2_started_at: string | null
           day_3_completed_at: string | null
+          day_3_rating: number | null
           day_3_started_at: string | null
           day_4_completed_at: string | null
+          day_4_rating: number | null
           day_4_started_at: string | null
           day_5_completed_at: string | null
+          day_5_rating: number | null
           day_5_started_at: string | null
           day_6_completed_at: string | null
+          day_6_rating: number | null
           day_6_started_at: string | null
           day_7_completed_at: string | null
+          day_7_rating: number | null
           day_7_started_at: string | null
           id: string
           updated_at: string
@@ -40,18 +47,25 @@ export type Database = {
           created_at?: string
           current_day?: number
           day_1_completed_at?: string | null
+          day_1_rating?: number | null
           day_1_started_at?: string | null
           day_2_completed_at?: string | null
+          day_2_rating?: number | null
           day_2_started_at?: string | null
           day_3_completed_at?: string | null
+          day_3_rating?: number | null
           day_3_started_at?: string | null
           day_4_completed_at?: string | null
+          day_4_rating?: number | null
           day_4_started_at?: string | null
           day_5_completed_at?: string | null
+          day_5_rating?: number | null
           day_5_started_at?: string | null
           day_6_completed_at?: string | null
+          day_6_rating?: number | null
           day_6_started_at?: string | null
           day_7_completed_at?: string | null
+          day_7_rating?: number | null
           day_7_started_at?: string | null
           id?: string
           updated_at?: string
@@ -61,18 +75,25 @@ export type Database = {
           created_at?: string
           current_day?: number
           day_1_completed_at?: string | null
+          day_1_rating?: number | null
           day_1_started_at?: string | null
           day_2_completed_at?: string | null
+          day_2_rating?: number | null
           day_2_started_at?: string | null
           day_3_completed_at?: string | null
+          day_3_rating?: number | null
           day_3_started_at?: string | null
           day_4_completed_at?: string | null
+          day_4_rating?: number | null
           day_4_started_at?: string | null
           day_5_completed_at?: string | null
+          day_5_rating?: number | null
           day_5_started_at?: string | null
           day_6_completed_at?: string | null
+          day_6_rating?: number | null
           day_6_started_at?: string | null
           day_7_completed_at?: string | null
+          day_7_rating?: number | null
           day_7_started_at?: string | null
           id?: string
           updated_at?: string
@@ -111,6 +132,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      journal_entries: {
+        Row: {
+          content: string
+          created_at: string
+          day_number: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          day_number: number
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          day_number?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       leads: {
         Row: {

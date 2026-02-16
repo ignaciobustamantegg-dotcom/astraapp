@@ -13,13 +13,6 @@ const PLANS: { id: PlanId; name: string; price: string; subtitle: string }[] = [
   { id: "lifetime", name: "Vitalício", price: "$99.990", subtitle: "pagamento único" },
 ];
 
-// Placeholder checkout URLs — replace with real CartPanda links
-const CHECKOUT_URLS: Record<string, string> = {
-  weekly: "https://cartpanda.com/checkout/weekly",
-  "weekly-trial": "https://cartpanda.com/checkout/weekly-trial",
-  annual: "https://cartpanda.com/checkout/annual",
-  lifetime: "https://cartpanda.com/checkout/lifetime",
-};
 
 const Plans = () => {
   const navigate = useNavigate();
@@ -27,15 +20,12 @@ const Plans = () => {
   const [trialEnabled, setTrialEnabled] = useState(false);
 
   const handleContinue = () => {
-    const key = selectedPlan === "weekly" && trialEnabled ? "weekly-trial" : selectedPlan;
-    const checkoutUrl = CHECKOUT_URLS[key];
-
     localStorage.setItem(
       "astra_pending_plan",
       JSON.stringify({ plan: selectedPlan, trial: trialEnabled })
     );
 
-    window.location.href = checkoutUrl;
+    navigate("/quiz");
   };
 
   const ctaLabel =
