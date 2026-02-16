@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface DayLoadingScreenProps {
@@ -17,7 +17,7 @@ const DAY_TITLES: Record<number, string> = {
   7: "Sua Nova Perspectiva",
 };
 
-const DayLoadingScreen = ({ dayNumber, dayTitle, onComplete }: DayLoadingScreenProps) => {
+const DayLoadingScreen = forwardRef<HTMLDivElement, DayLoadingScreenProps>(({ dayNumber, dayTitle, onComplete }, ref) => {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
@@ -30,6 +30,7 @@ const DayLoadingScreen = ({ dayNumber, dayTitle, onComplete }: DayLoadingScreenP
   return (
     <AnimatePresence>
       <motion.div
+        ref={ref}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -120,7 +121,9 @@ const DayLoadingScreen = ({ dayNumber, dayTitle, onComplete }: DayLoadingScreenP
       </motion.div>
     </AnimatePresence>
   );
-};
+});
+
+DayLoadingScreen.displayName = "DayLoadingScreen";
 
 export { DAY_TITLES };
 export default DayLoadingScreen;

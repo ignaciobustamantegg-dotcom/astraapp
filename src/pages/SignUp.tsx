@@ -79,6 +79,7 @@ const SignUp = () => {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Seu nome"
+              required
               className="h-12 bg-transparent border-border/60 rounded-xl text-base text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -123,8 +124,8 @@ const SignUp = () => {
 
           <p className="text-xs text-muted-foreground text-center leading-relaxed">
             Ao criar uma conta, você aceita os{" "}
-            <span className="text-primary font-semibold">Termos de uso</span> e a{" "}
-            <span className="text-primary font-semibold">Política de privacidade</span>.
+            <a href="/terms" className="text-primary font-semibold underline underline-offset-2">Termos de uso</a> e a{" "}
+            <a href="/privacy" className="text-primary font-semibold underline underline-offset-2">Política de privacidade</a>.
           </p>
 
           <Button
