@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star } from "lucide-react";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import DayLoadingScreen, { DAY_TITLES } from "@/components/DayLoadingScreen";
+import { useJournal } from "@/hooks/useJournal";
 
 type ScreenLine = {
   text: string;
@@ -111,21 +112,10 @@ const DayExperience2 = () => {
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(true);
   const [currentScreen, setCurrentScreen] = useState(0);
-  const [journalText, setJournalText] = useState("");
+  const { journalText, setJournalText, saveJournal } = useJournal(user?.id, 2);
   const [showCompletion, setShowCompletion] = useState(false);
   const [rating, setRating] = useState(0);
   const handleLoadingComplete = useCallback(() => setIsLoading(false), []);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(`astra_day2_journal_${user?.id}`);
-    if (saved) setJournalText(saved);
-  }, [user?.id]);
-
-  useEffect(() => {
-    if (journalText && user?.id) {
-      localStorage.setItem(`astra_day2_journal_${user.id}`, journalText);
-    }
-  }, [journalText, user?.id]);
 
   const progress = ((currentScreen + 1) / TOTAL_SCREENS) * 100;
 
@@ -139,6 +129,7 @@ const DayExperience2 = () => {
 
   const handleComplete = async () => {
     if (!user) return;
+    await saveJournal();
     try {
       const now = new Date().toISOString();
       const { data: current } = await supabase
