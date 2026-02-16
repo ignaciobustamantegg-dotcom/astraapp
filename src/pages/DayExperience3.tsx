@@ -94,7 +94,10 @@ const DayExperience3 = () => {
     if (!user) return;
     try {
       const now = new Date().toISOString();
-      await supabase.from("audit_progress").update({ day_3_completed_at: now, current_day: 4 }).eq("user_id", user.id);
+      const { data: current } = await supabase.from("audit_progress").select("current_day").eq("user_id", user.id).maybeSingle();
+      const updateData: Record<string, any> = { day_3_completed_at: now };
+      if (!current || current.current_day < 4) updateData.current_day = 4;
+      await supabase.from("audit_progress").update(updateData).eq("user_id", user.id);
       queryClient.invalidateQueries({ queryKey: ["audit_progress", user.id] });
     } catch (e) { console.error("Error completing day:", e); }
     setShowCompletion(true);

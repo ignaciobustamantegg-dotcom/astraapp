@@ -88,7 +88,7 @@ const DayExperience6 = () => {
   useEffect(() => { if (journalText && user?.id) localStorage.setItem(`astra_day6_journal_${user.id}`, journalText); }, [journalText, user?.id]);
   const progress = ((currentScreen + 1) / TOTAL_SCREENS) * 100;
   const handleContinue = () => { if (currentScreen < TOTAL_SCREENS - 1) setCurrentScreen((prev) => prev + 1); else handleComplete(); };
-  const handleComplete = async () => { if (!user) return; try { const now = new Date().toISOString(); await supabase.from("audit_progress").update({ day_6_completed_at: now, current_day: 7 }).eq("user_id", user.id); queryClient.invalidateQueries({ queryKey: ["audit_progress", user.id] }); } catch (e) { console.error("Error completing day:", e); } setShowCompletion(true); };
+  const handleComplete = async () => { if (!user) return; try { const now = new Date().toISOString(); const { data: current } = await supabase.from("audit_progress").select("current_day").eq("user_id", user.id).maybeSingle(); const updateData: Record<string, any> = { day_6_completed_at: now }; if (!current || current.current_day < 7) updateData.current_day = 7; await supabase.from("audit_progress").update(updateData).eq("user_id", user.id); queryClient.invalidateQueries({ queryKey: ["audit_progress", user.id] }); } catch (e) { console.error("Error completing day:", e); } setShowCompletion(true); };
   const screen = SCREENS[currentScreen];
 
   if (isLoading) {
