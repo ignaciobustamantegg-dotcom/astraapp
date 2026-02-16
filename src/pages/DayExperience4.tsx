@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star } from "lucide-react";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import DayLoadingScreen, { DAY_TITLES } from "@/components/DayLoadingScreen";
+import { useJournal } from "@/hooks/useJournal";
 
 type ScreenLine = { text: string; style?: "serif-lead" | "serif-close" | "body" | "spacer" | "highlight-start" | "highlight-end" };
 type Screen = | { type: "text"; lines: ScreenLine[]; button: string } | { type: "journal"; title: string; prompt: string; hint: string; button: string };
@@ -73,13 +74,14 @@ const TOTAL_SCREENS = SCREENS.length;
 const DayExperience4 = () => {
   const navigate = useNavigate(); const { user } = useAuth(); const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(true);
-  const [currentScreen, setCurrentScreen] = useState(0); const [journalText, setJournalText] = useState(""); const [showCompletion, setShowCompletion] = useState(false); const [rating, setRating] = useState(0);
+  const [currentScreen, setCurrentScreen] = useState(0);
+  const { journalText, setJournalText, saveJournal } = useJournal(user?.id, 4);
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [rating, setRating] = useState(0);
   const handleLoadingComplete = useCallback(() => setIsLoading(false), []);
-  useEffect(() => { const saved = localStorage.getItem(`astra_day4_journal_${user?.id}`); if (saved) setJournalText(saved); }, [user?.id]);
-  useEffect(() => { if (journalText && user?.id) localStorage.setItem(`astra_day4_journal_${user.id}`, journalText); }, [journalText, user?.id]);
   const progress = ((currentScreen + 1) / TOTAL_SCREENS) * 100;
   const handleContinue = () => { if (currentScreen < TOTAL_SCREENS - 1) setCurrentScreen((prev) => prev + 1); else handleComplete(); };
-  const handleComplete = async () => { if (!user) return; try { const now = new Date().toISOString(); const { data: current } = await supabase.from("audit_progress").select("current_day").eq("user_id", user.id).maybeSingle(); const updateData: Record<string, any> = { day_4_completed_at: now }; if (!current || current.current_day < 5) updateData.current_day = 5; await supabase.from("audit_progress").update(updateData).eq("user_id", user.id); queryClient.invalidateQueries({ queryKey: ["audit_progress", user.id] }); } catch (e) { console.error("Error completing day:", e); } setShowCompletion(true); };
+  const handleComplete = async () => { if (!user) return; await saveJournal(); try { const now = new Date().toISOString(); const { data: current } = await supabase.from("audit_progress").select("current_day").eq("user_id", user.id).maybeSingle(); const updateData: Record<string, any> = { day_4_completed_at: now }; if (!current || current.current_day < 5) updateData.current_day = 5; await supabase.from("audit_progress").update(updateData).eq("user_id", user.id); queryClient.invalidateQueries({ queryKey: ["audit_progress", user.id] }); } catch (e) { console.error("Error completing day:", e); } setShowCompletion(true); };
   const screen = SCREENS[currentScreen];
 
   if (isLoading) {
