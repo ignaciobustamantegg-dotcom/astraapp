@@ -45,13 +45,14 @@ const Profile = () => {
       {/* Avatar */}
       <div className="flex flex-col items-center mb-8">
         <div
-          className="w-20 h-20 rounded-full flex items-center justify-center mb-3"
+          className="w-20 h-20 rounded-full flex items-center justify-center mb-3 shadow-lg shadow-primary/20"
           style={{
-            background: "linear-gradient(135deg, hsl(270, 45%, 30%), hsl(270, 40%, 22%))",
-            border: "2px solid hsl(270, 40%, 35%)",
+            background: "linear-gradient(135deg, hsl(270, 60%, 65%), hsl(275, 55%, 75%))",
           }}
         >
-          <User className="w-8 h-8 text-primary" />
+          <span className="text-2xl font-bold text-white">
+            {displayName?.charAt(0)?.toUpperCase() || "?"}
+          </span>
         </div>
         <h1 className="text-xl font-medium text-foreground">{displayName}</h1>
       </div>
