@@ -101,6 +101,42 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_forecasts: {
+        Row: {
+          created_at: string
+          emotion: string | null
+          energy: string | null
+          forecast_date: string
+          forecast_text: string | null
+          guide: string | null
+          id: string
+          intention: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emotion?: string | null
+          energy?: string | null
+          forecast_date?: string
+          forecast_text?: string | null
+          guide?: string | null
+          id?: string
+          intention?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emotion?: string | null
+          energy?: string | null
+          forecast_date?: string
+          forecast_text?: string | null
+          guide?: string | null
+          id?: string
+          intention?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string

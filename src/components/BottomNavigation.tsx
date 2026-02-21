@@ -1,9 +1,10 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Home, Map, MessageCircle, User } from "lucide-react";
+import { Home, Map, Sparkles, MessageCircle, User } from "lucide-react";
 
 const tabs = [
   { to: "/home", label: "Início", icon: Home },
   { to: "/journey", label: "Jornada", icon: Map },
+  { to: "/forecast", label: "Previsão", icon: Sparkles },
   { to: "/chat", label: "Chat", icon: MessageCircle },
   { to: "/profile", label: "Perfil", icon: User },
 ];
