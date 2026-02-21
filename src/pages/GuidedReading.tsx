@@ -185,30 +185,30 @@ const GuidedReading = () => {
                     }`}
                     style={{ fontWeight: pIdx === 0 ? 700 : 300 }}
                   >
-                    {showHighlight
-                      ? para.words.map((word, wIdx) => {
-                          const globalIdx = para.start + wIdx;
-                          return (
-                            <span
-                              key={wIdx}
-                              className={`inline mr-1 transition-all duration-200 ${
-                                globalIdx < currentWordIndex
-                                  ? "opacity-100"
-                                  : globalIdx === currentWordIndex
-                                  ? "text-primary opacity-100"
-                                  : "opacity-30"
-                              }`}
-                              style={
-                                globalIdx === currentWordIndex
-                                  ? { textShadow: "0 0 8px hsl(var(--primary) / 0.5)" }
-                                  : undefined
-                              }
-                            >
-                              {word}
-                            </span>
-                          );
-                        })
-                      : para.words.join(" ")}
+                    {para.words.map((word, wIdx) => {
+                      const globalIdx = para.start + wIdx;
+                      const isActive = showHighlight && globalIdx === currentWordIndex;
+                      const isPast = !showHighlight || showAllText || globalIdx < currentWordIndex;
+                      return (
+                        <span
+                          key={wIdx}
+                          className={`transition-all duration-200 ${
+                            isPast
+                              ? "opacity-100"
+                              : isActive
+                              ? "text-primary opacity-100"
+                              : "opacity-30"
+                          }`}
+                          style={
+                            isActive
+                              ? { textShadow: "0 0 8px hsl(var(--primary) / 0.5)" }
+                              : undefined
+                          }
+                        >
+                          {word}{" "}
+                        </span>
+                      );
+                    })}
                   </motion.p>
                 ))}
             </motion.div>
