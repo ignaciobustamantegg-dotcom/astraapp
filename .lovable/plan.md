@@ -1,64 +1,74 @@
 
 
-# Pre-generate Guided Reading Audio (Save ElevenLabs Credits)
+# Fix: Audio de Previsao Diaria -- Desactivar Autoplay + Cachear Audio
 
-## Problem
-Every time any user opens a guided reading, the app calls the ElevenLabs API, generating a new audio file and consuming credits. Since the guided reading content is static (same text for everyone), this is wasteful.
+## Problemas Identificados
 
-## Solution
-Store pre-generated audio files in Lovable Cloud storage and serve them directly to users. The ElevenLabs API is called only once per reading (during generation), not on every visit.
+1. **Autoplay**: Cada vez que se monta `ForecastResult`, el `useEffect` (linea 40-90) llama a ElevenLabs y ejecuta `audio.play()` automaticamente.
+2. **Doble voz**: Si el componente se monta dos veces (React StrictMode o re-render de AnimatePresence), se crean dos instancias de audio simultaneas.
+3. **Creditos extra**: Cada visita a la pantalla genera una nueva llamada a ElevenLabs (no hay cache). Un usuario que refresca 5 veces gasta 5x creditos.
 
-## How It Works
+## Solucion
 
-1. **Create a storage bucket** called `guided-readings-audio` to hold the MP3 files.
-2. **Create a backend function** (`generate-reading-audio`) that:
-   - Takes a reading ID
-   - Checks if the audio already exists in storage
-   - If not, calls ElevenLabs to generate it and uploads it to storage
-   - Returns the public URL
-3. **Update the guided reading page** to load audio directly from the storage URL instead of calling ElevenLabs every time.
-4. **Trigger generation once** for each reading (you can do this manually or via a simple admin action).
+### 1. Desactivar autoplay (ForecastResult.tsx)
 
-## Technical Details
+- Cambiar el estado inicial de `audioState` de `"loading"` a `"idle"` (nuevo estado).
+- Eliminar el `useEffect` que llama automaticamente a `fetchAndPlay()`.
+- Mostrar el texto completo desde el inicio (sin esperar audio).
+- Agregar un boton "Ouvir previsao" que inicia la carga y reproduccion del audio solo cuando el usuario lo presiona.
 
-### 1. Database Migration
-- Create a public storage bucket `guided-readings-audio` with a policy allowing public read access.
+### 2. Cachear audio en storage (daily-forecast-audio edge function)
 
-### 2. New Edge Function: `generate-reading-audio`
-- Accepts `{ readingId: string }`
-- Looks up reading content from `guidedReadings.ts` data (hardcoded in the function or passed as text)
-- Checks if `guided-readings-audio/{readingId}.mp3` already exists in storage
-- If missing: calls ElevenLabs, uploads the resulting MP3 to storage
-- Returns the public URL of the audio file
+- Modificar la funcion `daily-forecast-audio` para:
+  - Recibir un `userId` y `forecastDate` adicionales (ademas de text/guide).
+  - Antes de llamar a ElevenLabs, verificar si ya existe un archivo en el bucket `guided-readings-audio` con path `forecasts/{userId}/{date}.mp3`.
+  - Si existe: devolver el archivo desde storage directamente.
+  - Si no existe: generar el audio con ElevenLabs, subirlo a storage, y luego devolverlo.
+- El frontend pasara el token de auth para extraer el userId en el backend.
 
-### 3. Update `src/pages/GuidedReading.tsx`
-- Instead of calling `daily-forecast-audio` with the full text, fetch the audio directly from the storage bucket URL: `{SUPABASE_URL}/storage/v1/object/public/guided-readings-audio/{id}.mp3`
-- If the file doesn't exist yet (404), fall back to calling `generate-reading-audio` to create it on-the-fly, then play the result.
-- After the first generation, all subsequent visits (by any user) use the cached file -- zero ElevenLabs credits consumed.
+### 3. Prevenir doble voz (ForecastResult.tsx)
 
-### 4. Data Flow
+- Al hacer el audio on-demand (con boton), se elimina la posibilidad de doble instancia por mount/remount.
+- Adicionalmente, agregar una ref `isFetchingRef` para evitar llamadas duplicadas si el usuario hace doble click.
+
+## Detalle Tecnico
+
+### ForecastResult.tsx -- Cambios clave
 
 ```text
-User opens /reading/intuicao
-  |
-  v
-Try loading audio from storage bucket
-  |
-  +-- Found? --> Play directly (no API call)
-  |
-  +-- Not found? --> Call generate-reading-audio
-                       |
-                       v
-                   Call ElevenLabs (once)
-                       |
-                       v
-                   Upload MP3 to storage
-                       |
-                       v
-                   Return URL --> Play audio
+Estado inicial: "idle" (texto visible, sin audio)
+                     |
+       Usuario presiona "Ouvir previsao"
+                     |
+              Estado: "loading" (spinner en boton)
+                     |
+         Fetch audio desde edge function
+         (que primero busca en cache/storage)
+                     |
+              Estado: "playing" (word highlight activo)
+                     |
+         Termina -> "ended" | Pausa -> "paused"
 ```
 
-### Result
-- Each guided reading audio is generated exactly **once** across all users.
-- All subsequent plays load a static MP3 file from storage -- instant, free, and fast.
-- The daily forecast remains dynamic (generated per user per day) as intended.
+- Estado `"idle"`: muestra texto completo + boton de play. Sin llamada a ningun API.
+- Estado `"loading"`: boton con spinner mientras se carga el audio.
+- Estados `"playing"`, `"paused"`, `"ended"`: igual que ahora pero iniciados por el usuario.
+- Estado `"error"`: texto visible, boton de reintentar.
+
+### daily-forecast-audio/index.ts -- Cache en storage
+
+- Usar `createClient` con `SUPABASE_SERVICE_ROLE_KEY` para acceder a storage.
+- Path del cache: `forecasts/{userId}/{YYYY-MM-DD}.mp3`.
+- Flujo:
+  1. Verificar si existe en storage bucket `guided-readings-audio`.
+  2. Si existe: descargar y devolver como `audio/mpeg`.
+  3. Si no existe: llamar ElevenLabs, subir resultado a storage, devolver audio.
+- Requiere recibir auth header para extraer userId, o recibirlo como parametro.
+
+### Resultado
+
+- El audio nunca suena automaticamente al entrar a la pantalla.
+- El audio de cada previsao diaria se genera maximo UNA vez por usuario por dia.
+- No hay posibilidad de doble voz porque la reproduccion es manual.
+- Los creditos de ElevenLabs se consumen solo en la primera escucha del dia.
+
