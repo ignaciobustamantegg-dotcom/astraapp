@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { Home, Map, Sparkles, MessageCircle, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const tabs = [
   { to: "/home", label: "Início", icon: Home },
@@ -35,22 +36,34 @@ const BottomNavigation = () => {
                 className="flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] transition-all duration-200"
               >
                 <div className="relative">
-                  {isActive && (
-                    <div
-                      className="absolute -inset-3 rounded-full pointer-events-none"
-                      style={{
-                        background:
-                          "radial-gradient(circle, hsl(270 80% 65% / 0.2) 0%, transparent 70%)",
-                      }}
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        key="glow"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="absolute -inset-3 rounded-full pointer-events-none"
+                        style={{
+                          background:
+                            "radial-gradient(circle, hsl(270 80% 65% / 0.2) 0%, transparent 70%)",
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
+                  <motion.div
+                    animate={isActive ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.35, ease: [0.34, 1.56, 0.64, 1] }}
+                  >
+                    <Icon
+                      className={`w-5 h-5 transition-colors duration-200 ${
+                        isActive
+                          ? "text-primary drop-shadow-[0_0_6px_hsl(270_60%_70%/0.5)]"
+                          : "text-muted-foreground"
+                      }`}
                     />
-                  )}
-                  <Icon
-                    className={`w-5 h-5 transition-all duration-200 ${
-                      isActive
-                        ? "text-primary drop-shadow-[0_0_6px_hsl(270_60%_70%/0.5)]"
-                        : "text-muted-foreground"
-                    }`}
-                  />
+                  </motion.div>
                 </div>
                 <span
                   className={`text-[10px] font-medium tracking-wide transition-all duration-200 ${
