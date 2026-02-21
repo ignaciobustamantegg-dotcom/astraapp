@@ -305,18 +305,21 @@ export type Database = {
           completed_at: string
           id: string
           session_id: string
+          user_id: string | null
         }
         Insert: {
           answers_json: Json
           completed_at?: string
           id?: string
           session_id: string
+          user_id?: string | null
         }
         Update: {
           answers_json?: Json
           completed_at?: string
           id?: string
           session_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
