@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+
 import { Unlock, Shield, CreditCard } from "lucide-react";
 import { trackEvent, getSessionId, getClickIds } from "@/lib/session";
 import SocialProofPopup from "./SocialProofPopup";
@@ -14,16 +14,6 @@ import Orbs from "./Orbs";
 const CHECKOUT_URL = import.meta.env.VITE_CARTPANDA_CHECKOUT_URL || "https://www.mindapps.store/checkout/207418029:1?subscription=3988";
 
 const ResultsScreen = () => {
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://assets.mycartpanda.com/cartx-ecomm-ui-assets/js/cpsales.js";
-    script.type = "text/javascript";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   const handleCheckout = () => {
     if (!CHECKOUT_URL) {
