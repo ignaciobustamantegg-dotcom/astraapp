@@ -22,6 +22,7 @@ import DayExperience5 from "./pages/DayExperience5";
 import DayExperience6 from "./pages/DayExperience6";
 import DayExperience7 from "./pages/DayExperience7";
 import Quiz from "./pages/Quiz";
+import Chat from "./pages/Chat";
 
 import PostCheckout from "./pages/PostCheckout";
 import CreateAccount from "./pages/CreateAccount";
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/journey/day/5" element={<DayExperience5 />} />
               <Route path="/journey/day/6" element={<DayExperience6 />} />
               <Route path="/journey/day/7" element={<DayExperience7 />} />
+              <Route path="/chat" element={<Chat />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Navigate to="/journey" replace />} />
             </Route>
