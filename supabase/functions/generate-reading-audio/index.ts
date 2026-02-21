@@ -51,6 +51,24 @@ const READINGS: Record<string, { guide: string; paragraphs: string[] }> = {
       "Dentro desse silêncio, você vai encontrar algo que estava lá o tempo todo: a sua própria sabedoria.",
     ],
   },
+  soltar: {
+    guide: "rafael",
+    paragraphs: [
+      "Você carrega mais do que deveria.",
+      "Expectativas que não são suas. Culpas que alguém depositou em você. Medos que herdou sem perceber.",
+      "E esse peso, mesmo invisível, cansa. Ocupa espaço. Rouba leveza.",
+      "Soltar não é abandonar. Não é fingir que não importa. É reconhecer que nem tudo que você sente é seu para resolver.",
+      "Pense agora: existe algo que você carrega que não escolheu? Uma cobrança, uma mágoa, uma responsabilidade que nunca foi sua?",
+      "Dê um nome a isso. Não precisa ser perfeito. Apenas reconheça.",
+      "Agora imagine que esse peso tem forma — talvez uma pedra, talvez uma mala velha. Você o segura há tanto tempo que seus dedos já se moldaram a ele.",
+      "Mas seus dedos podem abrir. Devagar, com gentileza.",
+      "Soltar é um ato de coragem, não de fraqueza. É dizer: eu mereço caminhar mais leve.",
+      "Respire fundo. A cada expiração, imagine essa carga se dissolvendo no ar.",
+      "Você não precisa resolver tudo. Você não precisa carregar tudo.",
+      "O que é verdadeiramente seu permanece. O resto pode ir.",
+      "E quando suas mãos estiverem livres, você vai perceber: elas sempre estiveram prontas para receber algo melhor.",
+    ],
+  },
 };
 
 const BUCKET = "guided-readings-audio";
