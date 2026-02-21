@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import forecastHeroBg from "@/assets/forecast-hero-bg.jpg";
 import readingIntuition from "@/assets/reading-intuition.jpg";
 import readingSilence from "@/assets/reading-silence.jpg";
+import readingSoltar from "@/assets/reading-soltar.jpg";
 import { GUIDED_READINGS } from "@/data/guidedReadings";
 
 interface ForecastResultProps {
@@ -18,6 +19,7 @@ const stripMarkdown = (md: string) =>
 const READING_IMAGES: Record<string, string> = {
   "reading-intuition": readingIntuition,
   "reading-silence": readingSilence,
+  "reading-soltar": readingSoltar,
 };
 
 const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
