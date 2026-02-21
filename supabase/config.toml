@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.daily-forecast-audio]
 verify_jwt = false
+
+[functions.generate-reading-audio]
+verify_jwt = false
