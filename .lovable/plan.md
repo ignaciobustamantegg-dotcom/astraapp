@@ -1,74 +1,99 @@
 
 
-## Plan: Creación de cuenta post-checkout con email pre-rellenado
+## Plan: Rediseno de /home con resultados dinamicos del quiz
 
-### Contexto actual
-- El usuario completa el quiz, ingresa su email (que ya se guarda en la tabla `leads`), ve los resultados, y es redirigido al checkout de Cartpanda.
-- Tras el pago, llega a `/post-checkout?order_id=X`, que hace polling hasta confirmar el pago y actualmente redirige a `/app?token=...` (una pagina con token temporal).
-- Las rutas protegidas (`/home`, `/journey`, `/profile`) requieren una cuenta Supabase Auth real.
-- **Estos dos flujos estan desconectados.** El comprador no tiene cuenta.
+### Situacion actual
 
-### Leads
-Los emails del quiz **ya se guardan** en la tabla `leads` vinculados al `session_id`. No hace falta cambiar nada para eso.
-
-### Nuevo flujo propuesto
-
-```text
-Quiz -> Email (guardado en leads) -> Resultados -> Cartpanda
-  -> /post-checkout?order_id=X (polling)
-  -> Pago confirmado
-  -> /create-account?email=X&order_id=Y (NUEVA PAGINA)
-  -> Usuario crea contrasena (email pre-rellenado, no editable)
-  -> Cuenta creada automaticamente
-  -> Redirigido a /home
-```
+- Las respuestas del quiz **ya se guardan** en la tabla `quiz_submissions` con el formato `{0: 2, 1: 1, 2: 0, ...}` donde la clave es el indice de la pregunta y el valor es el indice de la respuesta seleccionada.
+- Estan vinculadas a un `session_id` (generado en localStorage), pero **no hay vinculo** entre `session_id` y `user_id`.
+- La pagina `/home` actual es estatica: muestra un texto fijo sin usar las respuestas del quiz.
 
 ### Cambios necesarios
 
-#### 1. Modificar la edge function `verify-order`
-- Ademas de devolver `{ ok: true, token }`, tambien devolver el `customer_email` de la orden.
-- Esto permite que el frontend sepa que email usar para pre-rellenar.
+#### 1. Vincular quiz con usuario (migracion de BD)
 
-#### 2. Modificar `PostCheckout.tsx`
-- Cuando el pago es confirmado, en vez de redirigir a `/app?token=...`, redirigir a `/create-account?email=EMAIL&token=TOKEN`.
-- El email viene de la respuesta de `verify-order`.
+Agregar columna `user_id` (uuid, nullable) a la tabla `quiz_submissions` para poder consultar las respuestas del quiz desde la cuenta autenticada.
 
-#### 3. Crear nueva pagina `/create-account` (`src/pages/CreateAccount.tsx`)
-- Pagina con el mismo estilo visual del resto de la app (fondo oscuro, Orbs, etc.).
-- Muestra un mensaje de felicitaciones por la compra.
-- Campo de email pre-rellenado y deshabilitado (solo lectura), tomado del query param.
-- Campo de contrasena (con toggle mostrar/ocultar).
-- Campo de nombre (display_name).
-- Boton "Criar minha conta".
-- Al hacer submit:
-  - Llama a `supabase.auth.signUp({ email, password, options: { data: { display_name } } })`.
-  - Si el registro es exitoso, vincula la orden con el `user_id` (opcional, via edge function).
-  - Redirige a `/home`.
+#### 2. Vincular session al crear cuenta
 
-#### 4. Configurar auto-confirm para emails
-- Como el usuario ya verifico su email al ingresarlo en el quiz y acaba de pagar, tiene sentido activar auto-confirm para que no tenga que verificar el email de nuevo y pueda acceder inmediatamente.
-- Se configurara via la herramienta de auth de Lovable Cloud.
+En `CreateAccount.tsx`, despues del signup exitoso, hacer un UPDATE en `quiz_submissions` para asignar el `user_id` a las submissions que pertenezcan al `session_id` actual (que esta en localStorage).
 
-#### 5. Agregar ruta en `App.tsx`
-- Agregar `<Route path="/create-account" element={<CreateAccount />} />` como ruta publica.
+#### 3. Sistema de etiquetado + texto dinamico (combinacion de opciones 2 y 3)
 
-#### 6. Vincular orden con usuario (opcional pero recomendado)
-- Agregar columna `user_id` a la tabla `orders` para vincular la compra con la cuenta creada.
-- Crear una edge function `link-order` o hacerlo directamente tras el signup exitoso.
+Crear un archivo `src/data/quizProfile.ts` que:
+
+- Define etiquetas para cada respuesta de cada pregunta (ej: pregunta 5, opcion 0 = "frio_indisponivel")
+- Tiene una funcion `buildProfile(answers)` que:
+  - Recorre las respuestas
+  - Acumula etiquetas
+  - Determina un "perfil dominante" basado en las mas frecuentes
+  - Genera textos dinamicos usando las palabras exactas del quiz
+- Define plantillas de texto que usan variables como `{status_amoroso}`, `{patron_dominante}`, `{mayor_miedo}`, etc.
+
+#### 4. Redisenar `/home` (CreateAccount -> Home)
+
+La nueva pagina `/home` sera:
+
+```
+Seccion 1: Titulo personalizado
+"Seu Perfil: [Nombre del arquetipo generado]"
+Subtitulo con frase de impacto basada en respuestas
+
+Seccion 2: Resumo personalizado
+Parrafo que combina las respuestas elegidas usando las mismas palabras del quiz.
+Ejemplo: "Voce se identifica como [status_amoroso]. Seu padrao dominante
+e atrair [perfil_homem]. Voce relatou que [como_termina]."
+
+Seccion 3: Pontos marcados
+Bloque visual con los puntos principales detectados:
+- "Padrao de repeticao: [respuesta pregunta 12]"
+- "Medo principal: [respuesta pregunta 11]"
+- "Intuicao: [respuesta pregunta 13]"
+- "Bloqueio energetico: [respuesta pregunta 14]"
+
+Seccion 4: CTA
+Boton "Comecar minha jornada de desbloqueio" -> /journey
+```
+
+#### 5. Hook personalizado `useQuizProfile`
+
+Crear `src/hooks/useQuizProfile.ts` que:
+- Consulta `quiz_submissions` filtrado por `user_id` del usuario autenticado
+- Usa `buildProfile()` para procesar las respuestas
+- Retorna el perfil procesado (titulo, textos, etiquetas, puntos clave)
 
 ### Seccion tecnica
 
-**Archivos a modificar:**
-- `supabase/functions/verify-order/index.ts` - agregar `customer_email` a la respuesta
-- `src/pages/PostCheckout.tsx` - cambiar redireccion de `/app?token=` a `/create-account?email=&token=`
-- `src/App.tsx` - agregar ruta `/create-account`
+**Migracion de BD:**
+- `ALTER TABLE quiz_submissions ADD COLUMN user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL;`
+- `CREATE INDEX idx_quiz_submissions_user_id ON quiz_submissions(user_id);`
+- Agregar politica RLS para que usuarios autenticados puedan leer sus propias submissions
 
 **Archivos a crear:**
-- `src/pages/CreateAccount.tsx` - nueva pagina de creacion de cuenta
+- `src/data/quizProfile.ts` - logica de etiquetado, perfiles y generacion de texto dinamico
+- `src/hooks/useQuizProfile.ts` - hook para obtener y procesar las respuestas del quiz
 
-**Migracion de base de datos:**
-- Agregar columna `user_id` (uuid, nullable) a la tabla `orders` con foreign key a `auth.users(id)`
+**Archivos a modificar:**
+- `src/pages/Home.tsx` - rediseno completo con resultados dinamicos
+- `src/pages/CreateAccount.tsx` - agregar vinculacion de session_id -> user_id en quiz_submissions tras signup
 
-**Configuracion:**
-- Activar auto-confirm de emails en el sistema de autenticacion
+**Mapa de etiquetas por pregunta (ejemplos clave):**
+
+| Pregunta | Respuesta | Etiqueta |
+|----------|-----------|----------|
+| P2 (status amoroso) | "Solteira e exausta" | `solteira_exausta` |
+| P2 | "Presa em uma situacao" | `situacao_enrolada` |
+| P5 (perfil homem) | "O Frio/Indisponivel" | `frio_indisponivel` |
+| P5 | "O Promessa" | `promessa` |
+| P6 (como termina) | "Ghosting" | `ghosting` |
+| P11 (mayor miedo) | "Medo de ser abandonada" | `medo_abandono` |
+| P14 (bloqueio) | "Sinto que minha energia esta travada" | `energia_travada` |
+
+**Generacion de texto:**
+Se usaran las palabras exactas de las opciones del quiz para construir frases como:
+- "Voce relatou que se sente *solteira e exausta de tentar*"
+- "Seu padrao e atrair o perfil *Frio/Indisponivel: nunca demonstra o que sente*"
+- "Voce identificou que *sempre ve os sinais, mas finge que nao viu*"
+
+Esto crea el efecto de reconocimiento inmediato ("es exactamente asi!").
 
