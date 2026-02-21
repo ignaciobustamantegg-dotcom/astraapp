@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Star, Volume2, VolumeX, Loader2, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import forecastHeroBg from "@/assets/forecast-hero-bg.jpg";
 import readingIntuition from "@/assets/reading-intuition.jpg";
 import readingSilence from "@/assets/reading-silence.jpg";
@@ -24,9 +25,11 @@ const READING_IMAGES: Record<string, string> = {
 
 const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
-  const [audioState, setAudioState] = useState<"loading" | "playing" | "paused" | "ended" | "error">("loading");
+  const [audioState, setAudioState] = useState<"idle" | "loading" | "playing" | "paused" | "ended" | "error">("idle");
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isFetchingRef = useRef(false);
   const navigate = useNavigate();
+  const { session } = useAuth();
 
   const words = useMemo(() => stripMarkdown(forecastText).split(/\s+/).filter(Boolean), [forecastText]);
 
@@ -37,57 +40,45 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
     setCurrentWordIndex(Math.floor(progress * words.length));
   }, [words]);
 
-  useEffect(() => {
-    let cancelled = false;
+  const fetchAndPlay = useCallback(async () => {
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
+    setAudioState("loading");
 
-    const fetchAndPlay = async () => {
-      try {
-        const resp = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/daily-forecast-audio`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            },
-            body: JSON.stringify({ text: forecastText, guide: savedGuide }),
-          }
-        );
-        if (!resp.ok) throw new Error("audio_fail");
-        const blob = await resp.blob();
-        if (cancelled) return;
-
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        audioRef.current = audio;
-
-        audio.addEventListener("timeupdate", handleTimeUpdate);
-        audio.addEventListener("ended", () => {
-          setAudioState("ended");
-          setCurrentWordIndex(words.length);
-        });
-
-        await audio.play();
-        if (!cancelled) setAudioState("playing");
-      } catch {
-        if (!cancelled) {
-          setAudioState("error");
-          setCurrentWordIndex(words.length);
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/daily-forecast-audio`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+          },
+          body: JSON.stringify({ text: forecastText, guide: savedGuide }),
         }
-      }
-    };
+      );
+      if (!resp.ok) throw new Error("audio_fail");
+      const blob = await resp.blob();
 
-    fetchAndPlay();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audioRef.current = audio;
 
-    return () => {
-      cancelled = true;
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.removeEventListener("timeupdate", handleTimeUpdate);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      audio.addEventListener("timeupdate", handleTimeUpdate);
+      audio.addEventListener("ended", () => {
+        setAudioState("ended");
+        setCurrentWordIndex(words.length);
+      });
+
+      await audio.play();
+      setAudioState("playing");
+    } catch {
+      setAudioState("error");
+    } finally {
+      isFetchingRef.current = false;
+    }
+  }, [forecastText, savedGuide, session?.access_token, handleTimeUpdate, words]);
 
   const toggleAudio = () => {
     const audio = audioRef.current;
@@ -101,8 +92,23 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
     }
   };
 
+  const handlePlayClick = () => {
+    if (audioState === "idle" || audioState === "error") {
+      fetchAndPlay();
+    } else if (audioState === "ended") {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+        setAudioState("playing");
+        setCurrentWordIndex(0);
+      }
+    } else {
+      toggleAudio();
+    }
+  };
+
   const showHighlight = audioState === "playing" || audioState === "paused";
-  const showAllText = audioState === "ended" || audioState === "error";
 
   const today = new Date().toLocaleDateString("pt-BR", {
     weekday: "long",
@@ -164,50 +170,49 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
                     {word}
                   </span>
                 ))
-              : showAllText
-              ? <span>{words.slice(0, 30).join(" ")}...</span>
-              : (
-                  <div className="flex items-center gap-2 text-muted-foreground py-4">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-xs">Preparando sua leitura...</span>
-                  </div>
-                )}
+              : <span>{words.slice(0, 30).join(" ")}...</span>
+            }
           </div>
 
-          {/* Audio control inline */}
-          {(audioState === "playing" || audioState === "paused" || audioState === "ended") && (
-            <button
-              onClick={toggleAudio}
-              className="mt-3 flex items-center gap-2 text-primary text-xs font-medium"
-            >
-              {audioState === "playing" ? (
-                <><VolumeX className="w-3.5 h-3.5" /> Pausar</>
-              ) : (
-                <><Volume2 className="w-3.5 h-3.5" /> {audioState === "ended" ? "Ouvir novamente" : "Retomar"}</>
-              )}
-            </button>
-          )}
+          {/* Audio control */}
+          <button
+            onClick={handlePlayClick}
+            disabled={audioState === "loading"}
+            className="mt-3 flex items-center gap-2 text-primary text-xs font-medium disabled:opacity-50"
+          >
+            {audioState === "loading" ? (
+              <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Carregando áudio...</>
+            ) : audioState === "playing" ? (
+              <><VolumeX className="w-3.5 h-3.5" /> Pausar</>
+            ) : audioState === "paused" ? (
+              <><Volume2 className="w-3.5 h-3.5" /> Retomar</>
+            ) : audioState === "ended" ? (
+              <><Volume2 className="w-3.5 h-3.5" /> Ouvir novamente</>
+            ) : audioState === "error" ? (
+              <><Volume2 className="w-3.5 h-3.5" /> Tentar novamente</>
+            ) : (
+              <><Play className="w-3.5 h-3.5 fill-current" /> Ouvir previsão</>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Full text card (when ended) */}
-      {showAllText && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl p-5"
-          style={{
-            background: "hsla(260, 28%, 15%, 0.6)",
-            border: "1px solid hsla(260, 20%, 22%, 0.6)",
-          }}
-        >
-          <div className="text-secondary-foreground text-sm leading-relaxed">
-            {words.map((word, i) => (
-              <span key={i} className="inline mr-1">{word}</span>
-            ))}
-          </div>
-        </motion.div>
-      )}
+      {/* Full text card */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl p-5"
+        style={{
+          background: "hsla(260, 28%, 15%, 0.6)",
+          border: "1px solid hsla(260, 20%, 22%, 0.6)",
+        }}
+      >
+        <div className="text-secondary-foreground text-sm leading-relaxed">
+          {words.map((word, i) => (
+            <span key={i} className="inline mr-1">{word}</span>
+          ))}
+        </div>
+      </motion.div>
 
       {/* Guided Readings section */}
       <div className="mt-2">
@@ -248,11 +253,9 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
         </div>
       </div>
 
-      {audioState === "ended" && (
-        <p className="text-center text-muted-foreground text-xs mt-1 pb-4">
-          ✨ Sua previsão de hoje já foi revelada. A próxima estará disponível amanhã.
-        </p>
-      )}
+      <p className="text-center text-muted-foreground text-xs mt-1 pb-4">
+        ✨ Sua previsão de hoje já foi revelada. A próxima estará disponível amanhã.
+      </p>
     </motion.div>
   );
 };
