@@ -197,23 +197,6 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
         </div>
       </div>
 
-      {/* Full text card */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl p-5"
-        style={{
-          background: "hsla(260, 28%, 15%, 0.6)",
-          border: "1px solid hsla(260, 20%, 22%, 0.6)",
-        }}
-      >
-        <div className="text-secondary-foreground text-sm leading-relaxed">
-          {words.map((word, i) => (
-            <span key={i} className="inline mr-1">{word}</span>
-          ))}
-        </div>
-      </motion.div>
-
       {/* Guided Readings section */}
       <div className="mt-2">
         <h2 className="text-lg font-serif text-foreground mb-3">Leituras Guiadas</h2>
