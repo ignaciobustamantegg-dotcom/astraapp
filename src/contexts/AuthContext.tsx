@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
+import { getSessionId } from "@/lib/session";
 
 type AuthContextType = {
   session: Session | null;
@@ -17,9 +18,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setSession(session);
         setLoading(false);
+
+        // Auto-link orphan quiz submissions on sign in
+        if (event === "SIGNED_IN" && session?.user?.id) {
+          const sessionId = getSessionId();
+          supabase
+            .from("quiz_submissions")
+            .update({ user_id: session.user.id })
+            .eq("session_id", sessionId)
+            .is("user_id", null)
+            .then(({ error }) => {
+              if (error) console.warn("Auto-link quiz error:", error);
+            });
+        }
       }
     );
 
