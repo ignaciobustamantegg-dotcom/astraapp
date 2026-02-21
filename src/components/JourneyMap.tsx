@@ -29,7 +29,7 @@ const JourneyMap = () => {
   const navigate = useNavigate();
   const pathRef = useRef<SVGSVGElement>(null);
 
-  const { data: profileData } = useQuery({
+  const { data: profileData, isLoading: isLoadingProfile } = useQuery({
     queryKey: ["profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase.from("profiles").select("display_name").eq("user_id", user!.id).maybeSingle();
@@ -80,12 +80,12 @@ const JourneyMap = () => {
 
   const { d: pathD, points, totalHeight } = generatePath();
 
-  if (isLoading) {
+  if (isLoadingProfile || isLoading) {
     return <JourneyMapSkeleton />;
   }
 
   return (
-    <>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
       {/* Welcome */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -261,7 +261,7 @@ const JourneyMap = () => {
           );
         })}
       </div>
-    </>
+    </motion.div>
   );
 };
 
