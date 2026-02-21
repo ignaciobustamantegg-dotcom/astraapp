@@ -92,7 +92,8 @@ const DailyForecast = () => {
     checkExisting();
   }, []);
 
-  const generateForecast = useCallback(async () => {
+  const generateForecast = useCallback(async (selectedGuide?: string) => {
+    const guideToUse = selectedGuide || guide;
     setGenerating(true);
     setStep(5); // transition screen
 
@@ -111,7 +112,7 @@ const DailyForecast = () => {
             emotion,
             energy,
             intention,
-            guide,
+            guide: guideToUse,
             profile: profile
               ? {
                   archetype: profile.archetype,
@@ -131,7 +132,7 @@ const DailyForecast = () => {
 
       const data = await resp.json();
       setForecastText(data.text);
-      setSavedGuide(data.guide || guide);
+      setSavedGuide(data.guide || guideToUse);
 
       // Wait a bit on transition before showing result
       setTimeout(() => {
@@ -306,7 +307,7 @@ const DailyForecast = () => {
                 {GUIDES.map(({ id, name, desc, icon: Icon }) => (
                   <button
                     key={id}
-                    onClick={() => { setGuide(id); generateForecast(); }}
+                    onClick={() => { setGuide(id); generateForecast(id); }}
                     className="flex items-center gap-4 px-5 py-4 rounded-xl border border-border/30 bg-card/50 hover:border-primary/40 transition-all duration-200"
                   >
                     <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center flex-shrink-0">
