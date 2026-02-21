@@ -1,74 +1,40 @@
-import { motion } from "framer-motion";
-
-const NODE_POSITIONS = [37, 15, 59, 25, 55, 19, 37];
-
-const generatePath = () => {
-  const nodeSpacing = 160;
-  const topOffset = 40;
-  const points = NODE_POSITIONS.map((x, i) => ({
-    x: (x / 100) * 400,
-    y: topOffset + i * nodeSpacing,
-  }));
-
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i++) {
-    const curr = points[i];
-    const next = points[i + 1];
-    const midY = (curr.y + next.y) / 2;
-    d += ` C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y}`;
-  }
-  return { d, points, totalHeight: topOffset + (points.length - 1) * nodeSpacing + 80 };
-};
+import Orbs from "./quiz/Orbs";
 
 const JourneyMapSkeleton = () => {
-  const { d: pathD, points, totalHeight } = generatePath();
-
   return (
-    <>
-      <div className="px-5 pt-5 pb-2 text-center">
-        <div className="h-3 w-32 mx-auto mb-2 rounded bg-muted/30 animate-pulse" />
-        <div className="h-6 w-48 mx-auto rounded bg-muted/20 animate-pulse" />
-      </div>
+    <div className="min-h-[80vh] flex flex-col items-center justify-center px-5 relative">
+      <Orbs />
 
-      <div className="relative px-3" style={{ height: totalHeight }}>
-        <svg
-          className="absolute inset-0 w-full"
-          style={{ height: totalHeight }}
-          viewBox={`0 0 400 ${totalHeight}`}
-          preserveAspectRatio="xMidYMid meet"
-          fill="none"
-        >
-          <path
-            d={pathD}
-            stroke="hsl(260, 30%, 20%)"
-            strokeWidth="2"
-            strokeDasharray="6 6"
-            fill="none"
-            opacity="0.3"
-          />
-        </svg>
-
-        {points.map((point, i) => (
+      <div className="relative z-10 flex flex-col items-center animate-fade-in-up">
+        {/* Concentric spinning circles */}
+        <div className="relative w-20 h-20 mb-10">
+          <div className="absolute inset-0 rounded-full border border-primary/30 animate-spin-slow" />
           <div
-            key={i}
-            className="absolute flex flex-col items-center"
-            style={{
-              left: `${(point.x / 400) * 100}%`,
-              top: point.y,
-              transform: 'translate(-50%, -50%)',
-              width: 140,
-            }}
-          >
-            <div className="h-2.5 w-10 mb-2 rounded bg-muted/20 animate-pulse" />
-            <div
-              className="w-[72px] h-[72px] rounded-full animate-pulse"
-              style={{ background: 'hsl(260, 25%, 14%)' }}
-            />
-            <div className="h-3 w-20 mt-2.5 rounded bg-muted/20 animate-pulse" />
+            className="absolute inset-2 rounded-full border border-accent/20"
+            style={{ animation: "spin-slow 6s linear infinite reverse" }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-3 h-3 rounded-full bg-primary/60 animate-breathe" />
           </div>
-        ))}
+        </div>
+
+        <p className="text-secondary-foreground text-base font-light mb-8">
+          Preparando sua jornada...
+        </p>
+
+        {/* Progress bar */}
+        <div className="w-48 h-[3px] bg-secondary rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full"
+            style={{
+              width: "60%",
+              background: "linear-gradient(90deg, hsl(270 50% 72%), hsl(200 60% 65%))",
+              animation: "pulse 1.5s ease-in-out infinite",
+            }}
+          />
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
