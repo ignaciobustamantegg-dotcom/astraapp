@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Sun, Moon, Cloud, Heart, Flame, Zap, Wind, Droplets, Star, Shield, Eye, Feather, Compass, ArrowRight, Volume2, Loader2 } from "lucide-react";
+import { Sparkles, Sun, Moon, Cloud, Heart, Flame, Zap, Wind, Droplets, Shield, Eye, Feather, Compass, ArrowRight, Loader2 } from "lucide-react";
 import Orbs from "@/components/quiz/Orbs";
 import { useQuizProfile } from "@/hooks/useQuizProfile";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import ReactMarkdown from "react-markdown";
+import RevealAnimation from "@/components/forecast/RevealAnimation";
+import ForecastResult from "@/components/forecast/ForecastResult";
 
 /* ── options data ── */
 const EMOTIONS = [
@@ -49,7 +50,7 @@ const pageVariants = {
 };
 
 const DailyForecast = () => {
-  const [step, setStep] = useState(-1); // -1 = loading check
+  const [step, setStep] = useState(-1);
   const [emotion, setEmotion] = useState("");
   const [energy, setEnergy] = useState("");
   const [intention, setIntention] = useState("");
@@ -57,9 +58,7 @@ const DailyForecast = () => {
   const [forecastText, setForecastText] = useState("");
   const [savedGuide, setSavedGuide] = useState("");
   const [generating, setGenerating] = useState(false);
-  const [playingAudio, setPlayingAudio] = useState(false);
-  const [loadingAudio, setLoadingAudio] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const generatingRef = useRef(false);
   const { profile } = useQuizProfile();
   const { toast } = useToast();
 
@@ -95,7 +94,8 @@ const DailyForecast = () => {
   const generateForecast = useCallback(async (selectedGuide?: string) => {
     const guideToUse = selectedGuide || guide;
     setGenerating(true);
-    setStep(5); // transition screen
+    generatingRef.current = true;
+    setStep(5);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -133,55 +133,23 @@ const DailyForecast = () => {
       const data = await resp.json();
       setForecastText(data.text);
       setSavedGuide(data.guide || guideToUse);
-
-      // Wait a bit on transition before showing result
-      setTimeout(() => {
-        setStep(6);
-        setGenerating(false);
-      }, 2500);
+      setGenerating(false);
+      generatingRef.current = false;
     } catch (e: any) {
       toast({ title: "Erro", description: e.message, variant: "destructive" });
       setStep(4);
       setGenerating(false);
+      generatingRef.current = false;
     }
   }, [emotion, energy, intention, guide, profile, toast]);
 
-  const playAudio = async () => {
-    if (playingAudio && audioRef.current) {
-      audioRef.current.pause();
-      setPlayingAudio(false);
-      return;
+  // If animation ended but API was still loading, transition when ready
+  const [revealDone, setRevealDone] = useState(false);
+  useEffect(() => {
+    if (revealDone && !generating && step === 5 && forecastText) {
+      setStep(6);
     }
-
-    setLoadingAudio(true);
-    try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/daily-forecast-audio`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({ text: forecastText, guide: savedGuide }),
-        }
-      );
-
-      if (!resp.ok) throw new Error("Erro ao gerar áudio");
-
-      const blob = await resp.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audioRef.current = audio;
-      audio.onended = () => setPlayingAudio(false);
-      await audio.play();
-      setPlayingAudio(true);
-    } catch (e: any) {
-      toast({ title: "Erro", description: "Não foi possível reproduzir o áudio.", variant: "destructive" });
-    } finally {
-      setLoadingAudio(false);
-    }
-  };
+  }, [revealDone, generating, step, forecastText]);
 
   const nextStep = () => setStep((s) => s + 1);
 
@@ -323,60 +291,19 @@ const DailyForecast = () => {
             </motion.div>
           )}
 
-          {/* STEP 5 — Transition */}
+          {/* STEP 5 — Reveal Animation */}
           {step === 5 && (
-            <motion.div key="s5" {...pageVariants} className="flex-1 flex items-center justify-center">
-              <div className="text-center max-w-xs">
-                <div className="relative w-20 h-20 mx-auto mb-8">
-                  <div className="absolute inset-0 rounded-full border border-primary/30 animate-spin" style={{ animationDuration: "3s" }} />
-                  <div className="absolute inset-2 rounded-full border border-accent/20" style={{ animation: "spin 4s linear infinite reverse" }} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-primary/60 animate-pulse" />
-                  </div>
-                </div>
-                <p className="text-secondary-foreground text-sm leading-relaxed font-light">
-                  Conectando com as energias do universo para revelar sua previsão...
-                </p>
-              </div>
-            </motion.div>
+            <RevealAnimation
+              onComplete={() => {
+                setRevealDone(true);
+                if (!generatingRef.current) setStep(6);
+              }}
+            />
           )}
 
-          {/* STEP 6 — Result */}
+          {/* STEP 6 — Result with auto-play audio + word highlight */}
           {step === 6 && (
-            <motion.div key="s6" {...pageVariants} className="flex-1 flex flex-col gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mx-auto mb-3">
-                  <Star className="w-6 h-6 text-primary" />
-                </div>
-                <h2 className="text-xl font-serif text-foreground">Sua Previsão de Hoje</h2>
-                <p className="text-muted-foreground text-xs mt-1">
-                  {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
-                </p>
-              </div>
-
-              <div className="bg-card/60 border border-border/30 rounded-2xl p-5">
-                <div className="text-secondary-foreground text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
-                  <ReactMarkdown>{forecastText}</ReactMarkdown>
-                </div>
-              </div>
-
-              <button
-                onClick={playAudio}
-                disabled={loadingAudio}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary/15 border border-primary/30 text-primary text-sm font-medium hover:bg-primary/25 transition-colors disabled:opacity-50"
-              >
-                {loadingAudio ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Volume2 className="w-4 h-4" />
-                )}
-                {playingAudio ? "Pausar áudio" : "Ouvir minha previsão"}
-              </button>
-
-              <p className="text-center text-muted-foreground text-xs mt-2">
-                ✨ Sua previsão de hoje já foi revelada. A próxima estará disponível amanhã.
-              </p>
-            </motion.div>
+            <ForecastResult forecastText={forecastText} savedGuide={savedGuide} />
           )}
         </AnimatePresence>
       </div>
