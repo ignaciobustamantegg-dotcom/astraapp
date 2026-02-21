@@ -210,6 +210,7 @@ export type Database = {
           status: string
           token_expires_at: string | null
           updated_at: string
+          user_id: string | null
           utm_campaign: string | null
           utm_content: string | null
           utm_medium: string | null
@@ -233,6 +234,7 @@ export type Database = {
           status?: string
           token_expires_at?: string | null
           updated_at?: string
+          user_id?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null
@@ -256,6 +258,7 @@ export type Database = {
           status?: string
           token_expires_at?: string | null
           updated_at?: string
+          user_id?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null

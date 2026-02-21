@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
     if (error) throw error;
 
     if (data && data.status === "paid" && data.access_token) {
-      return new Response(JSON.stringify({ ok: true, token: data.access_token }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ ok: true, token: data.access_token, customer_email: data.customer_email || null }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     return new Response(JSON.stringify({ ok: false, status: data?.status || "not_found" }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });

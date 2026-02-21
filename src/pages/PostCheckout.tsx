@@ -36,7 +36,11 @@ const PostCheckout = () => {
         if (res.ok && res.token) {
           clearInterval(interval);
           setStatus("success");
-          setTimeout(() => navigate(`/app?token=${res.token}`, { replace: true }), 1500);
+          const email = res.customer_email ? encodeURIComponent(res.customer_email) : "";
+          const target = email
+            ? `/create-account?email=${email}&token=${res.token}`
+            : `/app?token=${res.token}`;
+          setTimeout(() => navigate(target, { replace: true }), 1500);
           return;
         }
         if (res.error) {

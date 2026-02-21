@@ -24,6 +24,7 @@ import DayExperience7 from "./pages/DayExperience7";
 import Quiz from "./pages/Quiz";
 
 import PostCheckout from "./pages/PostCheckout";
+import CreateAccount from "./pages/CreateAccount";
 import GatedApp from "./pages/GatedApp";
 import Support from "./pages/Support";
 import Terms from "./pages/Terms";
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/post-checkout" element={<PostCheckout />} />
             <Route path="/app" element={<GatedApp />} />
+            <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/support" element={<Support />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
