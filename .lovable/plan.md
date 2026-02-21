@@ -1,33 +1,18 @@
 
 
-# Agregar script de Cartpanda en la pagina de resultados
+# Mover script de Cartpanda al index.html
 
-## Que se hara
+## Problema
+Cartpanda escanea el HTML de la pagina `https://astraapp.lovable.app/quiz` buscando su script de tracking, pero como se carga dinamicamente con JavaScript (via `useEffect`), no lo encuentra en el codigo fuente inicial.
 
-Se cargara dinamicamente el script de tracking de Cartpanda (`cpsales.js`) unicamente en el componente `ResultsScreen`, que es la pagina de ventas donde estan los botones de checkout.
+## Solucion
+Mover el script del componente `ResultsScreen.tsx` al archivo `index.html` para que este presente en el HTML desde el primer momento.
 
-## Detalle tecnico
+## Cambios
 
-### Archivo: `src/components/quiz/ResultsScreen.tsx`
+### 1. `index.html`
+- Agregar `<script type="text/javascript" src="https://assets.mycartpanda.com/cartx-ecomm-ui-assets/js/cpsales.js"></script>` antes del cierre de `</body>`
 
-Se agregara un `useEffect` que:
-
-1. Crea un elemento `<script>` con `src="https://assets.mycartpanda.com/cartx-ecomm-ui-assets/js/cpsales.js"`
-2. Lo agrega al `document.body`
-3. Lo remueve al desmontar el componente (cleanup) para evitar duplicados
-
-```text
-useEffect(() => {
-  const script = document.createElement("script");
-  script.src = "https://assets.mycartpanda.com/cartx-ecomm-ui-assets/js/cpsales.js";
-  script.type = "text/javascript";
-  script.async = true;
-  document.body.appendChild(script);
-  return () => {
-    document.body.removeChild(script);
-  };
-}, []);
-```
-
-No se requieren cambios en otros archivos ni dependencias adicionales.
+### 2. `src/components/quiz/ResultsScreen.tsx`
+- Eliminar el `useEffect` que carga el script dinamicamente, ya que no sera necesario
 
