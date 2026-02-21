@@ -1,43 +1,64 @@
 
-# Fix: Guided Reading Text Layout During Audio Playback
+
+# Pre-generate Guided Reading Audio (Save ElevenLabs Credits)
 
 ## Problem
-During audio playback, each word is rendered as a separate `<span>` with `mr-1` margin, creating uneven spacing and awkward line breaks. After playback, words are joined as plain text with natural browser spacing, which looks clean.
+Every time any user opens a guided reading, the app calls the ElevenLabs API, generating a new audio file and consuming credits. Since the guided reading content is static (same text for everyone), this is wasteful.
 
 ## Solution
-Replace the current word-by-word `<span>` approach with a method that preserves natural text flow while still highlighting the current word.
+Store pre-generated audio files in Lovable Cloud storage and serve them directly to users. The ElevenLabs API is called only once per reading (during generation), not on every visit.
 
-## Changes
+## How It Works
 
-### File: `src/pages/GuidedReading.tsx`
+1. **Create a storage bucket** called `guided-readings-audio` to hold the MP3 files.
+2. **Create a backend function** (`generate-reading-audio`) that:
+   - Takes a reading ID
+   - Checks if the audio already exists in storage
+   - If not, calls ElevenLabs to generate it and uploads it to storage
+   - Returns the public URL
+3. **Update the guided reading page** to load audio directly from the storage URL instead of calling ElevenLabs every time.
+4. **Trigger generation once** for each reading (you can do this manually or via a simple admin action).
 
-1. **Remove `mr-1` margin from word spans** and use a simple space character between words instead, so spacing matches natural text flow.
+## Technical Details
 
-2. **Add a trailing space as a text node** after each word span (` `) rather than using CSS margin. This ensures the browser treats spacing identically to plain text.
+### 1. Database Migration
+- Create a public storage bucket `guided-readings-audio` with a policy allowing public read access.
 
-3. **Use the same rendering path for both states** -- always render word spans, but change only opacity/color classes. This eliminates the layout shift between "highlighting mode" and "finished mode."
+### 2. New Edge Function: `generate-reading-audio`
+- Accepts `{ readingId: string }`
+- Looks up reading content from `guidedReadings.ts` data (hardcoded in the function or passed as text)
+- Checks if `guided-readings-audio/{readingId}.mp3` already exists in storage
+- If missing: calls ElevenLabs, uploads the resulting MP3 to storage
+- Returns the public URL of the audio file
 
-### Technical Detail
+### 3. Update `src/pages/GuidedReading.tsx`
+- Instead of calling `daily-forecast-audio` with the full text, fetch the audio directly from the storage bucket URL: `{SUPABASE_URL}/storage/v1/object/public/guided-readings-audio/{id}.mp3`
+- If the file doesn't exist yet (404), fall back to calling `generate-reading-audio` to create it on-the-fly, then play the result.
+- After the first generation, all subsequent visits (by any user) use the cached file -- zero ElevenLabs credits consumed.
 
-Current (broken):
-```tsx
-// During playback - individual spans with margin
-<span className="inline mr-1 ...">word</span>
+### 4. Data Flow
 
-// After playback - plain text
-para.words.join(" ")
+```text
+User opens /reading/intuicao
+  |
+  v
+Try loading audio from storage bucket
+  |
+  +-- Found? --> Play directly (no API call)
+  |
+  +-- Not found? --> Call generate-reading-audio
+                       |
+                       v
+                   Call ElevenLabs (once)
+                       |
+                       v
+                   Upload MP3 to storage
+                       |
+                       v
+                   Return URL --> Play audio
 ```
 
-Fixed approach:
-```tsx
-// Both states use the same structure
-<span className="transition-opacity duration-200 ...">word</span>{" "}
-```
-
-Key changes:
-- Replace `className="inline mr-1"` with just the opacity/color classes
-- Add `{" "}` after each span instead of `mr-1` for natural word spacing
-- In the "ended" state, render the same spans but all at full opacity instead of switching to `join(" ")`, preventing any layout shift
-- Keep all animation and glow effects intact
-
-This is a minimal fix -- only the rendering logic inside `paragraphsWithOffsets.map()` changes. No structural, routing, or audio logic is modified.
+### Result
+- Each guided reading audio is generated exactly **once** across all users.
+- All subsequent plays load a static MP3 file from storage -- instant, free, and fast.
+- The daily forecast remains dynamic (generated per user per day) as intended.
