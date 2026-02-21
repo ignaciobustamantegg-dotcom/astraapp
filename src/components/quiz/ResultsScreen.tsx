@@ -10,7 +10,7 @@ import UrgencyTimer from "./UrgencyTimer";
 
 import Orbs from "./Orbs";
 
-const CHECKOUT_URL = import.meta.env.VITE_CARTPANDA_CHECKOUT_URL || "";
+const CHECKOUT_URL = import.meta.env.VITE_CARTPANDA_CHECKOUT_URL || "https://www.mindapps.store/checkout/207418029:1?subscription=3988";
 
 const ResultsScreen = () => {
   const handleCheckout = () => {
