@@ -1,99 +1,55 @@
 
 
-## Plan: Rediseno de /home con resultados dinamicos del quiz
+## Plan: Corregir flash visual en /journey y agregar animacion de carga estetica
 
-### Situacion actual
+### Problema identificado
 
-- Las respuestas del quiz **ya se guardan** en la tabla `quiz_submissions` con el formato `{0: 2, 1: 1, 2: 0, ...}` donde la clave es el indice de la pregunta y el valor es el indice de la respuesta seleccionada.
-- Estan vinculadas a un `session_id` (generado en localStorage), pero **no hay vinculo** entre `session_id` y `user_id`.
-- La pagina `/home` actual es estatica: muestra un texto fijo sin usar las respuestas del quiz.
+El componente `JourneyMap` tiene **dos queries** que cargan en paralelo:
+1. `profileData` (display_name) - **no tiene control de loading**
+2. `progressData` (current_day) - **solo este controla el skeleton**
 
-### Cambios necesarios
+Cuando `profileData` resuelve antes o despues que `progressData`, el componente renderiza parcialmente, causando un "destello" visual. Ademas, el skeleton actual (`JourneyMapSkeleton`) es muy basico (circulos grises pulsantes).
 
-#### 1. Vincular quiz con usuario (migracion de BD)
+### Solucion
 
-Agregar columna `user_id` (uuid, nullable) a la tabla `quiz_submissions` para poder consultar las respuestas del quiz desde la cuenta autenticada.
+#### 1. Unificar estados de carga
 
-#### 2. Vincular session al crear cuenta
-
-En `CreateAccount.tsx`, despues del signup exitoso, hacer un UPDATE en `quiz_submissions` para asignar el `user_id` a las submissions que pertenezcan al `session_id` actual (que esta en localStorage).
-
-#### 3. Sistema de etiquetado + texto dinamico (combinacion de opciones 2 y 3)
-
-Crear un archivo `src/data/quizProfile.ts` que:
-
-- Define etiquetas para cada respuesta de cada pregunta (ej: pregunta 5, opcion 0 = "frio_indisponivel")
-- Tiene una funcion `buildProfile(answers)` que:
-  - Recorre las respuestas
-  - Acumula etiquetas
-  - Determina un "perfil dominante" basado en las mas frecuentes
-  - Genera textos dinamicos usando las palabras exactas del quiz
-- Define plantillas de texto que usan variables como `{status_amoroso}`, `{patron_dominante}`, `{mayor_miedo}`, etc.
-
-#### 4. Redisenar `/home` (CreateAccount -> Home)
-
-La nueva pagina `/home` sera:
+Modificar `JourneyMap.tsx` para que el skeleton se muestre hasta que **ambas queries** hayan resuelto:
 
 ```
-Seccion 1: Titulo personalizado
-"Seu Perfil: [Nombre del arquetipo generado]"
-Subtitulo con frase de impacto basada en respuestas
-
-Seccion 2: Resumo personalizado
-Parrafo que combina las respuestas elegidas usando las mismas palabras del quiz.
-Ejemplo: "Voce se identifica como [status_amoroso]. Seu padrao dominante
-e atrair [perfil_homem]. Voce relatou que [como_termina]."
-
-Seccion 3: Pontos marcados
-Bloque visual con los puntos principales detectados:
-- "Padrao de repeticao: [respuesta pregunta 12]"
-- "Medo principal: [respuesta pregunta 11]"
-- "Intuicao: [respuesta pregunta 13]"
-- "Bloqueio energetico: [respuesta pregunta 14]"
-
-Seccion 4: CTA
-Boton "Comecar minha jornada de desbloqueio" -> /journey
+const isFullyLoaded = !isLoadingProfile && !isLoadingProgress;
+if (!isFullyLoaded) return <JourneyMapSkeleton />;
 ```
 
-#### 5. Hook personalizado `useQuizProfile`
+#### 2. Redisenar JourneyMapSkeleton con animacion estetica
 
-Crear `src/hooks/useQuizProfile.ts` que:
-- Consulta `quiz_submissions` filtrado por `user_id` del usuario autenticado
-- Usa `buildProfile()` para procesar las respuestas
-- Retorna el perfil procesado (titulo, textos, etiquetas, puntos clave)
+Reemplazar el skeleton actual por una animacion de carga elegante que incluya:
+- Los orbes ambiéntales del tema (reutilizando el componente `Orbs`)
+- Circulos concentricos giratorios (similar a `TransitionScreen`)
+- Un texto sutil como "Preparando sua jornada..."
+- Barra de progreso con gradiente purpura-turquesa
+- Transicion suave (fade) al contenido real cuando los datos esten listos
 
-### Seccion tecnica
+#### 3. Agregar transicion suave al contenido
 
-**Migracion de BD:**
-- `ALTER TABLE quiz_submissions ADD COLUMN user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL;`
-- `CREATE INDEX idx_quiz_submissions_user_id ON quiz_submissions(user_id);`
-- Agregar politica RLS para que usuarios autenticados puedan leer sus propias submissions
+Envolver el contenido del mapa en un wrapper con `animate-fade-in` para que al desaparecer el skeleton, el mapa aparezca de forma suave sin saltos visuales.
 
-**Archivos a crear:**
-- `src/data/quizProfile.ts` - logica de etiquetado, perfiles y generacion de texto dinamico
-- `src/hooks/useQuizProfile.ts` - hook para obtener y procesar las respuestas del quiz
+### Archivos a modificar
 
-**Archivos a modificar:**
-- `src/pages/Home.tsx` - rediseno completo con resultados dinamicos
-- `src/pages/CreateAccount.tsx` - agregar vinculacion de session_id -> user_id en quiz_submissions tras signup
+- **`src/components/JourneyMap.tsx`**: Extraer `isLoading` de ambas queries y unificar la condicion de carga
+- **`src/components/JourneyMapSkeleton.tsx`**: Redisenar con animacion de carga elegante (orbes + circulos giratorios + texto + barra de progreso)
 
-**Mapa de etiquetas por pregunta (ejemplos clave):**
+### Detalles tecnicos
 
-| Pregunta | Respuesta | Etiqueta |
-|----------|-----------|----------|
-| P2 (status amoroso) | "Solteira e exausta" | `solteira_exausta` |
-| P2 | "Presa em uma situacao" | `situacao_enrolada` |
-| P5 (perfil homem) | "O Frio/Indisponivel" | `frio_indisponivel` |
-| P5 | "O Promessa" | `promessa` |
-| P6 (como termina) | "Ghosting" | `ghosting` |
-| P11 (mayor miedo) | "Medo de ser abandonada" | `medo_abandono` |
-| P14 (bloqueio) | "Sinto que minha energia esta travada" | `energia_travada` |
+**JourneyMap.tsx** - cambios:
+- Agregar `isLoading: isLoadingProfile` a la query de `profileData`
+- Cambiar condicion: `if (isLoadingProfile || isLoadingProgress) return <JourneyMapSkeleton />`
 
-**Generacion de texto:**
-Se usaran las palabras exactas de las opciones del quiz para construir frases como:
-- "Voce relatou que se sente *solteira e exausta de tentar*"
-- "Seu padrao e atrair o perfil *Frio/Indisponivel: nunca demonstra o que sente*"
-- "Voce identificou que *sempre ve os sinais, mas finge que nao viu*"
-
-Esto crea el efecto de reconocimiento inmediato ("es exactamente asi!").
+**JourneyMapSkeleton.tsx** - rediseno completo:
+- Importar y usar el componente `Orbs` existente para el fondo
+- Animacion central: circulos concentricos con `animate-spin-slow` (ya definido en CSS)
+- Punto central con `animate-breathe` (ya definido en CSS)
+- Texto "Preparando sua jornada..." con `animate-fade-in-up`
+- Barra de progreso animada con gradiente `hsl(270 50% 72%) -> hsl(200 60% 65%)`
+- Altura minima para evitar saltos de layout: `min-h-[80vh]`
 
