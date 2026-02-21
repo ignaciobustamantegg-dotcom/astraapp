@@ -42,7 +42,7 @@ serve(async (req) => {
         },
         body: JSON.stringify({
           text,
-          model_id: "eleven_multilingual_v3",
+          model_id: "eleven_multilingual_v2",
           voice_settings: {
             stability: voice.stability,
             similarity_boost: voice.similarity_boost,
