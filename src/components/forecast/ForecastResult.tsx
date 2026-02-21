@@ -1,26 +1,30 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Star, Volume2, VolumeX, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { Star, Volume2, VolumeX, Loader2, Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import forecastHeroBg from "@/assets/forecast-hero-bg.jpg";
+import readingIntuition from "@/assets/reading-intuition.jpg";
+import readingSilence from "@/assets/reading-silence.jpg";
+import { GUIDED_READINGS } from "@/data/guidedReadings";
 
 interface ForecastResultProps {
   forecastText: string;
   savedGuide: string;
 }
 
-/** Strip markdown syntax to get plain words */
 const stripMarkdown = (md: string) =>
-  md
-    .replace(/[#*_~`>[\]()!-]/g, "")
-    .replace(/\n+/g, " ")
-    .trim();
+  md.replace(/[#*_~`>[\]()!-]/g, "").replace(/\n+/g, " ").trim();
+
+const READING_IMAGES: Record<string, string> = {
+  "reading-intuition": readingIntuition,
+  "reading-silence": readingSilence,
+};
 
 const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
   const [audioState, setAudioState] = useState<"loading" | "playing" | "paused" | "ended" | "error">("loading");
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const words = useMemo(() => stripMarkdown(forecastText).split(/\s+/).filter(Boolean), [forecastText]);
 
@@ -31,7 +35,6 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
     setCurrentWordIndex(Math.floor(progress * words.length));
   }, [words]);
 
-  // Auto-play on mount
   useEffect(() => {
     let cancelled = false;
 
@@ -67,7 +70,7 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
       } catch {
         if (!cancelled) {
           setAudioState("error");
-          setCurrentWordIndex(words.length); // show all text
+          setCurrentWordIndex(words.length);
         }
       }
     };
@@ -82,7 +85,7 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount
+  }, []);
 
   const toggleAudio = () => {
     const audio = audioRef.current;
@@ -99,81 +102,152 @@ const ForecastResult = ({ forecastText, savedGuide }: ForecastResultProps) => {
   const showHighlight = audioState === "playing" || audioState === "paused";
   const showAllText = audioState === "ended" || audioState === "error";
 
+  const today = new Date().toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+
   return (
     <motion.div
       key="s6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0, transition: { duration: 0.5 } }}
       exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }}
-      className="flex-1 flex flex-col gap-6"
+      className="flex-1 flex flex-col gap-5"
     >
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center mx-auto mb-3">
-          <Star className="w-6 h-6 text-primary" />
+      {/* Greeting */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-muted-foreground text-xs capitalize">{today}</p>
+          <h1 className="text-2xl font-serif text-foreground mt-0.5">Sua Previsão</h1>
         </div>
-        <h2 className="text-xl font-serif text-foreground">Sua Previsão de Hoje</h2>
-        <p className="text-muted-foreground text-xs mt-1">
-          {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
-        </p>
+        <div className="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+          <Star className="w-5 h-5 text-primary" />
+        </div>
       </div>
 
-      <div className="bg-card/60 border border-border/30 rounded-2xl p-5">
-        <div className="text-secondary-foreground text-sm leading-relaxed">
-          {showHighlight
-            ? words.map((word, i) => (
-                <span
-                  key={i}
-                  className={`inline-block mr-1 transition-all duration-200 ${
-                    i < currentWordIndex
-                      ? "opacity-100"
-                      : i === currentWordIndex
-                      ? "text-primary scale-105 opacity-100"
-                      : "opacity-30"
-                  }`}
-                  style={
-                    i === currentWordIndex
-                      ? { textShadow: "0 0 8px hsl(var(--primary) / 0.5)" }
-                      : undefined
-                  }
-                >
-                  {word}
-                </span>
-              ))
-            : showAllText
-            ? words.map((word, i) => (
-                <span key={i} className="inline-block mr-1">{word}</span>
-              ))
-            : (
-                <div className="flex items-center justify-center py-8 gap-2 text-muted-foreground">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-xs">Preparando sua leitura em áudio...</span>
-                </div>
+      {/* Hero forecast card */}
+      <div className="relative rounded-2xl overflow-hidden min-h-[280px]">
+        <img
+          src={forecastHeroBg}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
+
+        <div className="relative z-10 p-5 pt-10 flex flex-col justify-end min-h-[280px]">
+          <p className="text-[10px] uppercase tracking-[0.15em] text-primary/80 mb-2">
+            Previsão do Dia
+          </p>
+
+          <div className="text-foreground text-[15px] leading-[1.75] font-light">
+            {showHighlight
+              ? words.slice(0, Math.min(words.length, 30)).map((word, i) => (
+                  <span
+                    key={i}
+                    className={`inline mr-1 transition-all duration-200 ${
+                      i < currentWordIndex
+                        ? "opacity-100"
+                        : i === currentWordIndex
+                        ? "text-primary opacity-100"
+                        : "opacity-30"
+                    }`}
+                    style={
+                      i === currentWordIndex
+                        ? { textShadow: "0 0 8px hsl(var(--primary) / 0.5)" }
+                        : undefined
+                    }
+                  >
+                    {word}
+                  </span>
+                ))
+              : showAllText
+              ? <span>{words.slice(0, 30).join(" ")}...</span>
+              : (
+                  <div className="flex items-center gap-2 text-muted-foreground py-4">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-xs">Preparando sua leitura...</span>
+                  </div>
+                )}
+          </div>
+
+          {/* Audio control inline */}
+          {(audioState === "playing" || audioState === "paused" || audioState === "ended") && (
+            <button
+              onClick={toggleAudio}
+              className="mt-3 flex items-center gap-2 text-primary text-xs font-medium"
+            >
+              {audioState === "playing" ? (
+                <><VolumeX className="w-3.5 h-3.5" /> Pausar</>
+              ) : (
+                <><Volume2 className="w-3.5 h-3.5" /> {audioState === "ended" ? "Ouvir novamente" : "Retomar"}</>
               )}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Audio control */}
-      {(audioState === "playing" || audioState === "paused" || audioState === "ended") && (
-        <button
-          onClick={toggleAudio}
-          className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-primary/15 border border-primary/30 text-primary text-sm font-medium hover:bg-primary/25 transition-colors"
+      {/* Full text card (when ended) */}
+      {showAllText && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl p-5"
+          style={{
+            background: "hsla(260, 28%, 15%, 0.6)",
+            border: "1px solid hsla(260, 20%, 22%, 0.6)",
+          }}
         >
-          {audioState === "playing" ? (
-            <>
-              <VolumeX className="w-4 h-4" />
-              Pausar áudio
-            </>
-          ) : (
-            <>
-              <Volume2 className="w-4 h-4" />
-              {audioState === "ended" ? "Ouvir novamente" : "Retomar áudio"}
-            </>
-          )}
-        </button>
+          <div className="text-secondary-foreground text-sm leading-relaxed">
+            {words.map((word, i) => (
+              <span key={i} className="inline mr-1">{word}</span>
+            ))}
+          </div>
+        </motion.div>
       )}
 
+      {/* Guided Readings section */}
+      <div className="mt-2">
+        <h2 className="text-lg font-serif text-foreground mb-3">Leituras Guiadas</h2>
+
+        <div className="flex flex-col gap-3">
+          {GUIDED_READINGS.map((reading) => (
+            <button
+              key={reading.id}
+              onClick={() => navigate(`/reading/${reading.id}`)}
+              className="flex items-center gap-4 rounded-2xl overflow-hidden press-scale transition-all duration-200"
+              style={{
+                background: "hsla(260, 28%, 13%, 0.7)",
+                border: "1px solid hsla(260, 20%, 22%, 0.5)",
+              }}
+            >
+              <div className="flex-1 p-4 text-left">
+                <p className="text-[10px] uppercase tracking-[0.12em] text-primary/70 mb-1">
+                  {reading.category}
+                </p>
+                <p className="text-foreground text-sm font-medium leading-snug">
+                  {reading.title}
+                </p>
+                <div className="flex items-center gap-1.5 mt-2 text-muted-foreground">
+                  <Play className="w-3 h-3 fill-current" />
+                  <span className="text-[11px]">{reading.duration}</span>
+                </div>
+              </div>
+              <div className="w-24 h-24 flex-shrink-0">
+                <img
+                  src={READING_IMAGES[reading.image]}
+                  alt={reading.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {audioState === "ended" && (
-        <p className="text-center text-muted-foreground text-xs mt-2">
+        <p className="text-center text-muted-foreground text-xs mt-1 pb-4">
           ✨ Sua previsão de hoje já foi revelada. A próxima estará disponível amanhã.
         </p>
       )}
