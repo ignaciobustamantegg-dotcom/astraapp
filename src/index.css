@@ -268,3 +268,13 @@
   user-select: none;
   pointer-events: none;
 }
+
+/* Ocultar badge visual de Cartpanda */
+#cartx-secure-badge,
+.cartx-secure-badge,
+[id*="cartpanda"],
+[class*="cartpanda"],
+[id*="cartx"],
+[class*="cartx"] {
+  display: none !important;
+}
