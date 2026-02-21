@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.verify-token]
 verify_jwt = false
+
+[functions.link-order]
+verify_jwt = false
