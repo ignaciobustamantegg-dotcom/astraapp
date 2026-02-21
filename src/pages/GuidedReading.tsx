@@ -33,23 +33,37 @@ const GuidedReading = () => {
 
     const fetchAndPlay = async () => {
       try {
-        const resp = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/daily-forecast-audio`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            },
-            body: JSON.stringify({ text: fullText, guide: reading.guide }),
-          }
-        );
-        if (!resp.ok) throw new Error("audio_fail");
-        const blob = await resp.blob();
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const storageUrl = `${supabaseUrl}/storage/v1/object/public/guided-readings-audio/${reading.id}.mp3`;
+
+        // Try cached audio first
+        const headResp = await fetch(storageUrl, { method: "HEAD" });
+        let audioUrl: string;
+
+        if (headResp.ok) {
+          // Cached file exists — use it directly
+          audioUrl = storageUrl;
+        } else {
+          // Not cached — generate on-the-fly and cache
+          const genResp = await fetch(
+            `${supabaseUrl}/functions/v1/generate-reading-audio`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+              },
+              body: JSON.stringify({ readingId: reading.id }),
+            }
+          );
+          if (!genResp.ok) throw new Error("audio_fail");
+          const data = await genResp.json();
+          audioUrl = data.url || storageUrl;
+        }
+
         if (cancelled) return;
 
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
+        const audio = new Audio(audioUrl);
         audioRef.current = audio;
 
         audio.addEventListener("timeupdate", handleTimeUpdate);
