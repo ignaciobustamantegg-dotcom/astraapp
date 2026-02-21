@@ -76,7 +76,10 @@ const CreateAccount = () => {
           .from("quiz_submissions")
           .update({ user_id: userId })
           .eq("session_id", sessionId)
-          .then(() => {});
+          .is("user_id", null)
+          .then(({ error: linkErr }) => {
+            if (linkErr) console.warn("Link quiz error:", linkErr);
+          });
       }
 
       navigate("/home", { replace: true });
