@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getSessionId } from "@/lib/session";
 import Orbs from "@/components/quiz/Orbs";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, CheckCircle, Loader2 } from "lucide-react";
@@ -59,13 +60,23 @@ const CreateAccount = () => {
         }
       }
 
-      // Link order to user if we have a token and user_id
+      // Link order + quiz submissions to user
       const userId = data?.user?.id;
-      if (userId && token) {
-        // Fire and forget — non-blocking
-        supabase.functions.invoke("link-order", {
-          body: { token, user_id: userId },
-        }).catch(() => {});
+      if (userId) {
+        // Link order if we have a token
+        if (token) {
+          supabase.functions.invoke("link-order", {
+            body: { token, user_id: userId },
+          }).catch(() => {});
+        }
+
+        // Link quiz submissions from this session to the new user
+        const sessionId = getSessionId();
+        supabase
+          .from("quiz_submissions")
+          .update({ user_id: userId })
+          .eq("session_id", sessionId)
+          .then(() => {});
       }
 
       navigate("/home", { replace: true });
