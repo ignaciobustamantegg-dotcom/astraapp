@@ -275,6 +275,7 @@
 [id*="cartpanda"],
 [class*="cartpanda"],
 [id*="cartx"],
-[class*="cartx"] {
+[class*="cartx"],
+body > div:not(#root) {
   display: none !important;
 }
